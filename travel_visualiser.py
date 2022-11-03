@@ -19,6 +19,8 @@ def createScaleMaps(mapImg, minHeight):
         mapImgList[scale] = [pg.transform.scale(mapImg, (newWidth,newHeight)), [newWidth, newHeight]]
     
     return mapImgList
+
+# def addPin()
     
 def travelMap():
     displayWidth, displayHeight = displaySize = 1200,800
@@ -67,6 +69,8 @@ def travelMap():
                 if event.y == 1:
                     if scale < 20:
                         scale += 1
+            # if event.type == pg.MOUSEBUTTONUP():
+                
 
         keys = pg.key.get_pressed()
         if keys[pg.K_UP]:
