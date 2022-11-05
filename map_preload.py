@@ -18,7 +18,7 @@ class Cell:
         
 class Map:
     # Dictionary used to quickly lookup the multiplier for different terrrains
-    multiplierForTerrain = {
+    terrainMultiplier = {
         (0,0,0): 3,         # mountains
         (150,150,150): 1.5, # hills
         (0,255,0): 1.2,     # forest
@@ -38,8 +38,9 @@ class Map:
         self.map = surface
         self.width, self.height = pg.Surface.get_size(self.map)
         self.name = mapname
-    
-        self.receiveCells()
+        
+        self.cells = [[Cell(-1,(x,y)) for y in range(self.height)] for x in range(self.width)]
+        self.generateCells()
         
     #Returns RGB of a surface at the given coords
     def checkColour(self, coords):
@@ -48,7 +49,7 @@ class Map:
     
     #Calculates the distance multiplier for the terrain
     def accountTerrain(self, terrain):
-        return Map.multiplierForTerrain[terrain] if terrain in Map.multiplierForTerrain else 1
+        return Map.terrainMultiplier[terrain] if terrain in Map.terrainMultiplier else 1
     
     #Returns the cell at the coords
     def getCell(self, coords):
@@ -60,7 +61,7 @@ class Map:
         directions = [(0,-2), (1,-2), (2,-1), (2,0), (2,1), (1,2), (0,2), (-1,2), (-2,1), (-2,0), (-2,-1), (-1,-2)]
         
         # Calculating the absolute distances per direction once to save work
-        absForDir = {direction: (direction[0]**2+direction[1]**2)**0.5 for direction in directions}
+        dirAbs = {direction: (direction[0]**2+direction[1]**2)**0.5 for direction in directions}
         
         for y in range(self.height):
             for x in range(self.width):
@@ -77,17 +78,19 @@ class Map:
                     
                     neighbouringCell = self.getCell((x, y))
                     neighbouringCell.nbour.append(currentCell)
-                    neighbouringCell.nDist.append(absForDir[direction])
+                    neighbouringCell.nDist.append(dirAbs[direction])
                     
         print('Cells Generated')
     
     #Gets the pregenerated cells from the local file
-    def recallCells(self, fileDir):
-        print('Cells Received')
+    # def recallCells(self, fileDir):
+    #     self.cells = pkl.load(open(fileDir+'.p','rb'))
+    #     print('Cells Received')
     
     #Stores generated cells in local file
-    def storeCells(self, fileDir):
-        print('Cells Stored')
+    # def storeCells(self, fileDir):
+    #     pkl.dump(self.cells, open(fileDir+'.p','wb'))
+    #     print('Cells Stored')
         
     #Gets and stores the cells
     def receiveCells(self):
@@ -106,5 +109,7 @@ class Map:
     def resetCells(self):
         print('Cells Reset')
         
-        
+        for y in range(self.height):
+            for x in range(self.width):
+                self.getCell((x,y)).count = -1
         
