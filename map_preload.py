@@ -13,7 +13,7 @@ class Cell:
         
 class Map:
     # Dictionary used to quickly lookup the multiplier for different terrrains
-    multiplierForTerrain = {
+    terrainMultiplier = {
         (0,0,0): 3,         # mountains
         (150,150,150): 1.5, # hills
         (0,255,0): 1.2,     # forest
@@ -43,7 +43,7 @@ class Map:
     
     #Calculates the distance multiplier for the terrain
     def accountTerrain(self, terrain):
-        return Map.multiplierForTerrain[terrain] if terrain in Map.multiplierForTerrain else 1
+        return Map.terrainMultiplier[terrain] if terrain in Map.terrainMultiplier else 1
     
     #Returns the cell at the coords
     def getCell(self, coords):
@@ -55,7 +55,7 @@ class Map:
         directions = [(0,-2), (1,-2), (2,-1), (2,0), (2,1), (1,2), (0,2), (-1,2), (-2,1), (-2,0), (-2,-1), (-1,-2)]
         
         # Calculating the absolute distances per direction once to save work
-        absForDir = {direction: (direction[0]**2+direction[1]**2)**0.5 for direction in directions}
+        dirAbs = {direction: (direction[0]**2+direction[1]**2)**0.5 for direction in directions}
         
         for y in range(self.height):
             for x in range(self.width):
@@ -72,7 +72,7 @@ class Map:
                     
                     neighbouringCell = self.getCell((x, y))
                     neighbouringCell.nbour.append(currentCell)
-                    neighbouringCell.nDist.append(absForDir[direction])
+                    neighbouringCell.nDist.append(dirAbs[direction])
                     
         print('Cells Generated')
     
