@@ -1,5 +1,4 @@
 import pygame as pg
-import numpy as np
 from os import path
 
 class Cell:
@@ -13,6 +12,15 @@ class Cell:
         self.nDist = []
         
 class Map:
+    # Dictionary used to quickly lookup the multiplier for different terrrains
+    multiplierForTerrain = {
+        (0,0,0): 3,         # mountains
+        (150,150,150): 1.5, # hills
+        (0,255,0): 1.2,     # forest
+        (255,0,255): 2,     # marsh
+        (255,0,0): 0.9      # path
+    }
+
     def __init__(self, surface, mapname):
         self.mountains = (0,0,0)
         self.path = (255,0,0)
@@ -35,45 +43,36 @@ class Map:
     
     #Calculates the distance multiplier for the terrain
     def accountTerrain(self, terrain):
-        if terrain == self.mountains:
-            multiplier = 3
-        elif terrain == self.hills:
-            multiplier = 1.5
-        elif terrain == self.forest:
-            multiplier = 1.2
-        elif terrain == self.marsh:
-            multiplier = 2
-        elif terrain == self.path:
-            multiplier = 0.9
-        else:
-            multiplier = 1
-            
-        return multiplier
+        return Map.multiplierForTerrain[terrain] if terrain in Map.multiplierForTerrain else 1
     
     #Returns the cell at the coords
     def getCell(self, coords):
         x, y = coords
-        cell = self.cells[x][y]
-        return cell
+        return self.cells[x][y]
     
     #Generates the cells for path finding
     def generateCells(self):
-        directions = [[0,-2], [1,-2], [2,-1], [2,0], [2,1], [1,2], [0,2], [-1,2], [-2,1], [-2,0], [-2,-1], [-1,-2]]
+        directions = [(0,-2), (1,-2), (2,-1), (2,0), (2,1), (1,2), (0,2), (-1,2), (-2,1), (-2,0), (-2,-1), (-1,-2)]
+        
+        # Calculating the absolute distances per direction once to save work
+        absForDir = {direction: (direction[0]**2+direction[1]**2)**0.5 for direction in directions}
         
         for y in range(self.height):
             for x in range(self.width):
                 for direction in directions:
-                    coord = tuple(np.add((x,y),direction))
+                    coord = (x + direction[0], y + direction[1])
                     
                     if coord[0] < 0 or coord[0] >= self.width or coord[1] < 0 or coord[1] >= self.height:
                         continue
                     
                     terrain = self.checkColour(coord)
-                    self.getCell(coord).terrain = terrain
-                    self.getCell(coord).terrain_multiplier = self.accountTerrain(terrain)
+                    currentCell = self.getCell(coord)
+                    currentCell.terrain = terrain
+                    currentCell.terrain_multiplier = self.accountTerrain(terrain)
                     
-                    self.getCell((x,y)).nbour.append(self.getCell(coord))
-                    self.getCell((x,y)).nDist.append((direction[0]**2+direction[1]**2)**0.5)
+                    neighbouringCell = self.getCell((x, y))
+                    neighbouringCell.nbour.append(currentCell)
+                    neighbouringCell.nDist.append(absForDir[direction])
                     
         print('Cells Generated')
     
