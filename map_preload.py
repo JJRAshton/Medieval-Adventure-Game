@@ -33,8 +33,9 @@ class Map:
         self.map = surface
         self.width, self.height = pg.Surface.get_size(self.map)
         self.name = mapname
-    
-        self.receiveCells()
+        
+        self.cells = [[Cell(-1,(x,y)) for y in range(self.height)] for x in range(self.width)]
+        self.generateCells()
         
     #Returns RGB of a surface at the given coords
     def checkColour(self, coords):
@@ -77,12 +78,14 @@ class Map:
         print('Cells Generated')
     
     #Gets the pregenerated cells from the local file
-    def recallCells(self, fileDir):
-        print('Cells Received')
+    # def recallCells(self, fileDir):
+    #     self.cells = pkl.load(open(fileDir+'.p','rb'))
+    #     print('Cells Received')
     
     #Stores generated cells in local file
-    def storeCells(self, fileDir):
-        print('Cells Stored')
+    # def storeCells(self, fileDir):
+    #     pkl.dump(self.cells, open(fileDir+'.p','wb'))
+    #     print('Cells Stored')
         
     #Gets and stores the cells
     def receiveCells(self):
@@ -101,5 +104,7 @@ class Map:
     def resetCells(self):
         print('Cells Reset')
         
-        
+        for y in range(self.height):
+            for x in range(self.width):
+                self.getCell((x,y)).count = -1
         
