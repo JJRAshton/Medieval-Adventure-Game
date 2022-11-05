@@ -10,6 +10,11 @@ class Cell:
         self.terrain_multiplier = 1
         self.nbour = []
         self.nDist = []
+
+    def __lt__(self, other):
+        # Needed to make SortedList work
+        return self.distanceToEndEstimate < other.distanceToEndEstimate
+
         
 class Map:
     # Dictionary used to quickly lookup the multiplier for different terrrains

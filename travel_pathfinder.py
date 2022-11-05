@@ -1,6 +1,7 @@
 import pygame as pg
 import numpy as np
 from map_preload import Map
+from sortedcontainers import SortedList
 # import travel_visualiser as tv
 """Finds the Path Between Two Points On a Given Map"""
 
@@ -28,40 +29,37 @@ class Travel:
         goalCell = Pmap.getCell(self.endCoords)
         
         Pmap.getCell(self.startCoords).count = 0
+        Pmap.getCell(self.startCoords).f = 100000000
         search_list = [Pmap.getCell(self.startCoords)]
         
-        frontier_list = []
-        f_list = []
-        for cCell in search_list:
+        frontier_list = SortedList()
+
+        # This is a little bit whacky, search_list gets modified while being iterated through
+        for searchCell in search_list:
                         
-            for i, nCell in enumerate(cCell.nbour):
+            for i, neighbouringCell in enumerate(searchCell.nbour):
                 
                 if not self.boat:
-                    if nCell.terrain == Pmap.water:
+                    if neighbouringCell.terrain == Pmap.water:
                         continue
                 
-                counter = cCell.count + cCell.terrain_multiplier*cCell.nDist[i]
+                counter = searchCell.count + searchCell.terrain_multiplier*searchCell.nDist[i]
                     
-                if nCell.count > counter or nCell.count == -1:
-                    nCell.count = counter
-                    nCell.path = cCell
-                    frontier_list.append(nCell)
-                
-                    h = self.w*calcDist(nCell, goalCell)
-                    g = nCell.count
+                if neighbouringCell.count > counter or neighbouringCell.count == -1:
+                    neighbouringCell.count = counter
+                    neighbouringCell.path = searchCell
                     
-                    f = h + g
+                    h = self.w*calcDist(neighbouringCell, goalCell)
+                    g = neighbouringCell.count
                     
-                    f_list.append(f)
+                    distanceToEndEstimate = h + g
+                    neighbouringCell.distanceToEndEstimate = distanceToEndEstimate
+                    frontier_list.add(neighbouringCell)
               
             if len(frontier_list) != 0:
-                fminIndex = f_list.index(min(f_list))
-                search_list.append(frontier_list[fminIndex])
-                
-                frontier_list.pop(fminIndex)
-                f_list.pop(fminIndex)
+                search_list.append(frontier_list.pop(0))
             
-            if cCell.coords == self.endCoords:
+            if searchCell.coords == self.endCoords:
                 break
         
         print('Path Generated!')
@@ -118,13 +116,14 @@ def testMap():
             if event.type == pg.MOUSEBUTTONUP:
                 pinToggle = False
                 path.endCoords = xm, ym
+                print(xm, ym)
                 pathToggle = True
                 
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
             path.generate(mMap)
             generated = True
-            
+ 
         if pinToggle:
             xm, ym = pg.mouse.get_pos()
             display.blit(pinImg, (xm-int(pinWidth/2), ym-pinHeight))
