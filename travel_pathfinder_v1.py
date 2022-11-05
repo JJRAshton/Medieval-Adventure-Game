@@ -32,15 +32,16 @@ def checkColour(surface, coords):
 
 #Calculates the distance multiplier for the terrain
 def accountTerrain(surface, coords):
-    if checkColour(surface, coords) == mountains:
+    pixelColour = checkColour(surface, coords)
+    if pixelColour == mountains:
         multiplier = 3
-    elif checkColour(surface, coords) == hills:
+    elif pixelColour == hills:
         multiplier = 1.5
-    elif checkColour(surface, coords) == forest:
+    elif pixelColour == forest:
         multiplier = 1.2
-    elif checkColour(surface, coords) == marsh:
+    elif pixelColour == marsh:
         multiplier = 2
-    elif checkColour(surface, coords) == path:
+    elif pixelColour == path:
         multiplier = 0.9
     else:
         multiplier = 1
