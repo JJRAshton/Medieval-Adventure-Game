@@ -1,7 +1,7 @@
 
 class Entity:
     def __init__(self):
-        self.health = 0
+        self.lvl = 0
         self.movement = 0
         
         self.strStat = 0
@@ -18,10 +18,16 @@ class Entity:
         
         self.inventory = []
         
+        self.health = 0
+        
         self.refreshModifierStat()
         self.refreshArmourStat()
         self.refreshWeaponStat()
     
+    #Collects entity stats
+    def getStats(self):
+        
+        
     #Recalculates the creature stats after a change of stats
     def refreshModifierStat(self):
         self.str = 0
