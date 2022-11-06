@@ -32,8 +32,8 @@ class APIAttack:
 
 class DNDServer:
 
-    def moveRequest(move: APIMove):
+    def moveRequest(self, move: APIMove):
         raise NotImplementedError
 
-    def attackRequest(attck: APIAttack):
+    def attackRequest(self, attck: APIAttack):
         raise NotImplementedError
