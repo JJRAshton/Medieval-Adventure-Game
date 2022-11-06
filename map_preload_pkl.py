@@ -1,7 +1,6 @@
 import pygame as pg
 from os import path
 import pickle as pkl
-import numpy as np
 
 class Cell:
     def __init__(self, counter, cellCoords):
