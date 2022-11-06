@@ -1,6 +1,7 @@
 import pygame as pg
 from os import path
 import pickle as pkl
+import numpy as np
 
 class Cell:
     def __init__(self, counter, cellCoords):
@@ -11,6 +12,14 @@ class Cell:
         self.terrain_multiplier = 1
         self.nbour = []
         self.nDist = []
+        self.distToGoal = -1
+
+    #Calculates the distance between two cells
+    def getDistToGoal(self, goal):
+        if self.distToGoal == -1:
+            self.distToGoal = ((self.coords[0] - goal.coords[0])**2 + (self.coords[1] - goal.coords[1])**2)**0.5
+        return self.distToGoal
+
 
     def __lt__(self, other):
         # Needed to make SortedList work
@@ -127,6 +136,7 @@ class Map:
     def resetCells(self):
         for cell in self.editedCells:
             cell.count = -1
+            cell.distToGoal = -1
         
         self.editedCells = []
         print('Cells Reset')

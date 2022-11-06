@@ -1,5 +1,4 @@
 import pygame as pg
-import numpy as np
 from map_preload_pkl import Map
 from sortedcontainers import SortedList
 # import travel_visualiser as tv
@@ -7,11 +6,6 @@ from sortedcontainers import SortedList
 
 imageDir = 'assets/images/'
 elementDir = 'assets/elements/'
-
-#Calculates the distance between two cells
-def calcDist(cell1, cell2):
-    dist = np.linalg.norm(np.subtract(cell1.coords,cell2.coords))
-    return dist
 
 class Travel:
     def __init__(self):
@@ -30,7 +24,6 @@ class Travel:
         startCell = pMap.getCell(self.startCoords)
         
         startCell.count = 0
-        startCell.f = 100000000
         pMap.editedCells.append(startCell)
         
         search_list = [pMap.getCell(self.startCoords)]
@@ -53,7 +46,7 @@ class Travel:
                     pMap.editedCells.append(neighbouringCell)
                     neighbouringCell.path = searchCell
                     
-                    h = self.w*calcDist(neighbouringCell, goalCell)
+                    h = self.w*neighbouringCell.getDistToGoal(goalCell)
                     g = neighbouringCell.count
                     
                     distanceToEndEstimate = h + g
@@ -113,7 +106,10 @@ def testMap():
                 
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
+            import time
+            s = time.time()
             path.generate(mMap)
+            print(time.time()-s)
             generated = True
         if keys[pg.K_1]:
             generated = False
@@ -135,3 +131,5 @@ def testMap():
         display.fill((0,0,0))
         clock.tick(tickRate)
     pg.quit()
+
+testMap()
