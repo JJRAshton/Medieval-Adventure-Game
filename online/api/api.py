@@ -1,15 +1,14 @@
-class APIAttack:
+class APIWeapon:
 
-    def __init__(self, attacker, attacked, weapon):
-        self.attacker = attacker
-        self.attacked = attacked
-        self.weapon = weapon
+    def __init__(self, range, dice):
+        self.range = range
+        self.dice = dice
 
-class APIMove:
+class APILocation:
 
-    def __init__(self, entity, dest):
-        self.entity = entity
-        self.dest = dest
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
 class APIEntity:
 
@@ -18,8 +17,23 @@ class APIEntity:
         self.attackBonus = attackBonus
         self.armourClass = armourClass
 
-class APIWeapon:
+class APIMove:
 
-    def __init__(self, range, dice):
-        self.range = range
-        self.dice = dice
+    def __init__(self, entity, dest):
+        self.entity = entity
+        self.dest = dest
+
+class APIAttack:
+
+    def __init__(self, attacker, attacked, weapon):
+        self.attacker = attacker
+        self.attacked = attacked
+        self.weapon = weapon
+
+class DNDServer:
+
+    def moveRequest(move: APIMove):
+        raise NotImplementedError
+
+    def attackRequest(attck: APIAttack):
+        raise NotImplementedError
