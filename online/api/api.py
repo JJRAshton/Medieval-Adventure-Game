@@ -30,7 +30,7 @@ class APIAttack:
         self.attacked = attacked
         self.weapon = weapon
 
-class DNDServer:
+class APIServer:
 
     def moveRequest(self, move: APIMove):
         raise NotImplementedError
