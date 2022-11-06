@@ -1,0 +1,10 @@
+Roadmap
+
+First game target:
+•	10x10 square map
+•	1 medium sized player with 1 weapon
+•	2 medium sized monsters with 1 weapon each
+•	Entities can: move, attack
+•	Entities have: health, AC, attack roll bonus, size, movement
+•	Weapons have: range, damage dice
+
