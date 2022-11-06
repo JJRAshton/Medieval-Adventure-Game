@@ -1,5 +1,4 @@
 import pygame as pg
-import numpy as np
 from map_preload_pkl import Map
 from sortedcontainers import SortedList
 # import travel_visualiser as tv
@@ -10,7 +9,7 @@ elementDir = 'assets/elements/'
 
 #Calculates the distance between two cells
 def calcDist(cell1, cell2):
-    dist = np.linalg.norm(np.subtract(cell1.coords,cell2.coords))
+    dist = ((cell1.coords[0]-cell2.coords[0])**2+(cell1.coords[1]-cell2.coords[1])**2)**0.5
     return dist
 
 class Travel:
@@ -26,6 +25,8 @@ class Travel:
         
     #Generates all cells on the surface with paths
     def generate(self, pMap):
+        if len(pMap.editedCells) != 0:
+            pMap.resetCells()
         goalCell = pMap.getCell(self.endCoords)
         startCell = pMap.getCell(self.startCoords)
         
