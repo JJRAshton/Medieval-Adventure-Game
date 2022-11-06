@@ -100,43 +100,36 @@ def testMap():
     mMap = Map(mapImg, mapName)
     path = Travel()
     
-    path.startCoords = 50, 100
-    
-    pinToggle = False
-    pathToggle = False
+    startPin = False
+    endPin = False
     generated = False
     closed = False
     while not closed:
-        mapImg.blit(pinImg, (path.startCoords[0]-int(pinWidth/2), path.startCoords[1]-pinHeight))
         display.blit(mapImg, (xImage, yImage))
         
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 closed = True
-            if event.type == pg.MOUSEBUTTONDOWN:
-                pathToggle = False
-                if generated:
-                    generated = False
-                    mMap.resetCells()
-                pinToggle = True
-            if event.type == pg.MOUSEBUTTONUP:
-                pinToggle = False
-                path.endCoords = xm, ym
-                print(xm, ym)
-                pathToggle = True
                 
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
             path.generate(mMap)
             generated = True
+        if keys[pg.K_1]:
+            generated = False
+            path.startCoords = pg.mouse.get_pos()
+            startPin = True
+        if keys[pg.K_2]:
+            generated = False
+            path.endCoords = pg.mouse.get_pos()
+            endPin = True
  
-        if pinToggle:
-            xm, ym = pg.mouse.get_pos()
-            display.blit(pinImg, (xm-int(pinWidth/2), ym-pinHeight))
-        if pathToggle:
+        if startPin:
+            display.blit(pinImg, (path.startCoords[0]-int(pinWidth/2), path.startCoords[1]-pinHeight))
+        if endPin:
             display.blit(pinImg, (path.endCoords[0]-int(pinWidth/2), path.endCoords[1]-pinHeight))
-            if generated:
-                path.plot(mMap)
+        if generated:
+            path.plot(mMap)
             
         pg.display.update()
         display.fill((0,0,0))

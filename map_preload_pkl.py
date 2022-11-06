@@ -40,6 +40,9 @@ class Map:
         self.width, self.height = pg.Surface.get_size(self.map)
         self.name = mapname
         
+        self.directions = [(0,-2), (1,-2), (2,-1), (2,0), (2,1), (1,2), (0,2), (-1,2), (-2,1), (-2,0), (-2,-1), (-1,-2)]
+        self.dirN = len(self.directions)
+        
         self.editedCells = []
         
         self.receiveCells()
@@ -60,14 +63,13 @@ class Map:
     
     #Generates the cells for path finding without neighbours
     def generateCells(self):
-        directions = [(0,-2), (1,-2), (2,-1), (2,0), (2,1), (1,2), (0,2), (-1,2), (-2,1), (-2,0), (-2,-1), (-1,-2)]
         
         # Calculating the absolute distances per direction once to save work
-        dirAbs = {direction: (direction[0]**2+direction[1]**2)**0.5 for direction in directions}
+        dirAbs = {direction: (direction[0]**2+direction[1]**2)**0.5 for direction in self.directions}
         
         for y in range(self.height):
             for x in range(self.width):
-                for direction in directions:
+                for direction in self.directions:
                     coord = (x + direction[0], y + direction[1])
                     
                     if coord[0] < 0 or coord[0] >= self.width or coord[1] < 0 or coord[1] >= self.height:
@@ -84,11 +86,9 @@ class Map:
     
     #Adds neighbours to cells
     def addNeighbours(self):
-        directions = [(0,-2), (1,-2), (2,-1), (2,0), (2,1), (1,2), (0,2), (-1,2), (-2,1), (-2,0), (-2,-1), (-1,-2)]
-        
         for y in range(self.height):
             for x in range(self.width):
-                for direction in directions:
+                for direction in self.directions:
                     coord = (x + direction[0], y + direction[1])
                     
                     if coord[0] < 0 or coord[0] >= self.width or coord[1] < 0 or coord[1] >= self.height:
@@ -114,7 +114,7 @@ class Map:
         self.cells = [[Cell(-1,(x,y)) for y in range(self.height)] for x in range(self.width)]
         
         fileLoc = 'assets/pregen_maps/'
-        fileDir = fileLoc + self.name + '.pkl'
+        fileDir = fileLoc + self.name + str(self.dirN) + '.pkl'
         
         if path.isfile(fileDir):
             self.recallCells(fileDir)
