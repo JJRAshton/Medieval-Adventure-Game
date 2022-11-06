@@ -49,7 +49,9 @@ class Map:
         self.width, self.height = pg.Surface.get_size(self.map)
         self.name = mapname
         
-        self.directions = [(0,-2), (1,-2), (2,-1), (2,0), (2,1), (1,2), (0,2), (-1,2), (-2,1), (-2,0), (-2,-1), (-1,-2)]
+        # self.directions = [(0,-1), (1,-2), (1,-1), (2,-1), (1,0), (2,1), (1,1), (1,2), (0,1), (-1,2), (-1,1), (-2,1), (-1,0), (-2,-1), (-1,-1), (-1,-2)]
+        self.directions = [(0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1)]
+
         self.dirN = len(self.directions)
         
         self.editedCells = []
