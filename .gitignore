@@ -130,3 +130,8 @@ dmypy.json
 
 # Pycharm
 /.idea
+
+# Ignore pickle files
+*.pkl
+*/*.pkl
+*/*/*.pkl

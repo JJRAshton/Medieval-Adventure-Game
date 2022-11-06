@@ -1,6 +1,6 @@
 import pygame as pg
 import numpy as np
-from map_preload import Map
+from map_preload_pkl import Map
 from sortedcontainers import SortedList
 # import travel_visualiser as tv
 """Finds the Path Between Two Points On a Given Map"""
@@ -25,12 +25,15 @@ class Travel:
         self.endCoords = (0,0)
         
     #Generates all cells on the surface with paths
-    def generate(self, Pmap):
-        goalCell = Pmap.getCell(self.endCoords)
+    def generate(self, pMap):
+        goalCell = pMap.getCell(self.endCoords)
+        startCell = pMap.getCell(self.startCoords)
         
-        Pmap.getCell(self.startCoords).count = 0
-        Pmap.getCell(self.startCoords).f = 100000000
-        search_list = [Pmap.getCell(self.startCoords)]
+        startCell.count = 0
+        startCell.f = 100000000
+        pMap.editedCells.append(startCell)
+        
+        search_list = [pMap.getCell(self.startCoords)]
         
         frontier_list = SortedList()
 
@@ -40,13 +43,14 @@ class Travel:
             for i, neighbouringCell in enumerate(searchCell.nbour):
                 
                 if not self.boat:
-                    if neighbouringCell.terrain == Pmap.water:
+                    if neighbouringCell.terrain == pMap.water:
                         continue
                 
                 counter = searchCell.count + searchCell.terrain_multiplier*searchCell.nDist[i]
                     
                 if neighbouringCell.count > counter or neighbouringCell.count == -1:
                     neighbouringCell.count = counter
+                    pMap.editedCells.append(neighbouringCell)
                     neighbouringCell.path = searchCell
                     
                     h = self.w*calcDist(neighbouringCell, goalCell)
@@ -65,11 +69,11 @@ class Travel:
         print('Path Generated!')
 
     #Plots path across the map    
-    def plot(self, Pmap):
-        cell1 = Pmap.getCell(self.endCoords)
+    def plot(self, pMap):
+        cell1 = pMap.getCell(self.endCoords)
         while cell1.count != 0:
             cell2 = cell1.path
-            pg.draw.line(Pmap.map, Pmap.path, cell1.coords, cell2.coords)
+            pg.draw.line(pMap.map, pMap.path, cell1.coords, cell2.coords)
             cell1 = cell2
     
 def testMap():
@@ -111,7 +115,9 @@ def testMap():
                 closed = True
             if event.type == pg.MOUSEBUTTONDOWN:
                 pathToggle = False
-                generated = False
+                if generated:
+                    generated = False
+                    mMap.resetCells()
                 pinToggle = True
             if event.type == pg.MOUSEBUTTONUP:
                 pinToggle = False
