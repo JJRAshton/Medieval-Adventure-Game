@@ -137,6 +137,7 @@ class Map:
         for cell in self.editedCells:
             cell.count = -1
             cell.distToGoal = -1
+            cell.path = None
         
         self.editedCells = []
         print('Cells Reset')

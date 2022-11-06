@@ -20,6 +20,8 @@ class Travel:
         
     #Generates all cells on the surface with paths
     def generate(self, pMap):
+        if len(pMap.editedCells) != 0:
+            pMap.resetCells()
         goalCell = pMap.getCell(self.endCoords)
         startCell = pMap.getCell(self.startCoords)
         
@@ -106,10 +108,7 @@ def testMap():
                 
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
-            import time
-            s = time.time()
             path.generate(mMap)
-            print(time.time()-s)
             generated = True
         if keys[pg.K_1]:
             generated = False
@@ -131,5 +130,3 @@ def testMap():
         display.fill((0,0,0))
         clock.tick(tickRate)
     pg.quit()
-
-testMap()
