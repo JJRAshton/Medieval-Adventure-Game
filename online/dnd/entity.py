@@ -1,11 +1,15 @@
+import random as rd
 
 class Entity:
     def __init__(self):
         self.baseSize = 5
         self.weight = 0
+        self.weightTotal = 0
         
         self.baseHealth = 0
         self.health = 0
+        
+        self.alive = True
         
         self.texture = None
         
@@ -20,6 +24,23 @@ class Entity:
     
     def resetSize(self):
         self.size = self.baseSize
+    
+    #Checks if entity is still alive
+    def checkHealth(self):
+        if self.health < 0:
+            self.alive = False
+            self.health = 0
+            
+    #Damages the entity
+    def takeDamage(self, damage):
+        (number,dice,bonus) = damage
+        base = 0
+        for _ in range(number):
+            base += rd.randint(1,dice)
+        appliedDamage = base + bonus
+        self.health -= appliedDamage
+        
+        self.checkHealth()
         
     #Collects entity base stats
     def getStats(self):
@@ -46,13 +67,17 @@ class MovingEntity(Entity):
         self.hitDiceValue = 0
         self.hitDiceNumber = 0
         
-        self.weapon = None
+        self.primaryWeapon = None
         self.armour = None
         
         self.movement = 0
         
+        self.unconscious = False
+        self.savingThrows = (0,0)
+        
         self.inventory = []
         
+        self.levelUp()
         self.refreshModifierStat()
         self.refreshArmourStat()
         self.refreshWeaponStat()
@@ -62,6 +87,15 @@ class MovingEntity(Entity):
         super().move(vector)
         count = abs(vector[0])+abs(vector[1])
         self.movement -= 5*count
+        
+    #Checks if player is still alive
+    def checkHealth(self):
+        if self.health < 0:
+            if abs(self.health) < self.baseHealth:
+                self.alive = False
+            else:
+                self.unconscious = True
+            self.health = 0
         
     #Resets the stats to the base stats
     def resetStats(self):
@@ -102,8 +136,43 @@ class MovingEntity(Entity):
         
     #Recalculates the creature stats after change of weapon
     def refreshWeaponStat(self):
-        self.damage = self.weapon.damage + self.str
-        self.reach = self.weapon.reach
+        self.damage = self.primaryWeapon.damage + self.str
+        self.reach = self.primaryWeapon.reach
+        
+    #Makes a saving throw
+    def makeSavingThrow(self):
+        throw = rd.randint(1,20)
+        saved = False
+        dies = False
+        
+        if throw == 1:
+            self.savingThrows = (self.savingThrows[0],self.savingThrows[1]+2)
+            output = 'Critical Fail'
+        elif throw < 10:
+            self.savingThrows = (self.savingThrows[0],self.savingThrows[1]+1)
+            output = 'Fail'
+        elif throw == 20:
+            saved = True
+            output = 'Critical Success!'
+        else:
+            self.savingThrows = (self.savingThrows[0]+1,self.savingThrows[1])
+            output = 'Success!'
+            
+        if self.savingThrows[0] >= 3:
+            saved = True
+        elif self.savingThrow[1] >= 3:
+            dies = True
+            
+        if saved:
+            self.health = 1
+            self.stable = True
+            output = 'Saved'
+        if dies:
+            self.dead = True
+            output = 'Died'
+            
+        return output
+        
         
 class Object(Entity):
     def __init__(self):
@@ -141,3 +210,9 @@ class Creature(MovingEntity):
 class Monster(Creature):
     def __init__(self):
         super().__init__(self)
+        
+    #Checks if entity is still alive
+    def checkHealth(self):
+        if self.health < 0:
+            self.alive = False
+            self.health = 0
