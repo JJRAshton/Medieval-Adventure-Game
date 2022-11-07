@@ -1,27 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
- 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocker Client</title>
-</head>
- 
-<body>
-    <button onclick="contactServer()">Click Here</button>
-</body>
- 
-<script>
-    const socket = new WebSocket('ws://localhost:8000');
-    socket.addEventListener('open', function (event) {
-        socket.send('Connection Established');
-    });
-    socket.addEventListener('message', function (event) {
-        console.log(event.data);
-    });
-    const contactServer = () => {
-        socket.send("Initialize");
-    }
- </script>
+    <head>
+        <title>WebSocket demo</title>
+        <link href="ui.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="buttons">
+            <div class="minus button">-</div>
+            <div class="value">?</div>
+            <div class="plus button">+</div>
+        </div>
+        <div class="state">
+            <span class="users">?</span> online
+        </div>
+        <script src="ui.js"></script>
+    </body>
 </html>
