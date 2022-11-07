@@ -1,7 +1,7 @@
 import sys, os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
-from api import api
+from dnd import dnd
 
 import pygame
 pygame.init()
@@ -15,7 +15,7 @@ def main():
     SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
     CLOCK = pygame.time.Clock()
     pygame.display.set_caption('DnD')
-    server = api.DNDServer()
+    server = dnd.Server()
     # server.moveRequest(None)
 
     while True:
