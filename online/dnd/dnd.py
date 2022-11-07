@@ -4,8 +4,6 @@ import asyncio
 import json
 import websockets
 
-logging.basicConfig()
-
 USERS = set()
 
 VALUE = 0
