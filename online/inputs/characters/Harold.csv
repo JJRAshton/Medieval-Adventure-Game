@@ -1,6 +1,9 @@
 ﻿Name,Harold
 Size,medium
+Proficiency Bonus,2
 Health,40
 AC,10
-Attack bonus,2
+STR,15
+DEX,10
+Speed,30
 Weapon,greatsword
