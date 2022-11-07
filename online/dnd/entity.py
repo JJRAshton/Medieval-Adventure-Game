@@ -45,6 +45,8 @@ class Entity:
         
         self.checkHealth()
         
+        return appliedDamage
+        
     #Collects entity base stats
     def getStats(self): # yet to get from jamie
         self.baseSize
@@ -229,6 +231,7 @@ class Weapon(Object):
         self.bolts = False
         self.light = False
         self.heavy = False
+        self.versitile = False
         self.finesse = False
     
     #Collects entity base stats
