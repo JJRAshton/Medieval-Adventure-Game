@@ -1,20 +1,48 @@
 #!/usr/bin/env python
 
-# WS server example
-
 import asyncio
+import json
 import websockets
 
-async def hello(websocket, path):
-    name = await websocket.recv()
-    print(f"< {name}")
+logging.basicConfig()
 
-    greeting = f"Hello {name}!"
+USERS = set()
 
-    await websocket.send(greeting)
-    print(f"> {greeting}")
+VALUE = 0
 
-start_server = websockets.serve(hello, "localhost", 8000)
+def users_event():
+    return json.dumps({"type": "users", "count": len(USERS)})
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+def value_event():
+    return json.dumps({"type": "value", "value": VALUE})
+
+async def counter(websocket):
+    global USERS, VALUE
+    try:
+        # Register user
+        USERS.add(websocket)
+        websockets.broadcast(USERS, users_event())
+        # Send current state to user
+        await websocket.send(value_event())
+        # Manage state changes
+        async for message in websocket:
+            event = json.loads(message)
+            if event["action"] == "minus":
+                VALUE -= 1
+                websockets.broadcast(USERS, value_event())
+            elif event["action"] == "plus":
+                VALUE += 1
+                websockets.broadcast(USERS, value_event())
+            else:
+                print(f"unsupported event: {event}")
+    finally:
+        # Unregister user
+        USERS.remove(websocket)
+        websockets.broadcast(USERS, users_event())
+
+async def main():
+    async with websockets.serve(counter, "localhost", 8000):
+        await asyncio.Future()  # run forever
+
+if __name__ == "__main__":
+    asyncio.run(main())
