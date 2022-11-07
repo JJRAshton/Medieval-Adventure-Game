@@ -1,12 +1,12 @@
 window.addEventListener("DOMContentLoaded", () => {
     const websocket = new WebSocket("ws://localhost:8000/");
   
-    document.querySelector(".minus").addEventListener("click", () => {
-      websocket.send(JSON.stringify({ action: "minus" }));
+    document.querySelector(".joinGame").addEventListener("click", () => {
+      websocket.send(JSON.stringify({ action: "joinGame" }));
     });
   
-    document.querySelector(".plus").addEventListener("click", () => {
-      websocket.send(JSON.stringify({ action: "plus" }));
+    document.querySelector(".leaveGame").addEventListener("click", () => {
+      websocket.send(JSON.stringify({ action: "leaveGame" }));
     });
   
     websocket.onmessage = ({ data }) => {
@@ -16,7 +16,8 @@ window.addEventListener("DOMContentLoaded", () => {
           document.querySelector(".value").textContent = event.value;
           break;
         case "users":
-          const users = `${event.count} user${event.count == 1 ? "" : "s"}`;
+          console.log(event)
+          const users = "Users in lobby: "+String(event.inLobby)+", Users ready:"+String(event.ready);
           document.querySelector(".users").textContent = users;
           break;
         default:
