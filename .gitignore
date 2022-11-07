@@ -135,3 +135,4 @@ dmypy.json
 *.pkl
 */*.pkl
 */*/*.pkl
+.DS_Store
