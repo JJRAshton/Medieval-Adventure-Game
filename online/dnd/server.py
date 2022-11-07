@@ -1,6 +1,6 @@
 
 
-class Server(api.APIServer):
+class Server():
     
     def moveRequest(self, move):
         
