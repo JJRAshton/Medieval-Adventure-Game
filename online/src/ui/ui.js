@@ -13,11 +13,11 @@ window.addEventListener("DOMContentLoaded", () => {
       const event = JSON.parse(data);
       switch (event.type) {
         case "value":
-          document.querySelector(".value").textContent = event.value;
+          document.querySelector(".value").textContent = "You're ID is: " + event.value;
           break;
         case "users":
           console.log(event)
-          const users = "Users in lobby: "+String(event.inLobby)+", Users ready:"+String(event.ready);
+          const users = "Users in lobby: " + String(event.inLobby) + ", Users ready:" + String(event.ready);
           document.querySelector(".users").textContent = users;
           break;
         default:
