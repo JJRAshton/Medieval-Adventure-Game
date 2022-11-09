@@ -34,7 +34,7 @@ class Entity:
     
     #Checks if entity is still alive
     def checkHealth(self):
-        if self.health < 0:
+        if self.health <= 0:
             self.alive = False
             self.health = 0
             
