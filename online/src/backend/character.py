@@ -1,11 +1,11 @@
 from objects import Entity
+import random as rd
 
-class AnimateEntity(Entity):
-    def __init__(self):
-        super().__init__(self)
-        self.lvl = 0
+class Character(Entity):
+    def __init__(self, entityName):
+        super().__init__(self, entityName)
         self.maxMovement = 0
-        self.type = None
+        self.profBonus = 0
         
         self.baseStat = {
             'STR': 0,
@@ -16,17 +16,27 @@ class AnimateEntity(Entity):
             'CHAR': 0
             }
         
-        self.actions = []
         self.actionsTotal = 1
         self.attacksTotal = 1
+        self.reactionsTotal = 1
+        self.bonusactionsTotal = 0
+
         self.actions = 1
         self.attacks = 1
+        self.reactions = 1
+        self.bonusactions = 0
         
         self.hitDiceValue = 0
         self.hitDiceNumber = 0
         
         self.primaryWeapon = None
         self.armour = None
+
+        self.damage = (0,0)
+        self.atkMod = 0
+        self.reach = 0
+
+        self.armourClass = 0
         
         self.movement = 0
         
@@ -44,8 +54,40 @@ class AnimateEntity(Entity):
         super().move(vector)
         count = abs(vector[0])+abs(vector[1])
         self.movement -= 5*count
-        
-    #Checks if player is still alive
+    
+    #Makes an attack roll returning whether it 0:critical fail, 1:miss, 2:hit, 3:critical hit
+    def attackRoll(self, armourClass):
+        atkBonus = self.atkMod + self.profBonus
+        roll = rd.randint(1,20)
+
+        if roll == 1:
+            result = 0
+        elif roll == 20:
+            result = 3
+        elif roll+atkBonus < armourClass:
+            result = 1
+        elif roll+atkBonus > armourClass:
+            result = 2
+
+        return result
+
+    #Performs an attack on another creature
+    def attack(self, creature):
+        rollResult = self.attackRoll(creature.armourClass)
+
+        if rollResult > 1:
+            if rollResult == 2:
+                damage = self.damage
+            elif rollResult == 3:
+                damage = (2*self.damage[0], self.damage[1], self.damage[2])
+            appliedDamage = creature.takeDamage(damage)
+            indicator = str(appliedDamage)
+        else:
+            indicator = 'Whiff'
+
+        return indicator
+
+    #Checks if entity is still alive
     def checkHealth(self):
         if self.health < 0:
             if abs(self.health) < self.baseHealth:
@@ -72,35 +114,31 @@ class AnimateEntity(Entity):
     def resetMovement(self):
         self.movement = self.maxMovement
         
-    #Recalculates the entity stats after a change of stats
+    #Recalculates the entity modifiers after a change of stats
     def refreshModifierStat(self):
         self.mod = {}
         for stat in self.stat:
             self.mod[stat] = int((self.stat[stat]-self.stat[stat]%2)/2)-5
-    
-    #Recalculates the entity stats after a level up
-    def levelUp(self):
-        self.lvl += 1
-        self.baseHealth = self.con+self.hitDiceValue + (self.lvl-1)*(self.mod['CON']+0.5+self.hitDiceValue/2)
-    
+
     #Recalculates the entity AC
     def refreshArmourStat(self):
         if self.armour.type == 'Heavy':
-            self.AC = self.armour.armourValue
+            self.armourClass = self.armour.armourValue
         elif self.armour.type == 'Medium':
-            self.AC = self.armour.armourValue + min(self.mod['DEX'],2)
+            self.armourClass = self.armour.armourValue + min(self.mod['DEX'],2)
         elif self.armour.type == 'Light':
-            self.AC = self.armour.armourValue + self.mod['DEX']
+            self.armourClass = self.armour.armourValue + self.mod['DEX']
         elif self.armour == None:
-            self.AC = self.mod['DEX']
+            self.armourClass = self.mod['DEX']
         
     #Recalculates the entity damage and reach
     def refreshWeaponStat(self):
         self.reach = self.primaryWeapon.reach
         if self.primaryWeapon.finesse:
-            self.damage = (self.primaryWeapon.damage[0], self.primaryWeapon.damage[1], max(self.mod['STR'],self.mod['DEX']))
+            self.atkMod = max(self.mod['STR'],self.mod['DEX'])
         else:
-            self.damage = (self.primaryWeapon.damage[0], self.primaryWeapon.damage[1], self.mod['STR'])
+            self.atkMod = self.mod['STR']
+        self.damage = (self.primaryWeapon.damage[0], self.primaryWeapon.damage[1], self.atkMod)
         
     #Makes a saving throw
     def makeSavingThrow(self):
@@ -140,9 +178,9 @@ class AnimateEntity(Entity):
     def overrideStats(self): # temporary measure to work with just these stats
         self.baseSize = 
         self.health = 
-        self.AC = 
+        self.armourClass = 
         self.primaryWeapon = 
-        self.mod['STR'] = 
+        self.atkMod = 
         self.profBonus = 
         self.maxMovement = 
         
@@ -157,20 +195,32 @@ class AnimateEntity(Entity):
         self.primaryWeapon
         
 #A playable character        
-class Player(AnimateEntity):
-    def __init__(self):
-        super().__init__(self)
+class Player(Character):
+    def __init__(self, playerName, playerLevel = 1, playerClass = None):
+        super().__init__(self, playerName)
+        self.lvl = playerLevel
+        self.type = playerClass
+
+    #Recalculates the entity stats after a level up
+    def levelUp(self):
+        self.lvl += 1
+        self.profBonus = int(((self.lvl-1)-(self.lvl-1)%4)/4)+2
+        self.calcHealth()
+
+    #Calculates health based on level and con mod
+    def calcHealth(self):
+        self.baseHealth = self.con+self.hitDiceValue + (self.lvl-1)*(self.mod['CON']+0.5+self.hitDiceValue/2)
 
 #A non-playable character        
 class NPC(AnimateEntity):
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, npcName):
+        super().__init__(self, npcName)
         self.target = None
 
 #A hostile character        
 class Monster(NPC):
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, monsterName):
+        super().__init__(self, monsterName)
         
     #Checks if entity is still alive
     def checkHealth(self):

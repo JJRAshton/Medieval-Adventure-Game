@@ -1,7 +1,10 @@
 import random as rd
 
 class Entity:
-    def __init__(self):
+    def __init__(self, entityName):
+        self.name = entityName
+        self.id = 0
+
         self.baseSize = 5
         self.weight = 0
         self.weightTotal = 0
@@ -14,9 +17,10 @@ class Entity:
         
         self.coords = (0,0)
         
-        self.getStats()
+        #self.getStats()
         self.resetSize()
         self.calcWeight()
+        self.overrideStats()
     
     #Moves to new coords           
     def move(self, vector):
@@ -60,12 +64,12 @@ class Entity:
             self.weightTotal += item.weightTotal
         
 class Object(Entity):
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, objectName):
+        super().__init__(self, objectName)
         
 class Weapon(Object):
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, weaponName):
+        super().__init__(self, weaponName)
         self.damage = (0,0)
         self.reach = 5
         
@@ -100,8 +104,8 @@ class Weapon(Object):
         self.reach = 
         
 class Armour(Object):
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, armourName):
+        super().__init__(self, armourName)
         self.type = ''
         self.armourValue = 0
     

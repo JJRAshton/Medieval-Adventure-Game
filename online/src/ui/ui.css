@@ -19,10 +19,10 @@ body {
     cursor: pointer;
     user-select: none;
 }
-.minus {
+.leaveGame {
     color: red;
 }
-.plus {
+.joinGame {
     color: green;
 }
 .value {

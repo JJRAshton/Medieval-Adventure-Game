@@ -136,3 +136,6 @@ dmypy.json
 */*.pkl
 */*/*.pkl
 .DS_Store
+*/.DS_Store
+online/.DS_Store
+**/.DS_Store
