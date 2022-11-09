@@ -1,34 +1,27 @@
-#!/usr/bin/env python
-
+# I feel like all of this should ultimately become part of the api module,
+# once there's a bit more to the lobby management.
 import asyncio
 import json
 import websockets
 
-class User:
-    def __init__(self, ws, uuid):
-        self.uuid = uuid
-        self.ws = ws
-        self.ready = False
-        users.add(self)
+from api.users import currentUsers
+from api.users import User
+from api.api_session import APISession
 
-    def __str__(self):
-        return f"User with id: {self.uuid}"
+# Potentially these shouldn't yet be api.users.User yet, and get transformed only once a game starts?
+playerPool = set()
+UUID_TRACKER = 1 # Initialise at 1
 
-def getUserByWS(ws):
-    for user in users:
-        if user.ws == ws:
+def getUserByWS(socket):
+    for user in currentUsers:
+        if user.socket == socket:
             return user
 
 def broadcast(event):
-    websockets.broadcast({user.ws for user in users}, event)
-
-
-users = set()
-protoGame = set()
-UUID_TRACKER = 1 # Initialise at 1
+    websockets.broadcast({user.socket for user in currentUsers}, event)
 
 def users_event():
-    return json.dumps({"type": "users", "inLobby": len(users), "ready": len(protoGame)})
+    return json.dumps({"type": "users", "inLobby": len(currentUsers), "ready": len(playerPool)})
 
 def value_event():
     return json.dumps({"type": "value", "value": UUID_TRACKER})
@@ -39,7 +32,7 @@ async def addToLobby(websocket):
     try:
         # Wrap the websocket in a User
         user = User(websocket, UUID_TRACKER)
-        print(users)
+        print(currentUsers)
         # Send current state to user
         await websocket.send(value_event())
         UUID_TRACKER += 1
@@ -50,19 +43,21 @@ async def addToLobby(websocket):
             event = json.loads(message)
             print(event)
             if event["action"] == "joinGame":
-                protoGame.add(user)
+                playerPool.add(user)
                 broadcast(users_event())
-                if len(protoGame()) > 2:
-                    PlayerPool(protoGame)
+                if len(playerPool) > 2:
+                    APISession(playerPool)
+                    # All players should now have been added to the game, so removes them from the pool.
+                    playerPool.clear()
             elif event["action"] == "leaveGame":
-                protoGame.remove(user)
+                playerPool.remove(user)
                 broadcast(users_event())
             else:
                 print(f"unsupported event: {event}")
     finally:
         # Unregister user
-        users.remove(user)
-        websockets.broadcast({user.ws for user in users}, users_event())
+        currentUsers.remove(user)
+        websockets.broadcast({user.socket for user in currentUsers}, users_event())
 
 async def main():
     async with websockets.serve(addToLobby, "localhost", 8000):
