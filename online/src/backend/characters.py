@@ -71,7 +71,7 @@ class Character(Entity):
 
         return result
 
-    #Performs an attack on another creature
+    #Performs an attack on another entity
     def attack(self, creature):
         rollResult = self.attackRoll(creature.armourClass)
 

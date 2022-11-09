@@ -11,6 +11,8 @@ class Entity:
         
         self.baseHealth = 0
         self.health = 0
+
+        self.armourClass = 0
         
         self.inventory = []
         self.alive = True
@@ -66,6 +68,10 @@ class Entity:
 class Object(Entity):
     def __init__(self, objectName):
         super().__init__(self, objectName)
+
+    def getStats(self):
+        super().getStats(self)
+        self.armourClass
         
 class Weapon(Object):
     def __init__(self, weaponName):

@@ -40,3 +40,34 @@ class Chart:
 
 		self.entityGrid[newCoords[0]][newCoords[1]] = entity
 		self.entityGrid[prevCoords[0]][prevCoords[1]] = None
+
+	#Checks if a move is valid
+	def validateMove(self, entID, newCoords):
+		x, y = newCoords
+		size = (len(self.entityGrid[0]),len(self.entityGrid))
+		if x > size[0] or x < 0 or y > size[1] or y < 0:
+			valid = False
+		elif self.entityGrid[x][y] != None:
+			valid = False
+		else:
+			valid = True
+
+		return valid
+
+	#Checks if an attack is valid
+	def validateAttack(self, atkID, defID):
+		atkCoords = self.entities[atkID].coords
+		radius = self.entities[atkID].reach/5
+		defx, defy = self.entities[defID].coords
+
+		xmin = atkCoords[0] - radius
+		xmax = atkCoords[0] + radius
+		ymin = atkCoords[1] - radius
+		ymax = atkCoords[1] + radius
+
+		if defx < xmin or defx > xmax or defy < ymin or defy > ymax:
+			valid = False
+		else:
+			valid = True
+
+		return valid
