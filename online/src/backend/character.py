@@ -2,8 +2,8 @@ from objects import Entity
 import random as rd
 
 class AnimateEntity(Entity):
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, entityName, entityID):
+        super().__init__(self, entityName, entityID)
         self.maxMovement = 0
         self.profBonus = 0
         

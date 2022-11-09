@@ -4,7 +4,7 @@ class Entity:
     def __init__(self, entityName, entityID):
         self.name = entityName
         self.id = entityID
-        
+
         self.baseSize = 5
         self.weight = 0
         self.weightTotal = 0
@@ -64,12 +64,12 @@ class Entity:
             self.weightTotal += item.weightTotal
         
 class Object(Entity):
-    def __init__(self, objectName):
-        super().__init__(self, objectName)
+    def __init__(self, objectName, entityID):
+        super().__init__(self, objectName, entityID)
         
 class Weapon(Object):
-    def __init__(self, weaponName):
-        super().__init__(self, weaponName)
+    def __init__(self, weaponName, entityID):
+        super().__init__(self, weaponName, entityID)
         self.damage = (0,0)
         self.reach = 5
         
@@ -104,8 +104,8 @@ class Weapon(Object):
         self.reach = 
         
 class Armour(Object):
-    def __init__(self, armourName):
-        super().__init__(self, armourName)
+    def __init__(self, armourName, entityID):
+        super().__init__(self, armourName, entityID)
         self.type = ''
         self.armourValue = 0
     
