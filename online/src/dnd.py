@@ -42,6 +42,8 @@ async def addToLobby(websocket):
         async for message in websocket:
             event = json.loads(message)
             print(event)
+            if user.session:
+                user.sessionRequest(event)
             if event["action"] == "joinGame":
                 playerPool.add(user)
                 broadcast(users_event())

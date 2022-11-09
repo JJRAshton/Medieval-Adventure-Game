@@ -6,6 +6,8 @@ class APISession:
     Joe needs to decide how he wants this to be done """
     def __init__(self, playerPool):
         self.playerPool = playerPool # This is a set of api.users.User
+        for player in playerPool:
+            player.session = self
         # This should create a DnD session in the backend, 
 
     # Called by the backend, sends a json message
@@ -18,7 +20,11 @@ class APISession:
                 user.socket.send(message)
                 # Once we've found the user, we're done as the id are unique
                 return
-
+            
+    def sessionRequest(self, jsonEvent, user):
+        # This will probably be the main function, it is
+        # called directly by the user which is maybe a weird code flow?
+        print(jsonEvent)
 
 class JSONToPythonTranslator:
     def __init__(self):
