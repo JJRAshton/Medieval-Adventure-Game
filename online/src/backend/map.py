@@ -10,24 +10,41 @@ class Map:
 	}
 	def __init__(self, mapNumber):
 		self.map = mapNumber
+
+		self.entityGrid = []
 		self.entities = []
 
 		self.getMap()
 
 	#Loads in the map from the map number given
 	def getMap(self):
-		self.entities = pkl.load(open('maps/map'+str(self.map)+'.pkl','rb'))
+		self.entityGrid = pkl.load(open('maps/map'+str(self.map)+'.pkl','rb'))
 
 	#Gets what ID is in cell at given coords and places the relevant item
-	def createCell(self, coords, entityID):
-		itemID = self.grid[coords[0]][coords[1]]
+	def createEntity(self, coords, itemID):
 		if itemID > 200:
-			self.grid[coords[0][coords[1]] = ch.Object(Map.mapItemIDs[itemID], entityID)
-			self.grid[coords[0][coords[1]].coords = coords
+			entity = ch.Object(Map.mapItemIDs[itemID])
 		elif itemID > 100:
-			self.grid[coords[0][coords[1]] = ch.NPC(Map.mapItemIDs[itemID], entityID)
-			self.grid[coords[0][coords[1]].coords = coords
+			entity = ch.NPC(Map.mapItemIDs[itemID])
 		elif itemID > 0:
-			self.grid[coords[0][coords[1]] = ch.Monster(Map.mapItemIDs[itemID], entityID)
-			self.grid[coords[0][coords[1]].coords = coords
+			entity = ch.Monster(Map.mapItemIDs[itemID])
 
+		entity.coords = coords
+		self.entityGrid[coords[0]][coords[1]] = entity
+
+		return entity
+
+	#Creates the map
+	def create(self):
+
+		idNum = 0
+		for y in range(len(self.entityGrid)):
+			for x in range(len(self.entityGrid[0])):
+				itemID = self.entityGrid[coords[0]][coords[1]]
+				if itemID == 0:
+					continue
+				else:
+					entity = createEntity((x,y), itemID)
+					entity.entityID = idNum
+					self.entities.append(entity)
+					idNum += 1

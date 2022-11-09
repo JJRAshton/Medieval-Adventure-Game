@@ -1,9 +1,9 @@
 from objects import Entity
 import random as rd
 
-class AnimateEntity(Entity):
-    def __init__(self, entityName, entityID):
-        super().__init__(self, entityName, entityID)
+class Character(Entity):
+    def __init__(self, entityName):
+        super().__init__(self, entityName)
         self.maxMovement = 0
         self.profBonus = 0
         
@@ -195,9 +195,9 @@ class AnimateEntity(Entity):
         self.primaryWeapon
         
 #A playable character        
-class Player(AnimateEntity):
-    def __init__(self, playerName, entityID, playerLevel = 1, playerClass = None):
-        super().__init__(self, playerName, entityID)
+class Player(Character):
+    def __init__(self, playerName, playerLevel = 1, playerClass = None):
+        super().__init__(self, playerName)
         self.lvl = playerLevel
         self.type = playerClass
 
@@ -213,14 +213,14 @@ class Player(AnimateEntity):
 
 #A non-playable character        
 class NPC(AnimateEntity):
-    def __init__(self, npcName, entityID):
-        super().__init__(self, npcName, entityID)
+    def __init__(self, npcName):
+        super().__init__(self, npcName)
         self.target = None
 
 #A hostile character        
 class Monster(NPC):
-    def __init__(self, monsterName, entityID):
-        super().__init__(self, monsterName, entityID)
+    def __init__(self, monsterName):
+        super().__init__(self, monsterName)
         
     #Checks if entity is still alive
     def checkHealth(self):

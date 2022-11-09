@@ -1,9 +1,9 @@
 import random as rd
 
 class Entity:
-    def __init__(self, entityName, entityID):
+    def __init__(self, entityName):
         self.name = entityName
-        self.id = entityID
+        self.id = 0
 
         self.baseSize = 5
         self.weight = 0
@@ -64,12 +64,12 @@ class Entity:
             self.weightTotal += item.weightTotal
         
 class Object(Entity):
-    def __init__(self, objectName, entityID):
-        super().__init__(self, objectName, entityID)
+    def __init__(self, objectName):
+        super().__init__(self, objectName)
         
 class Weapon(Object):
-    def __init__(self, weaponName, entityID):
-        super().__init__(self, weaponName, entityID)
+    def __init__(self, weaponName):
+        super().__init__(self, weaponName)
         self.damage = (0,0)
         self.reach = 5
         
@@ -104,8 +104,8 @@ class Weapon(Object):
         self.reach = 
         
 class Armour(Object):
-    def __init__(self, armourName, entityID):
-        super().__init__(self, armourName, entityID)
+    def __init__(self, armourName):
+        super().__init__(self, armourName)
         self.type = ''
         self.armourValue = 0
     
