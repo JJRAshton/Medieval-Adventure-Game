@@ -4,9 +4,7 @@ import random as rd
 class AnimateEntity(Entity):
     def __init__(self):
         super().__init__(self)
-        self.lvl = 0
         self.maxMovement = 0
-        self.type = None
         self.profBonus = 0
         
         self.baseStat = {
@@ -121,13 +119,7 @@ class AnimateEntity(Entity):
         self.mod = {}
         for stat in self.stat:
             self.mod[stat] = int((self.stat[stat]-self.stat[stat]%2)/2)-5
-    
-    #Recalculates the entity stats after a level up
-    def levelUp(self):
-        self.lvl += 1
-        self.baseHealth = self.con+self.hitDiceValue + (self.lvl-1)*(self.mod['CON']+0.5+self.hitDiceValue/2)
-        self.profBonus = int(((self.lvl-1)-(self.lvl-1)%4)/4)+2
-    
+
     #Recalculates the entity AC
     def refreshArmourStat(self):
         if self.armour.type == 'Heavy':
@@ -204,19 +196,31 @@ class AnimateEntity(Entity):
         
 #A playable character        
 class Player(AnimateEntity):
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, playerName, entityID, playerLevel = 1, playerClass = None):
+        super().__init__(self, playerName, entityID)
+        self.lvl = playerLevel
+        self.type = playerClass
+
+    #Recalculates the entity stats after a level up
+    def levelUp(self):
+        self.lvl += 1
+        self.profBonus = int(((self.lvl-1)-(self.lvl-1)%4)/4)+2
+        self.calcHealth()
+
+    #Calculates health based on level and con mod
+    def calcHealth(self):
+        self.baseHealth = self.con+self.hitDiceValue + (self.lvl-1)*(self.mod['CON']+0.5+self.hitDiceValue/2)
 
 #A non-playable character        
 class NPC(AnimateEntity):
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, npcName, entityID):
+        super().__init__(self, npcName, entityID)
         self.target = None
 
 #A hostile character        
 class Monster(NPC):
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, monsterName, entityID):
+        super().__init__(self, monsterName, entityID)
         
     #Checks if entity is still alive
     def checkHealth(self):
