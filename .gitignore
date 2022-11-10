@@ -139,3 +139,6 @@ dmypy.json
 */.DS_Store
 online/.DS_Store
 **/.DS_Store
+**/.Test_map12.pkl.icloud
+
+**/__pycache__
