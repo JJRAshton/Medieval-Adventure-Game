@@ -1,6 +1,9 @@
 ﻿Name,orc
 Size,medium
+Proficiency Bonus,2
 Health,30
 AC,12
-Attack bonus,3
+STR,16
+DEX,12
+Speed,30
 Weapon,greataxe

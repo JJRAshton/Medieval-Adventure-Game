@@ -3,7 +3,7 @@ import random as rd
 
 class Character(Entity):
     def __init__(self, entityName):
-        super().__init__(self, entityName)
+        super().__init__(entityName)
         self.maxMovement = 0
         self.profBonus = 0
         
@@ -29,22 +29,22 @@ class Character(Entity):
         self.hitDiceValue = 0
         self.hitDiceNumber = 0
         
+        self.baseArmour = 10
+
         self.primaryWeapon = None
         self.armour = None
 
         self.damage = (0,0)
         self.atkMod = 0
         self.reach = 0
-
-        self.armourClass = 0
         
         self.movement = 0
         
-        self.unconscious = False
+        self.is_conscious = True
+        self.is_alive = True
         self.savingThrows = (0,0)
         
         self.resetStats()
-        self.levelUp()
         self.refreshModifierStat()
         self.refreshArmourStat()
         self.refreshWeaponStat()
@@ -54,6 +54,14 @@ class Character(Entity):
         super().move(vector)
         count = abs(vector[0])+abs(vector[1])
         self.movement -= 5*count
+
+    #Calculates the weight of the character
+    def calcWeight(self):
+        super().calcWeight(self)
+        if self.primaryWeapon != None:
+            self.weightTotal += self.primaryWeapon.weight
+        if self.armour != None:
+            self.weightTotal += self.armour.weight
     
     #Makes an attack roll returning whether it 0:critical fail, 1:miss, 2:hit, 3:critical hit
     def attackRoll(self, armourClass):
@@ -71,7 +79,7 @@ class Character(Entity):
 
         return result
 
-    #Performs an attack on another creature
+    #Performs an attack on another entity
     def attack(self, creature):
         rollResult = self.attackRoll(creature.armourClass)
 
@@ -87,13 +95,18 @@ class Character(Entity):
 
         return indicator
 
+    #Makes an opportunity attack
+    def oppAttack(self, creature):
+        self.attack(creature)
+        self.reactions -= 1
+
     #Checks if entity is still alive
     def checkHealth(self):
-        if self.health < 0:
+        if self.health <= 0:
             if abs(self.health) < self.baseHealth:
-                self.alive = False
+                self.is_alive = False
             else:
-                self.unconscious = True
+                self.is_conscious = False
             self.health = 0
             
     #Heals the entity
@@ -129,12 +142,12 @@ class Character(Entity):
         elif self.armour.type == 'Light':
             self.armourClass = self.armour.armourValue + self.mod['DEX']
         elif self.armour == None:
-            self.armourClass = self.mod['DEX']
+            self.armourClass = self.baseArmour + self.mod['DEX']
         
     #Recalculates the entity damage and reach
     def refreshWeaponStat(self):
         self.reach = self.primaryWeapon.reach
-        if self.primaryWeapon.finesse:
+        if self.primaryWeapon.is_finesse:
             self.atkMod = max(self.mod['STR'],self.mod['DEX'])
         else:
             self.atkMod = self.mod['STR']
@@ -197,9 +210,11 @@ class Character(Entity):
 #A playable character        
 class Player(Character):
     def __init__(self, playerName, playerLevel = 1, playerClass = None):
-        super().__init__(self, playerName)
+        super().__init__(playerName)
         self.lvl = playerLevel
         self.type = playerClass
+        
+        self.levelUp()
 
     #Recalculates the entity stats after a level up
     def levelUp(self):
@@ -214,13 +229,13 @@ class Player(Character):
 #A non-playable character        
 class NPC(AnimateEntity):
     def __init__(self, npcName):
-        super().__init__(self, npcName)
+        super().__init__(npcName)
         self.target = None
 
 #A hostile character        
 class Monster(NPC):
     def __init__(self, monsterName):
-        super().__init__(self, monsterName)
+        super().__init__(monsterName)
         
     #Checks if entity is still alive
     def checkHealth(self):
