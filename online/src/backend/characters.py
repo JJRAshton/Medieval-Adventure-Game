@@ -147,7 +147,7 @@ class Character(Entity):
     #Recalculates the entity damage and reach
     def refreshWeaponStat(self):
         self.reach = self.primaryWeapon.reach
-        if self.primaryWeapon.finesse:
+        if self.primaryWeapon.is_finesse:
             self.atkMod = max(self.mod['STR'],self.mod['DEX'])
         else:
             self.atkMod = self.mod['STR']

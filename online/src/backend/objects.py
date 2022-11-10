@@ -76,22 +76,23 @@ class Object(Entity):
 class Item(Entity):
     def __init__(self, itemName):
         super().__init__(self, itemName)
+        self.is_carried = True
         
-class Weapon(Object):
+class Weapon(Item):
     def __init__(self, weaponName):
         super().__init__(self, weaponName)
         self.damage = (0,0)
         self.reach = 5
         
-        self.ranged = False
+        self.is_ranged = False
         
-        self.loading = False
-        self.arrows = False
-        self.bolts = False
-        self.light = False
-        self.heavy = False
-        self.versitile = False
-        self.finesse = False
+        self.is_loading = False
+        self.is_arrows = False
+        self.is_bolts = False
+        self.is_light = False
+        self.is_heavy = False
+        self.is_versitile = False
+        self.is_finesse = False
     
     #Collects entity base stats
     def getStats(self): # yet to get from jamie
@@ -113,7 +114,7 @@ class Weapon(Object):
         self.damage = 
         self.reach = 
         
-class Armour(Object):
+class Armour(Item):
     def __init__(self, armourName):
         super().__init__(self, armourName)
         self.type = ''
