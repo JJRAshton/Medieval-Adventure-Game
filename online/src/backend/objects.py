@@ -72,6 +72,10 @@ class Object(Entity):
     def getStats(self):
         super().getStats(self)
         self.armourClass
+
+class Item(Entity):
+    def __init__(self, itemName):
+        super().__init__(self, itemName)
         
 class Weapon(Object):
     def __init__(self, weaponName):

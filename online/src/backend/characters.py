@@ -30,7 +30,7 @@ class Character(Entity):
         self.hitDiceNumber = 0
         
         self.baseArmour = 10
-        
+
         self.primaryWeapon = None
         self.armour = None
 
@@ -40,7 +40,7 @@ class Character(Entity):
         
         self.movement = 0
         
-        self.unconscious = False
+        self.conscious = True
         self.savingThrows = (0,0)
         
         self.resetStats()
@@ -95,13 +95,18 @@ class Character(Entity):
 
         return indicator
 
+    #Makes an opportunity attack
+    def oppAttack(self, creature):
+        self.attack(creature)
+        self.reactions -= 1
+
     #Checks if entity is still alive
     def checkHealth(self):
-        if self.health < 0:
+        if self.health <= 0:
             if abs(self.health) < self.baseHealth:
                 self.alive = False
             else:
-                self.unconscious = True
+                self.conscious = False
             self.health = 0
             
     #Heals the entity
