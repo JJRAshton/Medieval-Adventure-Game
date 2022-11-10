@@ -75,12 +75,12 @@ class Object(Entity):
 
 class Item(Entity):
     def __init__(self, itemName):
-        super().__init__(self, itemName)
+        super().__init__(itemName)
         self.is_carried = True
         
 class Weapon(Item):
     def __init__(self, weaponName):
-        super().__init__(self, weaponName)
+        super().__init__(weaponName)
         self.damage = (0,0)
         self.reach = 5
         
@@ -111,8 +111,8 @@ class Weapon(Item):
         
     #Collects entity end stats
     def overrideStats(self): # temporary measure to work with just these stats
-        self.damage = 
-        self.reach = 
+        self.damage = 0
+        self.reach = 0
         
 class Armour(Item):
     def __init__(self, armourName):
