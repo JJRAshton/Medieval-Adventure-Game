@@ -29,14 +29,14 @@ class Character(Entity):
         self.hitDiceValue = 0
         self.hitDiceNumber = 0
         
+        self.baseArmour = 10
+        
         self.primaryWeapon = None
         self.armour = None
 
         self.damage = (0,0)
         self.atkMod = 0
         self.reach = 0
-
-        self.armourClass = 0
         
         self.movement = 0
         
@@ -54,6 +54,14 @@ class Character(Entity):
         super().move(vector)
         count = abs(vector[0])+abs(vector[1])
         self.movement -= 5*count
+
+    #Calculates the weight of the character
+    def calcWeight(self):
+        super().calcWeight(self)
+        if self.primaryWeapon != None:
+            self.weightTotal += self.primaryWeapon.weight
+        if self.armour != None:
+            self.weightTotal += self.armour.weight
     
     #Makes an attack roll returning whether it 0:critical fail, 1:miss, 2:hit, 3:critical hit
     def attackRoll(self, armourClass):
@@ -129,7 +137,7 @@ class Character(Entity):
         elif self.armour.type == 'Light':
             self.armourClass = self.armour.armourValue + self.mod['DEX']
         elif self.armour == None:
-            self.armourClass = self.mod['DEX']
+            self.armourClass = self.baseArmour + self.mod['DEX']
         
     #Recalculates the entity damage and reach
     def refreshWeaponStat(self):
