@@ -67,7 +67,7 @@ class Entity:
         
 class Object(Entity):
     def __init__(self, objectName):
-        super().__init__(self, objectName)
+        super().__init__(objectName)
 
     def getStats(self):
         super().getStats(self)
@@ -116,7 +116,7 @@ class Weapon(Item):
         
 class Armour(Item):
     def __init__(self, armourName):
-        super().__init__(self, armourName)
+        super().__init__(armourName)
         self.type = ''
         self.armourValue = 0
     

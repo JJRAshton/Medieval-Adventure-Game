@@ -1,0 +1,52 @@
+Create player request:
+    {
+        "event": "newPlayer"
+    }
+    returns:
+    {
+        "responseType": "newPlayer",
+        "newPlayerId": "{whatever the id is}"
+    }
+
+Move request (for now, will probably change):
+    {
+        "event": "moveRequest"
+        "playerID": "{the id of the player that I want to move}",
+        "coords:
+            {
+                "x": "{the x coord of the destination square}",
+                "y": "{the y coord of the destination square}"
+            }
+    }
+    returns:
+    {
+        "responseType": "moveResult",
+        "moveResult": "{true or false}"
+    }
+
+Map state request:
+    {
+        "event": "mapRequest",
+        "playerID": "{the id of the player that I want to move}"
+    }
+    returns:
+    {
+        "responseType": "mapStatus",
+        "mapWidth": "{the width of the map}",
+        "mapHeight": "{the height of the map}",
+        "map":
+            {
+                {"(id of the thing thats here)", "", ""}},
+                {"(id of the thing thats here)", "", "(id of the thing thats here)"}},
+                {"", "(id of the thing thats here)", ""}}
+            }
+    }
+
+Get entity descriptions:
+    {
+        "event": "entityInfo"
+    }
+    returns:
+    {
+        some info about the entity, not exactly sure what should go here
+    }

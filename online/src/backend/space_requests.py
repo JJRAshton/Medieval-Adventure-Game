@@ -1,39 +1,31 @@
 from space import Chart
-from conversion_functions import Convert
+from space_requests_functions import Requester
 
-class Requester:
+class MollyRequests:
 
-	def __init__(self, mapNumber):
-		self.chart = Chart(mapNumber)
-		self.functions = Convert()
+	def __init__(self):
+		self.functions = Requester()
 		
-
+		
+	# Requests to move an entity with ID 'globalID' to a given coords.
+	# Returns true if the request is carried out and false if not.
 	def moveRequest(self, globalID, coords):
 
-		localID, category = self.functions.id_to_local(globalID)
-
-		if category == 2 and self.chart.is_validCoords(coords):
-			self.chart.moveObject(localID, coords)
-		elif category == 1 and self.chart.is_validCoords(coords) and self.chart.is_validMovement(localID, coords):
-			if self.chart.checkOpportunity(localID, coords):
-				pass # makes opportunity attacks
-			self.chart.moveCharacter(localID, coords)
-			completed = True
-		else:
-			completed = False
-
+		completed = self.functions.requestMove(globalID, coords)
+		
 		return completed
 
 
+	# Requests an attack to be carried out between entities by 'globalID1' upon 'globalID2'
+	# Returns true if the request is carried out and false if not.
 	def attackRequest(self, globalID1, globalID2):
 
-		if is_validAttack(globalID1, globalID2):
-			attacker = self.chart.entities[globalID1]
-			defender = self.chart.entities[globalID2]
-			
-			attacker.attack(defender)
-			request = True
-		else:
-			request = False
+		completed = self.functions.requestAttack(globalID1, globalID2)
 
-		return request
+		return completed
+	
+	# Requests the generation of the given map
+	def startRequest(self, mapNumber):
+        
+		self.functions.requestStart(mapNumber)
+    

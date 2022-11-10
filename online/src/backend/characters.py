@@ -3,7 +3,7 @@ import random as rd
 
 class Character(Entity):
     def __init__(self, entityName):
-        super().__init__(self, entityName)
+        super().__init__(entityName)
         self.maxMovement = 0
         self.profBonus = 0
         
@@ -45,7 +45,6 @@ class Character(Entity):
         self.savingThrows = (0,0)
         
         self.resetStats()
-        self.levelUp()
         self.refreshModifierStat()
         self.refreshArmourStat()
         self.refreshWeaponStat()
@@ -211,9 +210,11 @@ class Character(Entity):
 #A playable character        
 class Player(Character):
     def __init__(self, playerName, playerLevel = 1, playerClass = None):
-        super().__init__(self, playerName)
+        super().__init__(playerName)
         self.lvl = playerLevel
         self.type = playerClass
+        
+        self.levelUp()
 
     #Recalculates the entity stats after a level up
     def levelUp(self):
@@ -228,13 +229,13 @@ class Player(Character):
 #A non-playable character        
 class NPC(AnimateEntity):
     def __init__(self, npcName):
-        super().__init__(self, npcName)
+        super().__init__(npcName)
         self.target = None
 
 #A hostile character        
 class Monster(NPC):
     def __init__(self, monsterName):
-        super().__init__(self, monsterName)
+        super().__init__(monsterName)
         
     #Checks if entity is still alive
     def checkHealth(self):
