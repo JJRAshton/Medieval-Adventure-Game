@@ -146,7 +146,7 @@ class Chart:
 	def is_validMovement(self, charID, newCoords):
 		x, y = newCoords
 		oldx, oldy = self.characters[charID].coords
-		if self.characters[charID].movement < calcPathDist((oldx,oldy), (x,y))
+		if self.characters[charID].movement < calcPathDist((oldx,oldy), (x,y)):
 			valid = False
 		else:
 			valid = True
@@ -164,7 +164,7 @@ class Chart:
 			for x in range(oldx-searchRadius, oldx+searchRadius+1):
 				if self.characterGrid[x][y] != None:
 					entity = self.characterGrid[x][y]
-					if entity.conscious:
+					if entity.is_conscious:
 						if entity.reach != self.maxReach:
 							olddist = self.calcRadDist((x,y),(oldx,oldy))
 							if olddist > entity.reach:

@@ -6,6 +6,7 @@ class Requester:
 	def __init__(self, mapNumber):
 		self.chart = Chart(mapNumber)
 		self.functions = Convert()
+		
 
 	def moveRequest(self, globalID, coords):
 

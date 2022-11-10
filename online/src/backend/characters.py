@@ -40,7 +40,8 @@ class Character(Entity):
         
         self.movement = 0
         
-        self.conscious = True
+        self.is_conscious = True
+        self.is_alive = True
         self.savingThrows = (0,0)
         
         self.resetStats()
@@ -104,9 +105,9 @@ class Character(Entity):
     def checkHealth(self):
         if self.health <= 0:
             if abs(self.health) < self.baseHealth:
-                self.alive = False
+                self.is_alive = False
             else:
-                self.conscious = False
+                self.is_conscious = False
             self.health = 0
             
     #Heals the entity
