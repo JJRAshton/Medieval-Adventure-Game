@@ -67,7 +67,7 @@ class Entity:
         
 class Object(Entity):
     def __init__(self, objectName):
-        super().__init__(self, objectName)
+        super().__init__(objectName)
 
     def getStats(self):
         super().getStats(self)
@@ -75,12 +75,12 @@ class Object(Entity):
 
 class Item(Entity):
     def __init__(self, itemName):
-        super().__init__(self, itemName)
+        super().__init__(itemName)
         self.is_carried = True
         
 class Weapon(Item):
     def __init__(self, weaponName):
-        super().__init__(self, weaponName)
+        super().__init__(weaponName)
         self.damage = (0,0)
         self.reach = 5
         
@@ -116,7 +116,7 @@ class Weapon(Item):
         
 class Armour(Item):
     def __init__(self, armourName):
-        super().__init__(self, armourName)
+        super().__init__(armourName)
         self.type = ''
         self.armourValue = 0
     
