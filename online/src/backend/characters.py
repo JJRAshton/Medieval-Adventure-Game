@@ -199,23 +199,30 @@ class Character(Entity):
         
     #Collects entity base stats
     def getStats(self): # yet to get from jamie
-        super().getStats(self)
-        self.lvl
+        super().getStats()
         self.maxMovement
-        self.type
+        
+        self.profBonus
+        self.baseStat
         
         self.armour
         self.primaryWeapon
         
 #A playable character        
 class Player(Character):
-    def __init__(self, playerName, playerLevel = 1, playerClass = None):
+    names = ['Robert', 'Arthur', 'Grork', 'Fosdron', 'Thulgraena', 'Diffros', 'Ayda', 'Tezug', 'Dor\'goxun', 'Belba']
+    
+    def __init__(self, playerLevel = 1, playerClass = None, playerName = rd.choice(Player.names):
         super().__init__(playerName)
         self.lvl = playerLevel
         self.type = playerClass
         
         self.levelUp()
-
+    
+    #Gets the player stats
+    def getStats(self):
+        super().getStats()
+    
     #Recalculates the entity stats after a level up
     def levelUp(self):
         self.lvl += 1

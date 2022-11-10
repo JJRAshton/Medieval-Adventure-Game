@@ -42,9 +42,19 @@ class Requester:
 		else:
 			completed = False
 
-		return request
+		return completed
 	
 	def requestStart(self, mapNumber):
 		self.map = mapNumber
 		self.chart = Chart(self.map)
+		
+	def requestPlayerCreation(self):
+		
+		player = self.chart.createPlayer()
+		playerID = player.id
+		playerName = player.name
+		
+		return playerID, playerName
+		
+    
 		

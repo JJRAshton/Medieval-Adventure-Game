@@ -29,3 +29,9 @@ class MollyRequests:
         
 		self.functions.requestStart(mapNumber)
     
+	def createPlayerRequest(self):
+        
+		globalID, playerName = self.functions.requestPlayerCreation()
+		
+		return globalID, playerName
+    
