@@ -70,7 +70,7 @@ class Object(Entity):
         super().__init__(objectName)
 
     def getStats(self):
-        super().getStats(self)
+        super().getStats()
         self.armourClass
 
 class Item(Entity):
@@ -96,7 +96,7 @@ class Weapon(Item):
     
     #Collects entity base stats
     def getStats(self): # yet to get from jamie
-        super().getStats(self)
+        super().getStats()
         self.damage
         self.reach
         
@@ -122,6 +122,6 @@ class Armour(Item):
     
     #Collects entity base stats
     def getStats(self): # yet to get from jamie
-        super().getStats(self)
+        super().getStats()
         self.type
         self.armourValue
