@@ -1,8 +1,8 @@
 import pickle as pkl
 
 class Chart:
-	def __init__(self, mapNumber):
-		self.map = mapNumber
+	def __init__(self, mapLevel):
+		self.map = mapLevel
 
 		self.terrainGrid = []
 
@@ -74,6 +74,30 @@ class Chart:
 					self.objects.append(entity)
 					objIDNum += 1
 
+	#Creates a player and registers it
+	def createPlayer(self):
+		player = ch.Player()
+		charIDNum = len(self.characters)
+		itemIDNum = len(self.items)
+		player.id = charIDNum
+		if player.reach > self.maxReach: self.maxReach = player.reach
+		self.characters.append(player)
+		charIDNum += 1
+		if player.primaryWeapon != None: 
+			player.primaryWeapon.id = itemIDNum
+			self.item.append(player.primaryWeapon)
+			itemIDNum += 1
+		if player.armour != None: 
+			player.armour.id = itemIDNum
+			self.item.append(player.armour)
+			itemIDNum += 1
+		for item in player.inventory:
+			item.id = itemIDNum
+			self.item.append(item)
+			itemIDNum += 1
+			
+		return player
+    
 	#Moves a character on the grid
 	def moveCharacter(self, charID, newCoords):
 		character = self.characters[charID]

@@ -1,4 +1,4 @@
-
+from space import Chart
 
 #Converts an ID number to the index of its category's list
 def id_to_local(globalID):
@@ -15,7 +15,7 @@ def id_to_local(globalID):
 	return localID, category
 	
 class Requester:
-	
+		
 	def requestMove(self, globalID, coords):
 		localID, category = self.functions.id_to_local(globalID)
 	
@@ -42,5 +42,19 @@ class Requester:
 		else:
 			completed = False
 
-		return request
+		return completed
+	
+	def requestStart(self, mapNumber):
+		self.map = mapNumber
+		self.chart = Chart(self.map)
+		
+	def requestPlayerCreation(self):
+		
+		player = self.chart.createPlayer()
+		playerID = player.id
+		playerName = player.name
+		
+		return playerID, playerName
+		
     
+		
