@@ -17,6 +17,7 @@ def id_to_local(globalID):
 	return localID, category
 
 
+# Function comments are in back_requests
 class Requester:
 
 	def __init__(self):

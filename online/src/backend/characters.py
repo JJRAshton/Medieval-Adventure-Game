@@ -44,15 +44,14 @@ class Character(Entity):
         self.movement = 0
         
         self.is_conscious = True
-        self.is_alive = True
         self.is_stable = False
-        self.is_dead = False
         self.savingThrows = (0, 0)
         
         self.getStats()
         self.resetStats()
+        self.resetHealth()
         self.refreshModifierStat()
-        # self.refreshArmourStat()
+        self.refreshArmourStat()
         self.refreshWeaponStat()
     
     # Moves entity by given vector and decreases movement
@@ -131,11 +130,11 @@ class Character(Entity):
 
     # Recalculates the entity AC
     def refreshArmourStat(self):
-        if self.armour.type == 'Heavy':
+        if self.armour.type == 'heavy':
             self.armourClass = self.armour.armourValue
-        elif self.armour.type == 'Medium':
+        elif self.armour.type == 'medium':
             self.armourClass = self.armour.armourValue + min(self.mod['DEX'], 2)
-        elif self.armour.type == 'Light':
+        elif self.armour.type == 'light':
             self.armourClass = self.armour.armourValue + self.mod['DEX']
         elif self.armour is None:
             self.armourClass = self.baseArmour + self.mod['DEX']
@@ -178,7 +177,7 @@ class Character(Entity):
             self.is_stable = True
             output = 'Saved'
         if dies:
-            self.is_dead = True
+            self.is_alive = False
             output = 'Died'
             
         return output
@@ -186,7 +185,10 @@ class Character(Entity):
     # Collects entity base stats
     def getStats(self):  # yet to get from jamie
         Entity.entityStats.getCharacterStats(self)
-        self.primaryWeapon = Weapon(self.primaryWeapon)
+        if self.primaryWeapon is not None:
+            self.primaryWeapon = Weapon(self.primaryWeapon)
+        if self.armour is not None:
+            self.armour = Armour(self.armour)
 
 
 # A playable character
@@ -199,18 +201,27 @@ class Player(Character):
         super().__init__(playerName)
         self.lvl = playerLevel
         self.type = playerClass
-        
-        self.levelUp()
+
+        self.calcHealth()
+        self.calcProfB()
     
     # Gets the player stats
     def getStats(self):
         Entity.entityStats.getPlayerStats(self)
+        if self.primaryWeapon is not None:
+            self.primaryWeapon = Weapon(self.primaryWeapon)
+        if self.armour is not None:
+            self.armour = Armour(self.armour)
     
     # Recalculates the entity stats after a level up
     def levelUp(self):
         self.lvl += 1
-        self.profBonus = int(((self.lvl-1)-(self.lvl-1) % 4)/4)+2
+        self.calcProfB
         self.calcHealth()
+
+    # Calculates the entity proficiency bonus
+    def calcProfB(self):
+        self.profBonus = int(((self.lvl - 1) - (self.lvl - 1) % 4) / 4) + 2
 
     # Calculates health based on level and con mod
     def calcHealth(self):
@@ -232,5 +243,5 @@ class Monster(NPC):
     # Checks if entity is still alive
     def checkHealth(self):
         if self.health < 0:
-            self.alive = False
+            self.is_alive = False
             self.health = 0

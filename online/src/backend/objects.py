@@ -11,14 +11,13 @@ class Entity:
 
         self.baseSize = 5
         self.size = 5
-        
+
         self.baseHealth = 0
         self.health = 0
 
         self.armourClass = 0
-        
-        self.inventory = []
-        self.alive = True
+
+        self.is_alive = True
         
         self.coords = (0, 0)
         
@@ -37,7 +36,7 @@ class Entity:
     # Checks if entity is still alive
     def checkHealth(self):
         if self.health <= 0:
-            self.alive = False
+            self.is_alive = False
             self.health = 0
             
     # Damages the entity
@@ -57,7 +56,8 @@ class Entity:
 class Object(Entity):
     def __init__(self, objectName):
         super().__init__(objectName)
-        
+        self.inventory = []
+
         self.getStats()
 
     def getStats(self):
@@ -91,11 +91,6 @@ class Weapon(Item):
     # Collects entity base stats
     def getStats(self):  # yet to get from jamie
         Entity.entityStats.getWeaponStats(self)
-        
-    # Collects entity end stats
-    def overrideStats(self):    # temporary measure to work with just these stats
-        self.damage = 0
-        self.reach = 0
 
 
 class Armour(Item):
@@ -108,4 +103,4 @@ class Armour(Item):
     
     # Collects entity base stats
     def getStats(self):  # yet to get from jamie
-        pass
+        Entity.entityStats.getArmourStats(self)

@@ -1,4 +1,5 @@
-import create_stat_tables as cst
+from create_stat_tables import Tables
+import random as rd
 
 
 def convertDice(dice):
@@ -13,17 +14,27 @@ def convertDice(dice):
 class Stats:
     
     def __init__(self):
-        self.characterTable, self.weaponTable = cst.make_stat_tables()
+        self.tables = Tables(1)
 
     # Returns a dictionary of stats for the given weapon
     def getWeaponDict(self, weaponName):
-        weaponDict = cst.get_weapon_stats_dict(weaponName, self.weaponTable)
+        weaponDict = self.tables.get_weapon_stats_dict(weaponName)
         return weaponDict
 
     # Returns a dictionary of stats for the given character
     def getCharacterDict(self, characterName):
-        characterDict = cst.get_character_stats_dict(characterName, self.characterTable)
+        characterDict = self.tables.get_character_stats_dict(characterName)
         return characterDict
+
+    # Returns a dictionary of stats for the given armour
+    def getArmourDict(self, armourName):
+        armourDict = self.tables.get_armour_stats_dict(armourName)
+        return armourDict
+
+    # Returns a dictionary of stats for the given player
+    def getPlayerDict(self, number):
+        playerDict = self.tables.get_player_stats_dict(number)
+        return playerDict
 
     # Adds the stats to the given weapon
     def getWeaponStats(self, weapon):   # Doesn't collect all data
@@ -34,6 +45,12 @@ class Stats:
         weapon.reach = int(wepDict['Range'])
         weapon.damage = convertDice(damageStr)
 
+    def getArmourStats(self, armour):
+        arDict = self.getArmourDict(armour.name)
+
+        armour.type = arDict['Type']
+        armour.armourValue = int(arDict['Value'])
+
     # Adds the stats to the given character (not player)
     def getCharacterStats(self, character):  # Doesn't collect all data
         characterName = character.name
@@ -41,14 +58,18 @@ class Stats:
         
         size = charDict['Size']
         character.primaryWeapon = charDict['Weapon']
-        
+        character.armour = charDict['Armour']
+
         character.profBonus = int(charDict['Proficiency Bonus'])
-        character.maxHealth = int(charDict['Health'])
-        character.armourClass = int(charDict['AC'])
+        character.baseHealth = int(charDict['Health'])
         character.maxMovement = int(charDict['Speed'])
         
         character.baseStat['STR'] = int(charDict['STR'])
         character.baseStat['DEX'] = int(charDict['DEX'])
+        character.baseStat['CON'] = int(charDict['CON'])
+        character.baseStat['INT'] = int(charDict['INT'])
+        character.baseStat['WIS'] = int(charDict['WIS'])
+        character.baseStat['CHA'] = int(charDict['CHA'])
         
         if size == 'small':
             character.baseSize = 5
@@ -61,18 +82,25 @@ class Stats:
 
     # Adds the stats to the given player
     def getPlayerStats(self, player):   # Doesn't collect all data
-        charDict = self.getPlayerDict(playerName)   # Needs to pick random stat
+        statNumber = str(rd.randint(1, 10))
+        statNumber = 1
+        charDict = self.getPlayerDict(statNumber)   # Needs to pick random stat
         
         size = charDict['Size']
         player.primaryWeapon = charDict['Weapon']
-        
-        player.profBonus = int(charDict['Proficiency Bonus'])
-        player.maxHealth = int(charDict['Health'])
-        player.armourClass = int(charDict['AC'])
+        player.armour = charDict['Armour']
+        player.type = charDict['Class']
+
+        player.lvl = int(charDict['Level'])
         player.maxMovement = int(charDict['Speed'])
         
         player.baseStat['STR'] = int(charDict['STR'])
         player.baseStat['DEX'] = int(charDict['DEX'])
+        player.baseStat['CON'] = int(charDict['CON'])
+        player.baseStat['INT'] = int(charDict['INT'])
+        player.baseStat['WIS'] = int(charDict['WIS'])
+        player.baseStat['CHA'] = int(charDict['CHA'])
+
         
         if size == 'small':
             player.baseSize = 5
