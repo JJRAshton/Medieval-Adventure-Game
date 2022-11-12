@@ -1,4 +1,4 @@
-from space import Chart
+from back import Chart
 
 
 # Converts an ID number to the index of its category's list
@@ -27,15 +27,27 @@ class Requester:
 		localID, category = id_to_local(globalID)
 		completed = False
 	
-		if category == 2 and self.chart.is_validCoords(coords):
+		if category == 2:
 			self.chart.moveObject(localID, coords)
-		elif category == 1 and self.chart.is_validCoords(coords) and self.chart.is_validMovement(localID, coords):
-			if self.chart.checkOpportunity(localID, coords):
-				pass  # makes opportunity attacks
+
+		elif category == 1:
 			self.chart.moveCharacter(localID, coords)
 			completed = True
+			if self.chart.checkOpportunity(localID, coords):
+				pass  # makes opportunity attacks
 	
 		return completed
+
+	def requestMoveVerification(self, globalID, coords):
+		localID, category = id_to_local(globalID)
+		valid = False
+
+		if category == 2 and self.chart.is_validCoords(coords):
+			valid = True
+		elif category == 1 and self.chart.is_validCoords(coords) and self.chart.is_validMovement(localID, coords):
+			valid = True
+
+		return valid
 
 	def requestAttack(self, globalID1, globalID2):
 		localID1, category1 = id_to_local(globalID1)

@@ -1,7 +1,7 @@
-from space_requests_functions import Requester
+from front_back_interaction_functions import Requester
 
 
-class MollyRequests:
+class BackRequests:
 
 	def __init__(self):
 		self.functions = Requester()
@@ -13,6 +13,13 @@ class MollyRequests:
 		completed = self.functions.requestMove(globalID, coords)
 		
 		return completed
+
+	# Requests to verify whether a move is valid
+	def moveVerificationRequest(self, globalID, coords):
+
+		valid = self.functions.requestMoveVerification(globalID, coords)
+
+		return valid
 
 	# Requests an attack to be carried out between entities by 'globalID1' upon 'globalID2'
 	# Returns true if the request is carried out and false if not.
@@ -26,6 +33,7 @@ class MollyRequests:
 	def startRequest(self, mapNumber):
 		self.functions.requestStart(mapNumber)
 
+	# Requests the creation of a new player
 	def createPlayerRequest(self):
 		globalID, playerName = self.functions.requestPlayerCreation()
 		

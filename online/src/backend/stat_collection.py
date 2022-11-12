@@ -14,15 +14,18 @@ class Stats:
     
     def __init__(self):
         self.characterTable, self.weaponTable = cst.make_stat_tables()
-    
+
+    # Returns a dictionary of stats for the given weapon
     def getWeaponDict(self, weaponName):
         weaponDict = cst.get_weapon_stats_dict(weaponName, self.weaponTable)
         return weaponDict
-    
+
+    # Returns a dictionary of stats for the given character
     def getCharacterDict(self, characterName):
         characterDict = cst.get_character_stats_dict(characterName, self.characterTable)
         return characterDict
-        
+
+    # Adds the stats to the given weapon
     def getWeaponStats(self, weapon):   # Doesn't collect all data
         wepDict = self.getWeaponDict(weapon.name)
         
@@ -31,6 +34,7 @@ class Stats:
         weapon.reach = int(wepDict['Range'])
         weapon.damage = convertDice(damageStr)
 
+    # Adds the stats to the given character (not player)
     def getCharacterStats(self, character):  # Doesn't collect all data
         characterName = character.name
         charDict = self.getCharacterDict(characterName)
@@ -54,7 +58,8 @@ class Stats:
             character.baseSize = 10
         elif size == 'huge':
             character.baseSize = 15
-            
+
+    # Adds the stats to the given player
     def getPlayerStats(self, player):   # Doesn't collect all data
         charDict = self.getPlayerDict(playerName)   # Needs to pick random stat
         
