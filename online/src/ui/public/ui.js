@@ -1,5 +1,5 @@
 window.addEventListener("DOMContentLoaded", () => {
-    const websocket = new WebSocket("ws://localhost:8000/");
+    const websocket = new WebSocket("ws://localhost:8001/");
   
     document.querySelector(".joinGame").addEventListener("click", () => {
       websocket.send(JSON.stringify({ action: "joinGame" }));

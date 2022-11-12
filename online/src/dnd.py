@@ -62,7 +62,7 @@ async def addToLobby(websocket):
         websockets.broadcast({user.socket for user in currentUsers}, users_event())
 
 async def main():
-    async with websockets.serve(addToLobby, "localhost", 8000):
+    async with websockets.serve(addToLobby, "localhost", 8001):
         await asyncio.Future()  # run forever
 
 if __name__ == "__main__":
