@@ -2,6 +2,7 @@ import pickle as pkl
 import characters as ch
 import objects as ob
 
+
 class MapGen:
 	def __init__(self, number, size):
 		self.mapGrid = [[0 for _ in range(size[1])] for _ in range(size[0])]
@@ -21,31 +22,31 @@ class MapGen:
 		self.charGrid[coords[0]][coords[1]] = creature
 		return creature
 
-	def addNPC(coords, name):
+	def addNPC(self, coords, name):
 		creature = ch.NPC(name)
 		creature.coords = coords
 		self.charGrid[coords[0]][coords[1]] = creature
 		return creature
 
-	def addObject(coords, name):
+	def addObject(self, coords, name):
 		creature = ob.Object(name)
 		creature.coords = coords
 		self.objGrid[coords[0]][coords[1]] = creature
 		return creature
 
-	def addItem(coords, name):
+	def addItem(self, coords, name):
 		creature = ob.Item(name)
 		creature.coords = coords
 		self.itemGrid[coords[0]][coords[1]] = creature
 		return creature
 
-	def addWeapon(coords, name):
+	def addWeapon(self, coords, name):
 		creature = ob.Weapon(name)
 		creature.coords = coords
 		self.itemGrid[coords[0]][coords[1]] = creature
 		return creature
 
-	def addArmour(coords, name):
+	def addArmour(self, coords, name):
 		creature = ob.Armour(name)
 		creature.coords = coords
 		self.itemGrid[coords[0]][coords[1]] = creature
@@ -57,9 +58,10 @@ class MapGen:
 		pkl.dump(self.itemGrid, open(self.fileNameItem, 'wb'))
 		pkl.dump(self.objGrid, open(self.fileNameObj, 'wb'))
 
-chart = MapGen(1,(10,10))
 
-chart.addMonster((8,8), 'orc')
-chart.addMonster((9,4), 'orc')
+chart = MapGen(1, (10, 10))
+
+chart.addMonster((8, 8), 'orc')
+chart.addMonster((9, 4), 'orc')
 
 chart.save()
