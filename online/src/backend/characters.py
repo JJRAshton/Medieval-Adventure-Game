@@ -1,5 +1,6 @@
-from objects import Entity
+from objects import Entity, Weapon, Item, Armour
 import random as rd
+
 
 class Character(Entity):
     def __init__(self, entityName):
@@ -15,6 +16,8 @@ class Character(Entity):
             'WIS': 0,
             'CHAR': 0
             }
+        self.stat = {}
+        self.mod = {}
         
         self.actionsTotal = 1
         self.attacksTotal = 1
@@ -34,7 +37,7 @@ class Character(Entity):
         self.primaryWeapon = None
         self.armour = None
 
-        self.damage = (0,0)
+        self.damage = (0, 0)
         self.atkMod = 0
         self.reach = 0
         
@@ -42,31 +45,26 @@ class Character(Entity):
         
         self.is_conscious = True
         self.is_alive = True
-        self.savingThrows = (0,0)
+        self.is_stable = False
+        self.is_dead = False
+        self.savingThrows = (0, 0)
         
+        self.getStats()
         self.resetStats()
         self.refreshModifierStat()
-        self.refreshArmourStat()
+        # self.refreshArmourStat()
         self.refreshWeaponStat()
     
-    #Moves entity by given vector and decreases movement
+    # Moves entity by given vector and decreases movement
     def move(self, vector):
         super().move(vector)
         count = abs(vector[0])+abs(vector[1])
         self.movement -= 5*count
-
-    #Calculates the weight of the character
-    def calcWeight(self):
-        super().calcWeight(self)
-        if self.primaryWeapon != None:
-            self.weightTotal += self.primaryWeapon.weight
-        if self.armour != None:
-            self.weightTotal += self.armour.weight
     
-    #Makes an attack roll returning whether it 0:critical fail, 1:miss, 2:hit, 3:critical hit
+    # Makes an attack roll returning whether it 0:critical fail, 1:miss, 2:hit, 3:critical hit
     def attackRoll(self, armourClass):
         atkBonus = self.atkMod + self.profBonus
-        roll = rd.randint(1,20)
+        roll = rd.randint(1, 20)
 
         if roll == 1:
             result = 0
@@ -74,19 +72,19 @@ class Character(Entity):
             result = 3
         elif roll+atkBonus < armourClass:
             result = 1
-        elif roll+atkBonus > armourClass:
+        else:
             result = 2
 
         return result
 
-    #Performs an attack on another entity
+    # Performs an attack on another entity
     def attack(self, creature):
         rollResult = self.attackRoll(creature.armourClass)
 
         if rollResult > 1:
             if rollResult == 2:
                 damage = self.damage
-            elif rollResult == 3:
+            else:   # roll result = 3
                 damage = (2*self.damage[0], self.damage[1], self.damage[2])
             appliedDamage = creature.takeDamage(damage)
             indicator = str(appliedDamage)
@@ -95,12 +93,12 @@ class Character(Entity):
 
         return indicator
 
-    #Makes an opportunity attack
+    # Makes an opportunity attack
     def oppAttack(self, creature):
         self.attack(creature)
         self.reactions -= 1
 
-    #Checks if entity is still alive
+    # Checks if entity is still alive
     def checkHealth(self):
         if self.health <= 0:
             if abs(self.health) < self.baseHealth:
@@ -109,142 +107,129 @@ class Character(Entity):
                 self.is_conscious = False
             self.health = 0
             
-    #Heals the entity
+    # Heals the entity
     def heal(self, damage):
-        (number,dice,bonus) = damage
+        (number, dice, bonus) = damage
         base = 0
         for _ in range(number):
-            base += rd.randint(1,dice)
+            base += rd.randint(1, dice)
         appliedHealing = base + bonus
         self.health += appliedHealing
             
-    #Resets the stats to the base stats
+    # Resets the stats to the base stats
     def resetStats(self):
-        self.stat = {}
         for stat in self.baseStat:
             self.stat[stat] = self.baseStat[stat]
         
     def resetMovement(self):
         self.movement = self.maxMovement
         
-    #Recalculates the entity modifiers after a change of stats
+    # Recalculates the entity modifiers after a change of stats
     def refreshModifierStat(self):
-        self.mod = {}
         for stat in self.stat:
-            self.mod[stat] = int((self.stat[stat]-self.stat[stat]%2)/2)-5
+            self.mod[stat] = int((self.stat[stat]-self.stat[stat] % 2)/2)-5
 
-    #Recalculates the entity AC
+    # Recalculates the entity AC
     def refreshArmourStat(self):
         if self.armour.type == 'Heavy':
             self.armourClass = self.armour.armourValue
         elif self.armour.type == 'Medium':
-            self.armourClass = self.armour.armourValue + min(self.mod['DEX'],2)
+            self.armourClass = self.armour.armourValue + min(self.mod['DEX'], 2)
         elif self.armour.type == 'Light':
             self.armourClass = self.armour.armourValue + self.mod['DEX']
-        elif self.armour == None:
+        elif self.armour is None:
             self.armourClass = self.baseArmour + self.mod['DEX']
         
-    #Recalculates the entity damage and reach
+    # Recalculates the entity damage and reach
     def refreshWeaponStat(self):
         self.reach = self.primaryWeapon.reach
         if self.primaryWeapon.is_finesse:
-            self.atkMod = max(self.mod['STR'],self.mod['DEX'])
+            self.atkMod = max(self.mod['STR'], self.mod['DEX'])
         else:
             self.atkMod = self.mod['STR']
         self.damage = (self.primaryWeapon.damage[0], self.primaryWeapon.damage[1], self.atkMod)
         
-    #Makes a saving throw
+    # Makes a saving throw
     def makeSavingThrow(self):
-        throw = rd.randint(1,20)
+        throw = rd.randint(1, 20)
         saved = False
         dies = False
         
         if throw == 1:
-            self.savingThrows = (self.savingThrows[0],self.savingThrows[1]+2)
+            self.savingThrows = (self.savingThrows[0], self.savingThrows[1]+2)
             output = 'Critical Fail'
         elif throw < 10:
-            self.savingThrows = (self.savingThrows[0],self.savingThrows[1]+1)
+            self.savingThrows = (self.savingThrows[0], self.savingThrows[1]+1)
             output = 'Fail'
         elif throw == 20:
             saved = True
             output = 'Critical Success!'
         else:
-            self.savingThrows = (self.savingThrows[0]+1,self.savingThrows[1])
+            self.savingThrows = (self.savingThrows[0]+1, self.savingThrows[1])
             output = 'Success!'
             
         if self.savingThrows[0] >= 3:
             saved = True
-        elif self.savingThrow[1] >= 3:
+        elif self.savingThrows[1] >= 3:
             dies = True
             
         if saved:
             self.health = 1
-            self.stable = True
+            self.is_stable = True
             output = 'Saved'
         if dies:
-            self.dead = True
+            self.is_dead = True
             output = 'Died'
             
         return output
-    
-    #Collects entity end stats
-    def overrideStats(self): # temporary measure to work with just these stats
-        self.baseSize = 
-        self.health = 
-        self.armourClass = 
-        self.primaryWeapon = 
-        self.atkMod = 
-        self.profBonus = 
-        self.maxMovement = 
         
-    #Collects entity base stats
-    def getStats(self): # yet to get from jamie
-        super().getStats()
-        self.maxMovement
-        
-        self.profBonus
-        self.baseStat
-        
-        self.armour
-        self.primaryWeapon
-        
-#A playable character        
+    # Collects entity base stats
+    def getStats(self):  # yet to get from jamie
+        Entity.entityStats.getCharacterStats(self)
+        self.primaryWeapon = Weapon(self.primaryWeapon)
+
+
+# A playable character
 class Player(Character):
     names = ['Robert', 'Arthur', 'Grork', 'Fosdron', 'Thulgraena', 'Diffros', 'Ayda', 'Tezug', 'Dor\'goxun', 'Belba']
     
-    def __init__(self, playerLevel = 1, playerClass = None, playerName = rd.choice(Player.names):
+    def __init__(self, playerLevel=1, playerClass=None, playerName=None):
+        if playerName is None:
+            playerName = rd.choice(Player.names)
         super().__init__(playerName)
         self.lvl = playerLevel
         self.type = playerClass
         
         self.levelUp()
     
-    #Gets the player stats
+    # Gets the player stats
     def getStats(self):
-        super().getStats()
+        Entity.entityStats.getPlayerStats(self)
     
-    #Recalculates the entity stats after a level up
+    # Recalculates the entity stats after a level up
     def levelUp(self):
         self.lvl += 1
-        self.profBonus = int(((self.lvl-1)-(self.lvl-1)%4)/4)+2
+        self.profBonus = int(((self.lvl-1)-(self.lvl-1) % 4)/4)+2
         self.calcHealth()
 
-    #Calculates health based on level and con mod
+    # Calculates health based on level and con mod
     def calcHealth(self):
-        self.baseHealth = self.con+self.hitDiceValue + (self.lvl-1)*(self.mod['CON']+0.5+self.hitDiceValue/2)
+        self.baseHealth = self.mod['CON']+self.hitDiceValue + (self.lvl-1)*(self.mod['CON']+0.5+self.hitDiceValue/2)
 
-#A non-playable character        
-class NPC(AnimateEntity):
+
+# A non-playable character
+class NPC(Character):
     def __init__(self, npcName):
         super().__init__(npcName)
         self.target = None
 
-#A hostile character        
+
+# A hostile character
 class Monster(NPC):
     def __init__(self, monsterName):
         super().__init__(monsterName)
         
-    #Checks if entity is still alive
+    # Checks if entity is still alive
     def checkHealth(self):
         if self.health < 0:
             self.alive = False

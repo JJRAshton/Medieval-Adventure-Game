@@ -1,13 +1,16 @@
 import random as rd
+from stat_collection import Stats
+
 
 class Entity:
+    entityStats = Stats()
+
     def __init__(self, entityName):
         self.name = entityName
         self.id = 0
 
         self.baseSize = 5
-        self.weight = 0
-        self.weightTotal = 0
+        self.size = 5
         
         self.baseHealth = 0
         self.health = 0
@@ -17,16 +20,13 @@ class Entity:
         self.inventory = []
         self.alive = True
         
-        self.coords = (0,0)
+        self.coords = (0, 0)
         
-        #self.getStats()
         self.resetSize()
-        self.calcWeight()
-        self.overrideStats()
     
-    #Moves to new coords           
+    # Moves to new coords
     def move(self, vector):
-        self.coords = (self.coords[0]+vector[0],self.coords[1]+vector[1])
+        self.coords = (self.coords[0]+vector[0], self.coords[1]+vector[1])
             
     def resetHealth(self):
         self.health = self.baseHealth
@@ -34,54 +34,46 @@ class Entity:
     def resetSize(self):
         self.size = self.baseSize
     
-    #Checks if entity is still alive
+    # Checks if entity is still alive
     def checkHealth(self):
         if self.health <= 0:
             self.alive = False
             self.health = 0
             
-    #Damages the entity
+    # Damages the entity
     def takeDamage(self, damage):
-        (number,dice,bonus) = damage
+        (number, dice, bonus) = damage
         base = 0
         for _ in range(number):
-            base += rd.randint(1,dice)
+            base += rd.randint(1, dice)
         appliedDamage = base + bonus
         self.health -= appliedDamage
         
         self.checkHealth()
         
         return appliedDamage
-        
-    #Collects entity base stats
-    def getStats(self): # yet to get from jamie
-        self.baseSize
-        self.weight
-        self.baseHealth
-    
-    #Calculates the entity weight
-    def calcWeight(self):
-        self.weightTotal = self.weight
-        for item in self.inventory:
-            self.weightTotal += item.weightTotal
-        
+
+
 class Object(Entity):
     def __init__(self, objectName):
         super().__init__(objectName)
+        
+        self.getStats()
 
     def getStats(self):
-        super().getStats()
-        self.armourClass
+        pass
+
 
 class Item(Entity):
     def __init__(self, itemName):
         super().__init__(itemName)
         self.is_carried = True
-        
+
+
 class Weapon(Item):
     def __init__(self, weaponName):
         super().__init__(weaponName)
-        self.damage = (0,0)
+        self.damage = (0, 0)
         self.reach = 5
         
         self.is_ranged = False
@@ -91,37 +83,29 @@ class Weapon(Item):
         self.is_bolts = False
         self.is_light = False
         self.is_heavy = False
-        self.is_versitile = False
+        self.is_versatile = False
         self.is_finesse = False
+        
+        self.getStats()
     
-    #Collects entity base stats
-    def getStats(self): # yet to get from jamie
-        super().getStats()
-        self.damage
-        self.reach
+    # Collects entity base stats
+    def getStats(self):  # yet to get from jamie
+        Entity.entityStats.getWeaponStats(self)
         
-        self.ranged
-        
-        self.loading
-        self.arrows
-        self.bolts
-        self.light
-        self.heavy
-        self.finesse
-        
-    #Collects entity end stats
-    def overrideStats(self): # temporary measure to work with just these stats
+    # Collects entity end stats
+    def overrideStats(self):    # temporary measure to work with just these stats
         self.damage = 0
         self.reach = 0
-        
+
+
 class Armour(Item):
     def __init__(self, armourName):
         super().__init__(armourName)
         self.type = ''
         self.armourValue = 0
+        
+        self.getStats()
     
-    #Collects entity base stats
-    def getStats(self): # yet to get from jamie
-        super().getStats()
-        self.type
-        self.armourValue
+    # Collects entity base stats
+    def getStats(self):  # yet to get from jamie
+        pass
