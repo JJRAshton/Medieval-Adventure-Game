@@ -15,4 +15,5 @@ class User:
     def sessionRequest(self, jsonEvent):
         if self.session == None:
             raise ConnectionError
-        self.sessionRequest(jsonEvent, user)
+        self.session.sessionRequest(jsonEvent, self)
+
