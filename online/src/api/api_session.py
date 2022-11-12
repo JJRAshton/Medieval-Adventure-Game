@@ -1,6 +1,6 @@
 import json
 import websockets
-from backend.back_requests import MollyRequests
+from backend.back_requests import BackRequests
 
 class APISession:
     """The main API, this should probably create a dnd game interacting with the backend?
@@ -9,7 +9,7 @@ class APISession:
         self.playerPool = playerPool # This is a set of api.users.User
         for player in playerPool:
             player.session = self
-        self.backend = MollyRequests()
+        self.backend = BackRequests()
         # This should create a DnD session in the backend, 
 
     # Called by the backend, sends a json message
@@ -29,11 +29,20 @@ class APISession:
         print(jsonEvent)
         if jsonEvent["event"] == "newPlayer":
             id, name = self.backend.createPlayerRequest()
-            json.dumps({
+            output = json.dumps({
             "responseType": "newPlayer",
             "newPlayerId": str(id)
             })
-            
+            user.socket.send(output)
+'''
+        if jsonEvent["event"] == "moveRequest":
+            id, coords = self.backend.moveRequest(jsonEvent["playerID"], jsonEvent["coords"])
+            output = json.dumps({
+            "responseType": "newPlayer",
+            "newPlayerId": str(id)
+            })
+            user.socket.send(output)
+'''            
 
 class JSONToPythonTranslator:
     def __init__(self):
