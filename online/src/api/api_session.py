@@ -34,15 +34,22 @@ class APISession:
             "newPlayerId": str(id)
             })
             user.socket.send(output)
-'''
+
         if jsonEvent["event"] == "moveRequest":
-            id, coords = self.backend.moveRequest(jsonEvent["playerID"], jsonEvent["coords"])
+            move = self.backend.moveRequest(jsonEvent["playerID"], jsonEvent["coords"])
             output = json.dumps({
-            "responseType": "newPlayer",
-            "newPlayerId": str(id)
+            "responseType": "moveResult",
+            "moveResult": str(move)
             })
             user.socket.send(output)
-'''            
+            
+        if jsonEvent["event"] == "attackRequest":
+            attack=self.backend.attackRequest(jsonEvent["playerID"], jsonEvent["enemyID"])
+            output = json.dumps({
+            "responseType": "attackResult",
+            "attackResult": str(attack)
+            })
+            user.socket.send(output)
 
 class JSONToPythonTranslator:
     def __init__(self):
