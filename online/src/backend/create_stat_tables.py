@@ -64,7 +64,12 @@ def get_weapon_stats_dict(weapon_name, weapon_table):
     gotten_stats = weapon_table.loc[str(weapon_name)].to_dict()
     return gotten_stats
 
+def get_character_stats_dict(character_name, character_table):
+    # Make a dictionary of the stats for the entity
+    gotten_stats = character_table.loc[str(character_name)].to_dict()
+    return gotten_stats
+
 if __name__ == "__main__":
     character_table, weapon_table = make_stat_tables()
 
-print('game')
+# print('game')

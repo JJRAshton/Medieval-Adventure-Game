@@ -1,5 +1,5 @@
-import websockets
 import json
+from backend.space_requests import MollyRequests
 
 class APISession:
     """The main API, this should probably create a dnd game interacting with the backend?
@@ -8,6 +8,7 @@ class APISession:
         self.playerPool = playerPool # This is a set of api.users.User
         for player in playerPool:
             player.session = self
+        self.backend = MollyRequests()
         # This should create a DnD session in the backend, 
 
     # Called by the backend, sends a json message
@@ -25,6 +26,13 @@ class APISession:
         # This will probably be the main function, it is
         # called directly by the user which is maybe a weird code flow?
         print(jsonEvent)
+        if jsonEvent["event"] == "newPlayer":
+            id, name = self.backend.createPlayerRequest()
+            json.dumps({
+            "responseType": "newPlayer",
+            "newPlayerId": str(id)
+            })
+            
 
 class JSONToPythonTranslator:
     def __init__(self):
