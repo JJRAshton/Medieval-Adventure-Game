@@ -27,7 +27,7 @@ Move request (for now, will probably change):
 Map state request:
     {
         "event": "mapRequest",
-        "playerID": "{the id of the player that I want to move}"
+        "playerID": "(the id of the player that I want to move)"
     }
     returns:
     {
@@ -49,4 +49,16 @@ Get entity descriptions:
     returns:
     {
         some info about the entity, not exactly sure what should go here
+    }
+
+Attack request (for now):
+    {
+        "event": "attackRequest"
+        "playerID": "{the id of the player that I want to move}",
+        "enemyID": "id of enemy"}
+    }
+    returns:
+    {
+        "responseType": "attackResult",
+        "attackResult": "{true or false}"
     }

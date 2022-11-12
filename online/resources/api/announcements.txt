@@ -1,0 +1,14 @@
+Game start announcement:
+    {
+        "responseType": "gameStart"
+        "map": 
+            {
+                {"(id of the thing thats here)", "", ""}},
+                {"(id of the thing thats here)", "", "(id of the thing thats here)"}},
+                {"", "(id of the thing thats here)", ""}}
+            }
+        "ids": {
+            "id1":{"size":"10","friendly":"True/False"}
+            "id2":{"size":"10","friendly":"True/False"}
+            }
+    }
