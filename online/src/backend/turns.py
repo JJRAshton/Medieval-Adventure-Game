@@ -54,9 +54,9 @@ class Time:
             self.is_combat = False
 
     # Gets a player to make their turn
-    def playerTurn(self):
+    def playerTurn(self, character):
         pass
 
     # Gets an NPC to make their turn
-    def npcTurn(self):
+    def npcTurn(self, character):
         pass
