@@ -23,10 +23,11 @@ def calcPathDist(coords1, coords2):
 	return dist
 
 
-class Chart:
+class Back:
 
-	def __init__(self, mapLevel):
+	def __init__(self, mapLevel=1, nPlayers=1):
 		self.map = mapLevel
+		self.player_n = nPlayers
 
 		self.terrainGrid = []
 
@@ -38,9 +39,15 @@ class Chart:
 		self.objects = []
 		self.items = []
 
+		self.players = []
+
 		self.maxReach = 5
 
 		self.loadMap()
+		self.registerMapEntities()
+
+		for _ in range(self.player_n):
+			self.players.append(self.createPlayer())
 
 	# Loads in the map from the map number given
 	def loadMap(self):
@@ -50,7 +57,7 @@ class Chart:
 		self.terrainGrid = pkl.load(open('maps/map'+str(self.map)+'.pkl', 'rb'))
 
 	# Logs all entities on the starting map
-	def registerEntities(self):
+	def registerMapEntities(self):
 
 		charIDNum = 0
 		itemIDNum = 0

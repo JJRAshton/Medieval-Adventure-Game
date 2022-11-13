@@ -30,11 +30,15 @@ class BackRequests:
 		return completed
 	
 	# Requests the generation of the given map
-	def startRequest(self, mapNumber):
-		self.functions.requestStart(mapNumber)
+	def startRequest(self, mapNumber, playerNumber):
 
-	# Requests the creation of a new player
-	def createPlayerRequest(self):
-		globalID, playerName = self.functions.requestPlayerCreation()
-		
-		return globalID, playerName
+		self.functions.requestMapStart(mapNumber, playerNumber)
+
+		return self.functions.returnPlayers()
+
+	# Requests the coords of characters with their IDs
+	def locationRequest(self):
+
+		return self.functions.giveCharLoc()
+
+	# Requesting the creation of a new player has been removed - they are returned upon the creation of the map

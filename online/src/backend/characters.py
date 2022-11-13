@@ -18,7 +18,9 @@ class Character(Entity):
             }
         self.stat = {}
         self.mod = {}
-        
+
+        self.initiative = 0
+
         self.actionsTotal = 1
         self.attacksTotal = 1
         self.reactionsTotal = 1
@@ -28,6 +30,8 @@ class Character(Entity):
         self.attacks = 1
         self.reactions = 1
         self.bonusactions = 0
+
+        self.movement = 0
         
         self.hitDiceValue = 0
         self.hitDiceNumber = 0
@@ -41,8 +45,6 @@ class Character(Entity):
         self.atkMod = 0
         self.reach = 0
         
-        self.movement = 0
-        
         self.is_conscious = True
         self.is_stable = False
         self.savingThrows = (0, 0)
@@ -53,12 +55,31 @@ class Character(Entity):
         self.refreshModifierStat()
         self.refreshArmourStat()
         self.refreshWeaponStat()
+        self.calcInitiative()
+
+    # Allows for sorting by initiative order in sorted list
+    def __lt__(self, other):
+        return self.initiative > other.initiative
     
     # Moves entity by given vector and decreases movement
     def move(self, vector):
         super().move(vector)
         count = abs(vector[0])+abs(vector[1])
         self.movement -= 5*count
+
+    # Initialises the relevant stats to start a new turn
+    def initialiseTurn(self):
+        self.movement = self.maxMovement
+
+        self.actions = self.actionsTotal
+        self.attacks = self.attacksTotal
+        self.reactions = self.reactionsTotal
+        self.bonusactions = self.bonusactionsTotal
+
+    # Calculates the initiative roll
+    def calcInitiative(self):
+        init_roll = rd.randint(1,20)
+        self.initiative = init_roll + self.mod['DEX']
     
     # Makes an attack roll returning whether it 0:critical fail, 1:miss, 2:hit, 3:critical hit
     def attackRoll(self, armourClass):
@@ -202,6 +223,9 @@ class Player(Character):
         self.lvl = playerLevel
         self.type = playerClass
 
+        self.behaviour_type = 1
+        self.team = 1
+
         self.calcHealth()
         self.calcProfB()
     
@@ -233,12 +257,15 @@ class NPC(Character):
     def __init__(self, npcName):
         super().__init__(npcName)
         self.target = None
+        self.behaviour_type = 2
+        self.team = 1
 
 
 # A hostile character
 class Monster(NPC):
     def __init__(self, monsterName):
         super().__init__(monsterName)
+        self.team = 2
         
     # Checks if entity is still alive
     def checkHealth(self):
