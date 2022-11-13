@@ -1,4 +1,4 @@
-from backend.back import Back
+from src.backend.back import Back
 from turns import Time
 
 

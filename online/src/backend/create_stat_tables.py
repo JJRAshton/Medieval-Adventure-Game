@@ -1,24 +1,28 @@
 import pandas as pd
+import os
 
-char_in_dir = '../../resources/inputs/characters'
-player_in_dir = '../../resources/inputs/players'
-weapon_in_dir = '../../resources/inputs/weapons'
-armour_in_dir = '../../resources/inputs/armour'
+
+inputs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'../..resources/inputs'))
+
+char_in_dir = os.path.abspath(f'{inputs_dir}/characters.csv')
+player_in_dir = os.path.abspath(f'{inputs_dir}/players.csv')
+weapon_in_dir = os.path.abspath(f'{inputs_dir}/weapons.csv')
+armour_in_dir = os.path.abspath(f'{inputs_dir}/armour.csv')
 
 def read_char_inputs():
-    character_df = pd.read_csv(f"{char_in_dir}.csv", header=None)
+    character_df = pd.read_csv(char_in_dir, header=None)
     character_df = character_df.rename(columns=character_df.iloc[0]).drop(character_df.index[0])
     character_df.set_index('Name', inplace=True)
     return character_df
 
 def read_armour_inputs():
-    armour_df = pd.read_csv(f"{armour_in_dir}.csv", header=None)
+    armour_df = pd.read_csv(armour_in_dir, header=None)
     armour_df = armour_df.rename(columns=armour_df.iloc[0]).drop(armour_df.index[0])
     armour_df.set_index('Name', inplace=True)
     return armour_df
 
 def read_weapon_inputs():
-    weapon_df = pd.read_csv(f"{weapon_in_dir}.csv", header=None)
+    weapon_df = pd.read_csv(weapon_in_dir, header=None)
     weapon_df = weapon_df.rename(columns=weapon_df.iloc[0]).drop(weapon_df.index[0])
     weapon_df.set_index('Name', inplace=True)
     return weapon_df
@@ -27,7 +31,7 @@ def make_character_stat_table(map_number_str):
     # assign some useful variables
 
     # read combat setup
-    df = pd.read_csv(f'../../resources/inputs/map_entities/map{map_number_str}.csv', keep_default_na=False)
+    df = pd.read_csv(os.path.abspath(f'{inputs_dir}/map_entities/map{map_number_str}.csv'), keep_default_na=False)
     enemy_list = [x for x in df['Enemies'] if x != '']
 
     char_df = read_char_inputs()
