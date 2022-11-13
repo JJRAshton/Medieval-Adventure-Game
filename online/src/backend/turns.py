@@ -24,12 +24,12 @@ class Time:
 
         while self.is_combat:
 
-            for character in self.initOrder:
+            for n_round, character in enumerate(self.initOrder, start=1):
                 character.initialiseTurn()
                 if character.behaviour_type == 1:
-                    self.playerTurn()
+                    self.playerTurn(character)
                 if character.behaviour_type == 2:
-                    self.npcTurn()
+                    self.npcTurn(character)
 
             self.checkCombat()
 

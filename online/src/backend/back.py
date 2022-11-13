@@ -1,5 +1,6 @@
 import pickle as pkl
 from characters import Character, Player, NPC, Monster
+import random as rd
 
 
 # Gets the in game distance between two coords for attacks
@@ -51,10 +52,11 @@ class Back:
 
 	# Loads in the map from the map number given
 	def loadMap(self):
-		self.characterGrid = pkl.load(open('maps/map'+str(self.map)+'_characters'+'.pkl', 'rb'))
-		self.objectGrid = pkl.load(open('maps/map'+str(self.map)+'_objects'+'.pkl', 'rb'))
-		self.itemGrid = pkl.load(open('maps/map'+str(self.map)+'_items'+'.pkl', 'rb'))
-		self.terrainGrid = pkl.load(open('maps/map'+str(self.map)+'.pkl', 'rb'))
+		self.characterGrid = pkl.load(open(f'maps/map{self.map}_characters.pkl', 'rb'))
+		self.objectGrid = pkl.load(open(f'maps/map{self.map}_objects.pkl', 'rb'))
+		self.itemGrid = pkl.load(open(f'maps/map{self.map}_items.pkl', 'rb'))
+		self.terrainGrid = pkl.load(open(f'maps/map{self.map}.pkl', 'rb'))
+		self.spwnLoc = pkl.load(open(f'maps/map{self.map}_spwn.pkl', 'rb'))
 
 	# Logs all entities on the starting map
 	def registerMapEntities(self):
@@ -109,12 +111,16 @@ class Back:
 	# Creates a player and registers it
 	def createPlayer(self):
 		player = Player()
+
 		charIDNum = len(self.characters)
 		itemIDNum = len(self.items)
+
 		player.id = charIDNum
+		self.characters.append(player)
+
 		if player.reach > self.maxReach:
 			self.maxReach = player.reach
-		self.characters.append(player)
+
 		charIDNum += 1
 		if player.primaryWeapon is not None:
 			player.primaryWeapon.id = itemIDNum
@@ -128,6 +134,12 @@ class Back:
 			item.id = itemIDNum
 			self.items.append(item)
 			itemIDNum += 1
+
+		rand_index = rd.randint(1,len(self.spwnLoc))
+		spwn_coords = self.spwnLoc.pop(rand_index)
+
+		player.coords = spwn_coords
+		self.characterGrid[spwn_coords[0]][spwn_coords[1]] = player
 			
 		return player
 

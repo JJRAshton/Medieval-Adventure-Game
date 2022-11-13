@@ -226,8 +226,8 @@ class Player(Character):
         self.behaviour_type = 1
         self.team = 1
 
-        self.calcHealth()
         self.calcProfB()
+        self.calcHealth()
     
     # Gets the player stats
     def getStats(self):

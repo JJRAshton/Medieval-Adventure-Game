@@ -27,7 +27,7 @@ def make_character_stat_table(map_number_str):
     # assign some useful variables
 
     # read combat setup
-    df = pd.read_csv('../../resources/inputs/map_entities/map' + map_number_str + '.csv', keep_default_na=False)
+    df = pd.read_csv(f'../../resources/inputs/map_entities/map{map_number_str}.csv', keep_default_na=False)
     enemy_list = [x for x in df['Enemies'] if x != '']
 
     char_df = read_char_inputs()
