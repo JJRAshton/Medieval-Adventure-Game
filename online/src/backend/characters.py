@@ -41,6 +41,8 @@ class Character(Entity):
         self.primaryWeapon = None
         self.armour = None
 
+        self.inventory = []
+
         self.damage = (0, 0)
         self.atkMod = 0
         self.reach = 0
@@ -66,6 +68,14 @@ class Character(Entity):
         super().move(vector)
         count = abs(vector[0])+abs(vector[1])
         self.movement -= 5*count
+
+        # Moves characters held items
+        for item in self.inventory:
+            item.move(vector)
+        if self.primaryWeapon is not None:
+            self.primaryWeapon.move(vector)
+        if self.armour is not None:
+            self.armour.move(vector)
 
     # Initialises the relevant stats to start a new turn
     def initialiseTurn(self):
@@ -208,8 +218,10 @@ class Character(Entity):
         Entity.entityStats.getCharacterStats(self)
         if self.primaryWeapon is not None and self.primaryWeapon != 'None':
             self.primaryWeapon = Weapon(self.primaryWeapon)
+            self.primaryWeapon.coords = self.coords
         if self.armour is not None and self.armour != 'None':
             self.armour = Armour(self.armour)
+            self.armour.coords = self.coords
 
 
 # A playable character
@@ -234,8 +246,10 @@ class Player(Character):
         Entity.entityStats.getPlayerStats(self)
         if self.primaryWeapon is not None and self.primaryWeapon != 'None':
             self.primaryWeapon = Weapon(self.primaryWeapon)
+            self.primaryWeapon.coords = self.coords
         if self.armour is not None and self.armour != 'None':
             self.armour = Armour(self.armour)
+            self.armour.coords = self.coords
     
     # Recalculates the entity stats after a level up
     def levelUp(self):
