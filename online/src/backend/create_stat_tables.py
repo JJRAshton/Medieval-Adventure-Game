@@ -5,19 +5,19 @@ player_in_dir = '../../resources/inputs/players'
 weapon_in_dir = '../../resources/inputs/weapons'
 armour_in_dir = '../../resources/inputs/armour'
 
-def read_char_inputs(character):
+def read_char_inputs():
     character_df = pd.read_csv(f"{char_in_dir}.csv", header=None)
     character_df = character_df.rename(columns=character_df.iloc[0]).drop(character_df.index[0])
     character_df.set_index('Name', inplace=True)
     return character_df
 
-def read_armour_inputs(armour):
+def read_armour_inputs():
     armour_df = pd.read_csv(f"{armour_in_dir}.csv", header=None)
     armour_df = armour_df.rename(columns=armour_df.iloc[0]).drop(armour_df.index[0])
     armour_df.set_index('Name', inplace=True)
     return armour_df
 
-def read_weapon_inputs(weapon):
+def read_weapon_inputs():
     weapon_df = pd.read_csv(f"{weapon_in_dir}.csv", header=None)
     weapon_df = weapon_df.rename(columns=weapon_df.iloc[0]).drop(weapon_df.index[0])
     weapon_df.set_index('Name', inplace=True)
@@ -30,10 +30,12 @@ def make_character_stat_table(map_number_str):
     df = pd.read_csv('../../resources/inputs/map_entities/map' + map_number_str + '.csv', keep_default_na=False)
     enemy_list = [x for x in df['Enemies'] if x != '']
 
+    char_df = read_char_inputs()
+
     # construct dataframes of characters and weapons in this game - reference these tables to initialise things
     character_table = pd.DataFrame()
     for character in enemy_list:
-        character_table = pd.concat([character_table, read_char_inputs(character)])
+        character_table = pd.concat([character_table, char_df])
 
     return character_table
 
