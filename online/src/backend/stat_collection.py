@@ -1,4 +1,4 @@
-from create_stat_tables import Tables
+from backend.create_stat_tables import Tables
 import random as rd
 
 

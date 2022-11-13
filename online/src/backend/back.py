@@ -1,5 +1,5 @@
 import pickle as pkl
-from characters import Character, Player, NPC, Monster
+from backend.characters import Character, Player, NPC, Monster
 import random as rd
 
 

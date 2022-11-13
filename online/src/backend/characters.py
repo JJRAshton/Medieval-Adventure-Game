@@ -1,4 +1,4 @@
-from objects import Entity, Weapon, Item, Armour
+from backend.objects import Entity, Weapon, Item, Armour
 import random as rd
 
 

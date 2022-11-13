@@ -1,4 +1,4 @@
-from front_back_interaction_functions import Requester
+from backend.front_back_interaction_functions import Requester
 
 
 class BackRequests:
