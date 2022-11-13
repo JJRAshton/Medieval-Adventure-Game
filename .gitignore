@@ -144,3 +144,4 @@ online/.DS_Store
 # Molly's python (try if you dare)
 **/__pycache__
 .vscode/settings.json
+**/node_modules/*

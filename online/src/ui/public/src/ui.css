@@ -3,7 +3,7 @@ body {
     text-align: center;
 }
 .buttons {
-    font-size: 4em;
+    font-size: 2em;
     display: flex;
     justify-content: center;
 }
