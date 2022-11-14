@@ -1,8 +1,8 @@
-from .objects import Entity, Weapon, Item, Armour
+from . import objects as obj
 import random as rd
 
 
-class Character(Entity):
+class Character(obj.Entity):
     def __init__(self, entityName):
         super().__init__(entityName)
         self.maxMovement = 0
@@ -43,7 +43,9 @@ class Character(Entity):
 
         self.inventory = []
 
-        self.damage = (0, 0)
+        self.baseDamage = (0, 0)
+
+        self.damage = (0, 0, 0)
         self.atkMod = 0
         self.reach = 0
         
@@ -53,11 +55,14 @@ class Character(Entity):
         self.drop_rate = 0
         
         self.getStats()
+
         self.resetStats()
         self.resetHealth()
+
         self.refreshModifierStat()
         self.refreshArmourStat()
         self.refreshWeaponStat()
+
         self.calcInitiative()
 
     # Allows for sorting by initiative order in sorted list
@@ -173,13 +178,18 @@ class Character(Entity):
         
     # Recalculates the entity damage and reach
     def refreshWeaponStat(self):
-        self.reach = self.primaryWeapon.reach
-        if self.primaryWeapon.is_finesse:
-            self.atkMod = max(self.mod['STR'], self.mod['DEX'])
+        if self.primaryWeapon is not None:
+            self.reach = self.primaryWeapon.reach
+            if self.primaryWeapon.is_finesse:
+                self.atkMod = max(self.mod['STR'], self.mod['DEX'])
+            else:
+                self.atkMod = self.mod['STR']
+            self.damage = (self.primaryWeapon.damage[0], self.primaryWeapon.damage[1], self.atkMod)
         else:
+            self.reach = 5
             self.atkMod = self.mod['STR']
-        self.damage = (self.primaryWeapon.damage[0], self.primaryWeapon.damage[1], self.atkMod)
-        
+            self.damage = (self.baseDamage[0], self.baseDamage[1], self.atkMod)
+
     # Makes a saving throw
     def makeSavingThrow(self):
         throw = rd.randint(1, 20)
@@ -216,11 +226,11 @@ class Character(Entity):
         
     # Collects entity base stats
     def getStats(self):  # yet to get from jamie
-        Entity.entityStats.getCharacterStats(self)
+        obj.Entity.entityStats.getCharacterStats(self)
         if self.primaryWeapon is not None and self.primaryWeapon != '':
-            self.primaryWeapon = Weapon(self.primaryWeapon)
+            self.primaryWeapon = obj.Weapon(self.primaryWeapon)
         if self.armour is not None and self.armour != '':
-            self.armour = Armour(self.armour)
+            self.armour = obj.Armour(self.armour)
 
 
 # A playable character
@@ -242,11 +252,11 @@ class Player(Character):
     
     # Gets the player stats
     def getStats(self):
-        Entity.entityStats.getPlayerStats(self)
+        obj.Entity.entityStats.getPlayerStats(self)
         if self.primaryWeapon is not None and self.primaryWeapon != '':
-            self.primaryWeapon = Weapon(self.primaryWeapon)
+            self.primaryWeapon = obj.Weapon(self.primaryWeapon)
         if self.armour is not None and self.armour != '':
-            self.armour = Armour(self.armour)
+            self.armour = obj.Armour(self.armour)
     
     # Recalculates the entity stats after a level up
     def levelUp(self):

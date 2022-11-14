@@ -22,6 +22,19 @@ def convertDiceEx(dice):
     return nDice, sDice, bonus
 
 
+def convertList(str):
+    list = []
+    while ',' in str:
+        c_index = str.index(',')
+        item = str[:c_index]
+        str = str[c_index + 1:]
+        list.append(item)
+    list.append(str)
+
+    return list
+
+
+
 class Stats:
     
     def __init__(self):
@@ -79,7 +92,10 @@ class Stats:
         charDict = self.getCharacterDict(characterName)
         
         size = charDict['Size']
-        character.primaryWeapon = charDict['Weapon']
+        if charDict['Weapon'] != '':
+            character.primaryWeapon = charDict['Weapon']
+        if charDict['Base Damage'] != '':
+            character.baseDamage = convertDice(charDict['Base Damage'])
         if charDict['Armour'] != '':
             character.armour = charDict['Armour']
         if charDict['Base Armour'] != '':
@@ -90,6 +106,9 @@ class Stats:
         for _ in range(number):
             base += rd.randint(1, dice)
         character.baseHealth = base + bonus
+
+        if charDict['Inventory'] != '':
+            character.inventory = convertList(charDict['Inventory'])
 
         character.profBonus = int(charDict['Proficiency Bonus'])
         character.maxMovement = int(charDict['Speed'])

@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-inputs_dir = '.././resources/inputs'
+inputs_dir = '../../resources/inputs'
 
 char_in_dir = f'{inputs_dir}/characters.csv'
 player_in_dir = f'{inputs_dir}/players.csv'

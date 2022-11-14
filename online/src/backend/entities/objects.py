@@ -1,5 +1,5 @@
+from .stats import Stats
 import random as rd
-from .stat_collection import Stats
 
 
 class Entity:

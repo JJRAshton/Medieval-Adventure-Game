@@ -1,6 +1,5 @@
 import pickle as pkl
-from .characters import Player, NPC, Monster
-from .objects import Object
+import entities as ent
 import random as rd
 import pandas as pd
 
@@ -69,7 +68,7 @@ class Back:
 		objectList = pkl.load(open(f'{map_dir}/objects.pkl', 'rb'))
 		for object_info in objectList:
 			name, coords = object_info
-			self.objectGrid[coords[0]][coords[1]] = Object('name')
+			self.objectGrid[coords[0]][coords[1]] = ent.Object('name')
 
 		self.spawn = {
 			'Player': pkl.load(open(f'{map_dir}/player_spawn.pkl', 'rb')),
@@ -92,11 +91,11 @@ class Back:
 	# Creates and registers a character and its inventory
 	def createCharacter(self, character_type, sub_type=None):
 		if character_type == 'Player' and sub_type is None:
-			character = Player()
+			character = ent.Player()
 		elif character_type == 'Monster' and sub_type is not None:
-			character = Monster(sub_type)
+			character = ent.Monster(sub_type)
 		elif character_type == 'NPC' and sub_type is not None:
-			character = NPC(sub_type)
+			character = ent.NPC(sub_type)
 		else:
 			raise ValueError
 
