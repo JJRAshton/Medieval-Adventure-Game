@@ -148,3 +148,12 @@ class Requester:
 				self.chart.dropArmour(character)
 			else:
 				self.chart.dropInv(character)
+
+	# Gets information about a character
+	def getInfo(self, charID):
+		if charID >= 100:
+			raise ValueError
+
+		character = self.chart.characters[charID]
+
+		return character.team

@@ -1,1 +1,1 @@
-from .stat_collection import Stats
+from .collection import Stats

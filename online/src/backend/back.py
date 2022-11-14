@@ -1,7 +1,8 @@
 import pickle as pkl
-import entities as ent
 import random as rd
 import pandas as pd
+
+import entities as ent
 
 
 # Gets the in game distance between two coords for attacks
