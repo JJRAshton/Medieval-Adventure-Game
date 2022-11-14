@@ -1,5 +1,6 @@
-from . import objects as obj
 import random as rd
+
+from . import objects as obj
 
 
 class Character(obj.Entity):
