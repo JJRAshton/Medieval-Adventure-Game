@@ -1,5 +1,5 @@
-from back import Back
-from turns import Time
+from .back import Back
+from .turns import Time
 
 
 # Converts an ID number to the index of its category's list
@@ -83,7 +83,7 @@ class Requester:
 	def requestMapStart(self, mapNumber, n_players):
 		self.map = mapNumber
 		self.chart = Back(self.map, n_players)
-		self.time = Time()
+		self.time = Time(self.chart)
 
 	# Starts the turns
 	def requestTimeStart(self):
@@ -129,5 +129,3 @@ class Requester:
 				item_locs.append(item_info)
 
 		return item_locs
-
-

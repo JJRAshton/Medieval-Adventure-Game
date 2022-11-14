@@ -8,7 +8,7 @@ from api.users import currentUsers
 from api.users import User
 from api.api_session import APISession
 
-# Potentially these shouldn't yet be api.users.User yet, and get transformed only once a game starts?
+# Potentially these shouldn't yet be api.users.User, and get transformed only once a game starts?
 playerPool = set()
 UUID_TRACKER = 1 # Initialise at 1
 

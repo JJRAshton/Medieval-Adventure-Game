@@ -1,6 +1,6 @@
 import pickle as pkl
-from characters import Character, Player, NPC, Monster
-from objects import Object
+from .characters import Character, Player, NPC, Monster
+from .objects import Object
 import random as rd
 import pandas as pd
 import os
