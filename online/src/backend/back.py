@@ -3,7 +3,6 @@ from .characters import Character, Player, NPC, Monster
 from .objects import Object
 import random as rd
 import pandas as pd
-import os
 
 
 # Gets the in game distance between two coords for attacks
@@ -28,7 +27,7 @@ def calcPathDist(coords1, coords2):
 
 
 class Back:
-	maps_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../resources/inputs/maps'))
+	maps_dir = '.././resources/inputs/maps'
 
 	def __init__(self, mapLevel=1, nPlayers=1):
 		self.map = mapLevel
@@ -58,7 +57,7 @@ class Back:
 
 	# Loads in the map from the map number given
 	def loadMap(self):
-		map_dir = os.path.abspath(os.path.join(Back.maps_dir,f'map{self.map}'))
+		map_dir = f'{Back.maps_dir}/map{self.map}'
 
 		self.terrainGrid = pkl.load(open(f'{map_dir}/terrain.pkl', 'rb'))
 		size = (len(self.terrainGrid), len(self.terrainGrid[0]))
@@ -80,7 +79,7 @@ class Back:
 
 	# Adds in the map NPCs
 	def addMapNPCs(self):
-		df = pd.read_csv(os.path.abspath(f'{Back.maps_dir}/map{self.map}/entities.csv'), keep_default_na=False)
+		df = pd.read_csv(f'{Back.maps_dir}/map{self.map}/entities.csv', keep_default_na=False)
 		monster_list = [x for x in df['Monsters'] if x != '']
 		npc_list = [x for x in df['NPCs'] if x != '']
 

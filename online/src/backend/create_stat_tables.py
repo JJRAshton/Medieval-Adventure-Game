@@ -1,13 +1,12 @@
 import pandas as pd
-import os
 
 
-inputs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'../../resources/inputs'))
+inputs_dir = '.././resources/inputs'
 
-char_in_dir = os.path.abspath(f'{inputs_dir}/characters.csv')
-player_in_dir = os.path.abspath(f'{inputs_dir}/players.csv')
-weapon_in_dir = os.path.abspath(f'{inputs_dir}/weapons.csv')
-armour_in_dir = os.path.abspath(f'{inputs_dir}/armour.csv')
+char_in_dir = f'{inputs_dir}/characters.csv'
+player_in_dir = f'{inputs_dir}/players.csv'
+weapon_in_dir = f'{inputs_dir}/weapons.csv'
+armour_in_dir = f'{inputs_dir}/armour.csv'
 
 
 def read_char_inputs():
@@ -35,7 +34,7 @@ def make_character_stat_table(map_number_str):
     # assign some useful variables
 
     # read combat setup
-    df = pd.read_csv(os.path.abspath(f'{inputs_dir}/maps/map{map_number_str}/entities.csv'), keep_default_na=False)
+    df = pd.read_csv(f'{inputs_dir}/maps/map{map_number_str}/entities.csv', keep_default_na=False)
     monster_list = [x for x in df['Monsters'] if x != '']
     npc_list = [x for x in df['NPCs'] if x != '']
 
