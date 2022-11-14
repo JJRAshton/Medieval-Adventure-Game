@@ -51,6 +51,17 @@ class Stats:
         armour.type = arDict['Type']
         armour.armourValue = int(arDict['Value'])
 
+    def getObjectStats(self, i_object):
+        objDict = self.getArmourDict(i_object.name)
+
+        i_object.armourClass = int(objDict['AC'])
+        i_object.baseHealth = int(objDict['Health'])
+
+        is_inv = bool(objDict['Inventory'])
+
+        if is_inv:
+            i_object.inventory = []
+
     # Adds the stats to the given character (not player)
     def getCharacterStats(self, character):  # Doesn't collect all data
         characterName = character.name

@@ -56,12 +56,11 @@ class Entity:
 class Object(Entity):
     def __init__(self, objectName):
         super().__init__(objectName)
-        self.inventory = []
 
         self.getStats()
 
     def getStats(self):
-        pass
+        Entity.entityStats.getObjectStats(self)
 
 
 class Item(Entity):

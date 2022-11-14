@@ -1,6 +1,9 @@
 import pickle as pkl
-from backend.characters import Character, Player, NPC, Monster
+from characters import Character, Player, NPC, Monster
+from objects import Object
 import random as rd
+import pandas as pd
+import os
 
 
 # Gets the in game distance between two coords for attacks
@@ -25,6 +28,7 @@ def calcPathDist(coords1, coords2):
 
 
 class Back:
+	maps_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..resources/inputs/maps'))
 
 	def __init__(self, mapLevel=1, nPlayers=1):
 		self.map = mapLevel
@@ -41,107 +45,91 @@ class Back:
 		self.items = []
 
 		self.players = []
+		self.monsters = []
+		self.npcs = []
 
 		self.maxReach = 5
 
 		self.loadMap()
-		self.registerMapEntities()
+		self.addMapNPCs()
 
 		for _ in range(self.player_n):
-			self.players.append(self.createPlayer())
+			self.players.append(self.createCharacter('Player'))
 
 	# Loads in the map from the map number given
 	def loadMap(self):
-		self.characterGrid = pkl.load(open(f'maps/map{self.map}_characters.pkl', 'rb'))
-		self.objectGrid = pkl.load(open(f'maps/map{self.map}_objects.pkl', 'rb'))
-		self.itemGrid = pkl.load(open(f'maps/map{self.map}_items.pkl', 'rb'))
-		self.terrainGrid = pkl.load(open(f'maps/map{self.map}.pkl', 'rb'))
-		self.spwnLoc = pkl.load(open(f'maps/map{self.map}_spwn.pkl', 'rb'))
+		map_dir = os.path.abspath(os.path.join(Back.maps_dir,f'map{self.map}'))
 
-	# Logs all entities on the starting map
-	def registerMapEntities(self):
+		self.terrainGrid = pkl.load(open(f'{map_dir}/terrain.pkl', 'rb'))
+		size = (len(self.terrainGrid), len(self.terrainGrid[0]))
 
-		charIDNum = 0
-		itemIDNum = 0
-		objIDNum = 0
-		for y in range(len(self.characterGrid)):
-			for x in range(len(self.characterGrid[0])):
-				character = self.characterGrid[x][y]
-				if character is None:
-					continue
-				else:
-					character.id = charIDNum
-					if character.reach > self.maxReach:
-						self.maxReach = character.reach
-					self.characters.append(character)
-					charIDNum += 1
-					if character.primaryWeapon is not None:
-						character.primaryWeapon.id = itemIDNum
-						self.items.append(character.primaryWeapon)
-						itemIDNum += 1
-					if character.armour is not None:
-						character.armour.id = itemIDNum
-						self.items.append(character.armour)
-						itemIDNum += 1
-					for item in character.inventory:
-						item.id = itemIDNum
-						self.items.append(item)
-						itemIDNum += 1
+		self.characterGrid = [[None for _ in range(size[1])] for _ in range(size[0])]
+		self.itemGrid = [[None for _ in range(size[1])] for _ in range(size[0])]
 
-		for y in range(len(self.itemGrid)):
-			for x in range(len(self.itemGrid[0])):
-				item = self.itemGrid[x][y]
-				if item is None:
-					continue
-				else:
-					item.id = itemIDNum
-					self.items.append(item)
-					itemIDNum += 1
+		self.objectGrid = [[None for _ in range(size[1])] for _ in range(size[0])]
+		objectList = pkl.load(open(f'{map_dir}/objects.pkl', 'rb'))
+		for object_info in objectList:
+			name, coords = object_info
+			self.objectGrid[coords[0]][coords[1]] = Object('name')
 
-		for y in range(len(self.objectGrid)):
-			for x in range(len(self.objectGrid[0])):
-				entity = self.objectGrid[x][y]
-				if entity is None:
-					continue
-				else:
-					entity.id = objIDNum
-					self.objects.append(entity)
-					objIDNum += 1
+		self.spawn = {
+			'Player': pkl.load(open(f'{map_dir}/player_spawn.pkl', 'rb')),
+			'Monster': pkl.load(open(f'{map_dir}/monster_spawn.pkl', 'rb')),
+			'NPC': pkl.load(open(f'{map_dir}/npc_spawn.pkl', 'rb'))
+		}
 
-	# Creates a player and registers it
-	def createPlayer(self):
-		player = Player()
+	# Adds in the map NPCs
+	def addMapNPCs(self):
+		df = pd.read_csv(os.path.abspath(f'{Back.maps_dir}/map{self.map}/entities.csv'), keep_default_na=False)
+		monster_list = [x for x in df['Monsters'] if x != '']
+		npc_list = [x for x in df['NPCs'] if x != '']
+
+		for monster_str in monster_list:
+			self.monsters.append(self.createCharacter('Monster', monster_str))
+
+		for npc_str in npc_list:
+			self.npcs.append(self.createCharacter('NPC', npc_str))
+
+	# Creates and registers a character and its inventory
+	def createCharacter(self, character_type, sub_type=None):
+		if character_type == 'Player' and sub_type is None:
+			character = Player()
+		elif character_type == 'Monster' and sub_type is not None:
+			character = Monster(sub_type)
+		elif character_type == 'NPC' and sub_type is not None:
+			character = NPC(sub_type)
+		else:
+			raise ValueError
 
 		charIDNum = len(self.characters)
 		itemIDNum = len(self.items)
 
-		player.id = charIDNum
-		self.characters.append(player)
+		character.id = charIDNum
+		self.characters.append(character)
 
-		if player.reach > self.maxReach:
-			self.maxReach = player.reach
+		if character.reach > self.maxReach:
+			self.maxReach = character.reach
 
-		charIDNum += 1
-		if player.primaryWeapon is not None:
-			player.primaryWeapon.id = itemIDNum
-			self.items.append(player.primaryWeapon)
+		if character.primaryWeapon is not None:
+			character.primaryWeapon.id = itemIDNum
+			self.items.append(character.primaryWeapon)
 			itemIDNum += 1
-		if player.armour is not None:
-			player.armour.id = itemIDNum
-			self.items.append(player.armour)
+		if character.armour is not None:
+			character.armour.id = itemIDNum
+			self.items.append(character.armour)
 			itemIDNum += 1
-		for item in player.inventory:
+		for item in character.inventory:
 			item.id = itemIDNum
 			self.items.append(item)
 			itemIDNum += 1
 
-		rand_index = rd.randint(1,len(self.spwnLoc))
-		spwn_coords = self.spwnLoc.pop(rand_index)
+		rand_index = rd.randint(1, len(self.spawn[character_type]))
+		spawn_coords = self.spawn[character_type].pop(rand_index)
 
-		player.coords = spwn_coords
-		self.characterGrid[spwn_coords[0]][spwn_coords[1]] = player
-			
-		return player
+		character.coords = spawn_coords
+		self.characterGrid[spawn_coords[0]][spawn_coords[1]] = character
+
+		return character
 
 	# Moves a character on the grid
 	def moveCharacter(self, charID, newCoords):

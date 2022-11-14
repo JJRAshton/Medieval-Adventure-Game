@@ -218,10 +218,8 @@ class Character(Entity):
         Entity.entityStats.getCharacterStats(self)
         if self.primaryWeapon is not None and self.primaryWeapon != 'None':
             self.primaryWeapon = Weapon(self.primaryWeapon)
-            self.primaryWeapon.coords = self.coords
         if self.armour is not None and self.armour != 'None':
             self.armour = Armour(self.armour)
-            self.armour.coords = self.coords
 
 
 # A playable character
@@ -246,10 +244,8 @@ class Player(Character):
         Entity.entityStats.getPlayerStats(self)
         if self.primaryWeapon is not None and self.primaryWeapon != 'None':
             self.primaryWeapon = Weapon(self.primaryWeapon)
-            self.primaryWeapon.coords = self.coords
         if self.armour is not None and self.armour != 'None':
             self.armour = Armour(self.armour)
-            self.armour.coords = self.coords
     
     # Recalculates the entity stats after a level up
     def levelUp(self):
