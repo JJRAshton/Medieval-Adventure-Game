@@ -11,6 +11,17 @@ def convertDice(dice):
     return nDice, sDice
 
 
+def convertDiceEx(dice):
+    dIndex = dice.index('d')
+    plusIndex = dice.index('+')
+
+    nDice = int(dice[:dIndex])
+    sDice = int(dice[dIndex + 1:plusIndex-1])
+    bonus = int(dice[plusIndex + 2:])
+
+    return nDice, sDice, bonus
+
+
 class Stats:
     
     def __init__(self):
@@ -69,10 +80,18 @@ class Stats:
         
         size = charDict['Size']
         character.primaryWeapon = charDict['Weapon']
-        character.armour = charDict['Armour']
+        if charDict['Armour'] != '':
+            character.armour = charDict['Armour']
+        if charDict['Base Armour'] != '':
+            character.baseArmour = charDict['Base Armour']
+
+        number, dice, bonus = convertDiceEx(charDict['Health'])
+        base = 0
+        for _ in range(number):
+            base += rd.randint(1, dice)
+        character.baseHealth = base + bonus
 
         character.profBonus = int(charDict['Proficiency Bonus'])
-        character.baseHealth = int(charDict['Health'])
         character.maxMovement = int(charDict['Speed'])
         character.drop_rate = int(charDict['Drop Rate'])
         

@@ -217,9 +217,9 @@ class Character(Entity):
     # Collects entity base stats
     def getStats(self):  # yet to get from jamie
         Entity.entityStats.getCharacterStats(self)
-        if self.primaryWeapon is not None and self.primaryWeapon != 'None':
+        if self.primaryWeapon is not None and self.primaryWeapon != '':
             self.primaryWeapon = Weapon(self.primaryWeapon)
-        if self.armour is not None and self.armour != 'None':
+        if self.armour is not None and self.armour != '':
             self.armour = Armour(self.armour)
 
 
@@ -243,9 +243,9 @@ class Player(Character):
     # Gets the player stats
     def getStats(self):
         Entity.entityStats.getPlayerStats(self)
-        if self.primaryWeapon is not None and self.primaryWeapon != 'None':
+        if self.primaryWeapon is not None and self.primaryWeapon != '':
             self.primaryWeapon = Weapon(self.primaryWeapon)
-        if self.armour is not None and self.armour != 'None':
+        if self.armour is not None and self.armour != '':
             self.armour = Armour(self.armour)
     
     # Recalculates the entity stats after a level up
