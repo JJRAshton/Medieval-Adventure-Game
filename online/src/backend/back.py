@@ -1,5 +1,5 @@
 import pickle as pkl
-from .characters import Character, Player, NPC, Monster
+from .characters import Player, NPC, Monster
 from .objects import Object
 import random as rd
 import pandas as pd
