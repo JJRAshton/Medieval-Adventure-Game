@@ -1,4 +1,4 @@
-from .create_stat_tables import Tables
+from .tables import Tables
 import random as rd
 
 
@@ -20,6 +20,19 @@ def convertDiceEx(dice):
     bonus = int(dice[plusIndex + 2:])
 
     return nDice, sDice, bonus
+
+
+def convertList(str):
+    list = []
+    while ',' in str:
+        c_index = str.index(',')
+        item = str[:c_index]
+        str = str[c_index + 1:]
+        list.append(item)
+    list.append(str)
+
+    return list
+
 
 
 class Stats:
@@ -79,7 +92,10 @@ class Stats:
         charDict = self.getCharacterDict(characterName)
         
         size = charDict['Size']
-        character.primaryWeapon = charDict['Weapon']
+        if charDict['Weapon'] != '':
+            character.primaryWeapon = charDict['Weapon']
+        if charDict['Base Damage'] != '':
+            character.baseDamage = convertDice(charDict['Base Damage'])
         if charDict['Armour'] != '':
             character.armour = charDict['Armour']
         if charDict['Base Armour'] != '':
@@ -90,6 +106,9 @@ class Stats:
         for _ in range(number):
             base += rd.randint(1, dice)
         character.baseHealth = base + bonus
+
+        if charDict['Inventory'] != '':
+            character.inventory = convertList(charDict['Inventory'])
 
         character.profBonus = int(charDict['Proficiency Bonus'])
         character.maxMovement = int(charDict['Speed'])
