@@ -1,5 +1,6 @@
 from .back import Back
 from .turns import Time
+import random as rd
 
 
 # Converts an ID number to the index of its category's list
@@ -73,11 +74,16 @@ class Requester:
 				raise ValueError
 			
 			attacker.attack(defender)
-			completed = True
-		else:
-			completed = False
+			defender.checkHealth()
+			if not defender.is_alive:
+				if category2 == 1:
+					self.calcDrop(defender)
+				else:
+					self.chart.dropInv(defender)
 
-		return completed
+			return True
+		else:
+			return False
 
 	# Generates the map
 	def requestMapStart(self, mapNumber, n_players):
@@ -129,3 +135,16 @@ class Requester:
 				item_locs.append(item_info)
 
 		return item_locs
+
+	# Calculates whether a character will drop an item (upon death)
+	def calcDrop(self, character):
+		prob = character.difficulty + 10
+		roll = rd.randint(1, prob)
+
+		if roll <= 5:
+			if roll == 1:
+				self.chart.dropWeapon(character)
+			elif roll == 2:
+				self.chart.dropArmour(character)
+			else:
+				self.chart.dropInv(character)

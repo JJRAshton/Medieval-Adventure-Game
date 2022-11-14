@@ -25,9 +25,14 @@ class Time:
         while self.is_combat:
 
             for n_round, character in enumerate(self.initOrder, start=1):
+                if not character.is_alive:
+                    continue
+
                 character.initialiseTurn()
+
                 if character.behaviour_type == 1:
                     self.playerTurn(character)
+
                 if character.behaviour_type == 2:
                     self.npcTurn(character)
 
@@ -35,6 +40,7 @@ class Time:
 
     # Checks if combat is still taking place
     def checkCombat(self):
+
         # Check if any players are still alive
         is_a_player = False
         for player in self.back.players:
@@ -55,8 +61,12 @@ class Time:
 
     # Gets a player to make their turn
     def playerTurn(self, character):
+        if not character.is_conscious:
+            outcome = character.makeSavingThrow()
         pass
 
     # Gets an NPC to make their turn
     def npcTurn(self, character):
+        if not character.is_conscious:
+            outcome = character.makeSavingThrow()
         pass

@@ -74,6 +74,7 @@ class Stats:
         character.profBonus = int(charDict['Proficiency Bonus'])
         character.baseHealth = int(charDict['Health'])
         character.maxMovement = int(charDict['Speed'])
+        character.drop_rate = int(charDict['Drop Rate'])
         
         character.baseStat['STR'] = int(charDict['STR'])
         character.baseStat['DEX'] = int(charDict['DEX'])

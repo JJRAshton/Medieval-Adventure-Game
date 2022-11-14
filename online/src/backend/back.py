@@ -141,7 +141,14 @@ class Back:
 		self.characterGrid[newCoords[0]][newCoords[1]] = character
 		self.characterGrid[prevCoords[0]][prevCoords[1]] = None
 
-	# Moves a character on the grid
+		if self.is_item(newCoords):
+			item = self.itemGrid[newCoords[0]][newCoords[1]]
+			item.is_carried = True
+
+			self.itemGrid[newCoords[0]][newCoords[1]] = None
+			character.inventory.append(item)
+
+	# Moves an object on the grid
 	def moveObject(self, objID, newCoords):
 		entity = self.objects[objID]
 		prevCoords = entity.coords
@@ -152,7 +159,7 @@ class Back:
 		self.objectGrid[newCoords[0]][newCoords[1]] = entity
 		self.objectGrid[prevCoords[0]][prevCoords[1]] = None
 
-	# Moves a character on the grid
+	# Moves an item on the grid
 	def moveItem(self, itemID, newCoords):
 		item = self.items[itemID]
 		prevCoords = item.coords
@@ -163,42 +170,45 @@ class Back:
 		self.itemGrid[newCoords[0]][newCoords[1]] = item
 		self.itemGrid[prevCoords[0]][prevCoords[1]] = None
 
-	# Checks if coords are valid to move to
-	def is_validCoords(self, newCoords):
-		x, y = newCoords
-		size = (len(self.characterGrid[0]), len(self.characterGrid))
+	# Drops an item from an inventory
+	def dropInv(self, character):
+		index = rd.randint(0, len(character.inventory)-1)
+		item = character.inventory.pop(index)
 
-		if x > size[0] or x < 0 or y > size[1] or y < 0:
-			valid = False
-		elif self.characterGrid[x][y] is not None:
-			valid = False
-		elif self.objectGrid[x][y] is not None:
-			valid = False
-		else:
-			valid = True
+		item.coords = character.coords
+		self.itemGrid[item.coords[0]][item.coords[1]] = item
 
-		return valid
+		item.is_carried = False
 
-	# Checks if character has the movement to move to coords
-	def is_validMovement(self, charID, newCoords):
-		x, y = newCoords
-		oldx, oldy = self.characters[charID].coords
-		if self.characters[charID].movement < calcPathDist((oldx, oldy), (x, y)):
-			valid = False
-		else:
-			valid = True
+	# Drops the characters weapon
+	def dropWeapon(self, character):
+		weapon = character.primaryWeapon
+		character.primaryWeapon = None
 
-		return valid
+		weapon.coords = character.coords
+		self.itemGrid[weapon.coords[0]][weapon.coords[1]] = weapon
+
+		weapon.is_carried = False
+
+	# Drops the characters armour
+	def dropArmour(self, character):
+		armour = character.armour
+		character.armour = None
+
+		armour.coords = character.coords
+		self.itemGrid[armour.coords[0]][armour.coords[1]] = armour
+
+		armour.is_carried = False
 
 	# Makes a list of characters that can make an opportunity attack upon given characters movement to the new coords
 	def checkOpportunity(self, charID, newCoords):
-		searchRadius = int(self.maxReach/5)
+		searchRadius = int(self.maxReach / 5)
 		oldx, oldy = self.characters[charID].coords
 
 		characters = []
 
-		for y in range(oldy-searchRadius, oldy+searchRadius+1):
-			for x in range(oldx-searchRadius, oldx+searchRadius+1):
+		for y in range(oldy - searchRadius, oldy + searchRadius + 1):
+			for x in range(oldx - searchRadius, oldx + searchRadius + 1):
 				if self.characterGrid[x][y] is not None:
 					entity = self.characterGrid[x][y]
 					if entity.is_conscious:
@@ -211,6 +221,50 @@ class Back:
 							characters.append(entity)
 
 		return characters
+
+	# Checks if there is an item at the given coords
+	def is_item(self, coords):
+		if self.itemGrid[coords[0]][coords[1]] is None:
+			return False
+		else:
+			return True
+
+	# Checks if there is a character at the given coords
+	def is_character(self, coords):
+		if self.characterGrid[coords[0]][coords[1]] is None:
+			return False
+		else:
+			return True
+
+	# Checks if there is an object at the given coords
+	def is_object(self, coords):
+		if self.objectGrid[coords[0]][coords[1]] is None:
+			return False
+		else:
+			return True
+
+	# Checks if coords are valid to move to
+	def is_validCoords(self, newCoords):
+		x, y = newCoords
+		size = (len(self.characterGrid[0]), len(self.characterGrid))
+
+		if x > size[0] or x < 0 or y > size[1] or y < 0:
+			return False
+		elif self.is_character(newCoords):
+			return False
+		elif self.is_object(newCoords):
+			return False
+		else:
+			return True
+
+	# Checks if character has the movement to move to coords
+	def is_validMovement(self, charID, newCoords):
+		x, y = newCoords
+		oldx, oldy = self.characters[charID].coords
+		if self.characters[charID].movement < calcPathDist((oldx, oldy), (x, y)):
+			return False
+		else:
+			return True
 
 	# Checks if an attack is valid
 	def is_validAttack(self, atkID, defID, catDef):
@@ -229,8 +283,6 @@ class Back:
 		ymax = atkCoords[1] + radius
 
 		if defx < xmin or defx > xmax or defy < ymin or defy > ymax:
-			valid = False
+			return False
 		else:
-			valid = True
-
-		return valid
+			return True

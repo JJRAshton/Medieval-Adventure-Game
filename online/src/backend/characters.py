@@ -50,6 +50,7 @@ class Character(Entity):
         self.is_conscious = True
         self.is_stable = False
         self.savingThrows = (0, 0)
+        self.drop_rate = 0
         
         self.getStats()
         self.resetStats()
