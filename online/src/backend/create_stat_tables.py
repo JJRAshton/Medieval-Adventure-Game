@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 
-inputs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'../..resources/inputs'))
+inputs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'../../resources/inputs'))
 
 char_in_dir = os.path.abspath(f'{inputs_dir}/characters.csv')
 player_in_dir = os.path.abspath(f'{inputs_dir}/players.csv')
@@ -44,7 +44,7 @@ def make_character_stat_table(map_number_str):
     # construct dataframes of characters in this game - reference these tables to initialise things
     character_table = pd.DataFrame()
     for character in set(monster_list + npc_list):
-        character_table = pd.concat([character_table, char_df[character]])
+        character_table = pd.concat([character_table, char_df])
 
     return character_table
 

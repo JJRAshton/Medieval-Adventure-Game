@@ -28,7 +28,7 @@ def calcPathDist(coords1, coords2):
 
 
 class Back:
-	maps_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..resources/inputs/maps'))
+	maps_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../resources/inputs/maps'))
 
 	def __init__(self, mapLevel=1, nPlayers=1):
 		self.map = mapLevel
