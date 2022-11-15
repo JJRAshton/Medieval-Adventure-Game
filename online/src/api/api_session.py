@@ -1,6 +1,6 @@
 import json
 import websockets
-from src import backend as bk
+import backend as bk
 
 class APISession:
     """The main API, this should probably create a dnd game interacting with the backend?
