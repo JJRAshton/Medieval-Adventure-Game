@@ -52,8 +52,9 @@ async def addToLobby(websocket):
                     # All players should now have been added to the game, so removes them from the pool.
                     playerPool.clear()
             elif event["action"] == "leaveGame":
-                playerPool.remove(user)
-                broadcast(users_event())
+                if user in playerPool:
+                    playerPool.remove(user)
+                    broadcast(users_event())
             else:
                 print(f"unsupported event: {event}")
     finally:

@@ -32,7 +32,14 @@ export class Lobby extends Context {
         switch (event.responseType) {
             case "gameStart":
                 console.log("starting game");
-                contextHandler.context = new Game();
+                const mapStatus = event.mapStatus;
+                const playerID = event.playerID;
+                const characters = event.characters;
+                contextHandler.context = new Game(
+                    mapStatus.mapWidth,
+                    mapStatus.mapHeight,
+                    playerID,
+                    characters);
                 break;
             default:
         if (event.type === "users") {
