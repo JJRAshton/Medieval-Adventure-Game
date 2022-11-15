@@ -1,8 +1,9 @@
 import pickle as pkl
 import random as rd
 import pandas as pd
+import os
 
-import entities as ent
+from . import entities as ent
 
 
 # Gets the in game distance between two coords for attacks
@@ -27,7 +28,7 @@ def calcPathDist(coords1, coords2):
 
 
 class Back:
-	maps_dir = '.././resources/inputs/maps'
+	maps_dir = os.path.dirname(__file__) + '/../../../resources/inputs/maps'
 
 	def __init__(self, mapLevel=1, nPlayers=1):
 		self.map = mapLevel
@@ -122,7 +123,7 @@ class Back:
 			self.items.append(item)
 			itemIDNum += 1
 
-		rand_index = rd.randint(1, len(self.spawn[character_type]))
+		rand_index = rd.randint(1, len(self.spawn[character_type])-1)
 		spawn_coords = self.spawn[character_type].pop(rand_index)
 
 		character.coords = spawn_coords

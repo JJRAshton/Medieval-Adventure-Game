@@ -1,10 +1,10 @@
-from .front_back_interaction_functions import Requester
+from . import processing as pr
 
 
-class BackRequests:
+class Requests:
 
 	def __init__(self):
-		self.functions = Requester()
+		self.functions = pr.Track()
 
 	# Requests to move an entity with ID 'globalID' to a given coords.
 	# Returns true if the request is carried out and false if not.

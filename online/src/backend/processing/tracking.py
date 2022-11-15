@@ -1,6 +1,7 @@
-from .back import Back
-from .turns import Time
 import random as rd
+
+from . import turns as tn
+from . import back as bk
 
 
 # Converts an ID number to the index of its category's list
@@ -20,7 +21,7 @@ def id_to_local(globalID):
 
 
 # Function comments are in back_requests
-class Requester:
+class Track:
 
 	def __init__(self):
 		self.map = 0
@@ -88,8 +89,8 @@ class Requester:
 	# Generates the map
 	def requestMapStart(self, mapNumber, n_players):
 		self.map = mapNumber
-		self.chart = Back(self.map, n_players)
-		self.time = Time(self.chart)
+		self.chart = bk.Back(self.map, n_players)
+		self.time = tn.Time(self.chart)
 
 	# Starts the turns
 	def requestTimeStart(self):

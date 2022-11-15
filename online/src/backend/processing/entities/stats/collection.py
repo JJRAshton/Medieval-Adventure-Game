@@ -1,4 +1,5 @@
 from .tables import Tables
+
 import random as rd
 
 
@@ -23,6 +24,9 @@ def convertDiceEx(dice):
 
 
 def convertList(str):
+    while ' ' in str:
+        index = str.index(' ')
+        str = str[:index] + str[index + 1:]
     list = []
     while ',' in str:
         c_index = str.index(',')
@@ -92,22 +96,25 @@ class Stats:
         charDict = self.getCharacterDict(characterName)
         
         size = charDict['Size']
-        if charDict['Weapon'] != '':
+        if not isinstance(charDict['Weapon'], float):
             character.primaryWeapon = charDict['Weapon']
-        if charDict['Base Damage'] != '':
+        if not isinstance(charDict['Base Damage'], float):
             character.baseDamage = convertDice(charDict['Base Damage'])
-        if charDict['Armour'] != '':
+        if not isinstance(charDict['Armour'], float):
             character.armour = charDict['Armour']
-        if charDict['Base Armour'] != '':
+        if not isinstance(charDict['Base Armour'], float):
             character.baseArmour = charDict['Base Armour']
 
-        number, dice, bonus = convertDiceEx(charDict['Health'])
-        base = 0
-        for _ in range(number):
-            base += rd.randint(1, dice)
-        character.baseHealth = base + bonus
+        if 'd' in charDict['Health']:
+            number, dice, bonus = convertDiceEx(charDict['Health'])
+            base = 0
+            for _ in range(number):
+                base += rd.randint(1, dice)
+            character.baseHealth = base + bonus
+        else:
+            character.baseHealth = int(charDict['Health'])
 
-        if charDict['Inventory'] != '':
+        if not isinstance(charDict['Inventory'], float):
             character.inventory = convertList(charDict['Inventory'])
 
         character.profBonus = int(charDict['Proficiency Bonus'])

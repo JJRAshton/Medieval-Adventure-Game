@@ -1,6 +1,6 @@
 import json
 import websockets
-from backend.back_requests import BackRequests
+from src import backend as bk
 
 class APISession:
     """The main API, this should probably create a dnd game interacting with the backend?
@@ -9,7 +9,7 @@ class APISession:
         self.playerPool = playerPool # This is a set of api.users.User
         for player in playerPool:
             player.session = self
-        self.backend = BackRequests()
+        self.backend = bk.Requests()
         # This should create a DnD session in the backend, 
 
     # Called by the backend, sends a json message
