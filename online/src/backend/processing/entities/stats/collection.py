@@ -14,11 +14,15 @@ def convertDice(dice):
 
 def convertDiceEx(dice):
     dIndex = dice.index('d')
-    plusIndex = dice.index('+')
-
     nDice = int(dice[:dIndex])
-    sDice = int(dice[dIndex + 1:plusIndex-1])
-    bonus = int(dice[plusIndex + 2:])
+    if '+' in dice:
+        plusIndex = dice.index('+')
+
+        sDice = int(dice[dIndex + 1:plusIndex-1])
+        bonus = int(dice[plusIndex + 2:])
+    else:
+        sDice = int(dice[dIndex + 1:])
+        bonus = 0
 
     return nDice, sDice, bonus
 
