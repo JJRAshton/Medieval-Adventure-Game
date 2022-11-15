@@ -117,6 +117,7 @@ class Stats:
         if not isinstance(charDict['Inventory'], float):
             character.inventory = convertList(charDict['Inventory'])
 
+        character.attacksTotal = int(charDict['Attacks'])
         character.profBonus = int(charDict['Proficiency Bonus'])
         character.maxMovement = int(charDict['Speed'])
         character.drop_rate = int(charDict['Drop Rate'])
