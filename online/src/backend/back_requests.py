@@ -1,10 +1,10 @@
-from backend.front_back_interaction_functions import Requester
+from . import processing as pr
 
 
-class BackRequests:
+class Requests:
 
 	def __init__(self):
-		self.functions = Requester()
+		self.functions = pr.Track()
 
 	# Requests to move an entity with ID 'globalID' to a given coords.
 	# Returns true if the request is carried out and false if not.
@@ -30,15 +30,18 @@ class BackRequests:
 		return completed
 	
 	# Requests the generation of the given map
-	def startRequest(self, mapNumber, playerNumber):
+	def startRequest(self, map_number, player_quantity):
 
-		self.functions.requestMapStart(mapNumber, playerNumber)
+		self.functions.requestMapStart(map_number, player_quantity)
 
 		return self.functions.returnPlayers()
 
 	# Requests the coords of characters with their IDs
-	def locationRequest(self):
+	def locationsRequest(self):
 
 		return self.functions.giveCharLoc()
 
-	# Requesting the creation of a new player has been removed - they are returned upon the creation of the map
+	# Requests for info about a character
+	def infoRequest(self, globalID):
+
+		return self.functions.getInfo(globalID)

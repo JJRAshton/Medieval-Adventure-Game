@@ -1,5 +1,6 @@
-from . import objects as obj
 import random as rd
+
+from . import objects as obj
 
 
 class Character(obj.Entity):
@@ -44,6 +45,7 @@ class Character(obj.Entity):
         self.inventory = []
 
         self.baseDamage = (0, 0)
+        self.baseReach = 5
 
         self.damage = (0, 0, 0)
         self.atkMod = 0

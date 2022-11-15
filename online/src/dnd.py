@@ -27,8 +27,8 @@ def value_event():
     return json.dumps({"type": "value", "value": UUID_TRACKER})
 
 async def addToLobby(websocket):
-    # Eww a global variable, would be nice to get rid of this
     global UUID_TRACKER
+    print("new connection")
     try:
         # Wrap the websocket in a User
         user = User(websocket, UUID_TRACKER)
@@ -52,8 +52,9 @@ async def addToLobby(websocket):
                     # All players should now have been added to the game, so removes them from the pool.
                     playerPool.clear()
             elif event["action"] == "leaveGame":
-                playerPool.remove(user)
-                broadcast(users_event())
+                if user in playerPool:
+                    playerPool.remove(user)
+                    broadcast(users_event())
             else:
                 print(f"unsupported event: {event}")
     finally:

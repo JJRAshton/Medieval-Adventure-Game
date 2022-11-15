@@ -1,6 +1,6 @@
 import json
 import websockets
-from backend.back_requests import BackRequests
+from src import backend as bk
 
 
 class APISession:
