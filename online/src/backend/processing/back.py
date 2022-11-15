@@ -123,7 +123,7 @@ class Back:
 			self.items.append(item)
 			itemIDNum += 1
 
-		rand_index = rd.randint(1, len(self.spawn[character_type])-1)
+		rand_index = rd.randint(0, len(self.spawn[character_type])-1)
 		spawn_coords = self.spawn[character_type].pop(rand_index)
 
 		character.coords = spawn_coords

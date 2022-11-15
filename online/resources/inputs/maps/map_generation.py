@@ -1,4 +1,6 @@
 import pickle as pkl
+import csv
+import os
 
 
 class MapGen:
@@ -32,6 +34,15 @@ class MapGen:
 					self.spawn[entity].append(coords)
 
 	def save(self, number):
+
+		if not os.path.exists(f'./map{number}'):
+			os.mkdir(f'./map{number}')
+			open(f'map{number}/entities.csv', 'x')
+
+			file = open(f'map{number}/entities.csv', 'w')
+			csv_writer = csv.writer(file)
+			csv_writer.writerow(['Monsters','NPCs'])
+			file.close()
 
 		file_name = {
 			'Terrain': f'map{number}/terrain.pkl',
