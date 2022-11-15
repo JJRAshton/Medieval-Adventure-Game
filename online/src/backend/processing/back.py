@@ -64,10 +64,10 @@ class Back:
 		self.terrainGrid = pkl.load(open(f'{map_dir}/terrain.pkl', 'rb'))
 		self.size = (len(self.terrainGrid), len(self.terrainGrid[0]))
 
-		self.characterGrid = [[None for _ in range(size[1])] for _ in range(size[0])]
-		self.itemGrid = [[None for _ in range(size[1])] for _ in range(size[0])]
+		self.characterGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
+		self.itemGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
 
-		self.objectGrid = [[None for _ in range(size[1])] for _ in range(size[0])]
+		self.objectGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
 		objectList = pkl.load(open(f'{map_dir}/objects.pkl', 'rb'))
 		for object_info in objectList:
 			name, coords = object_info
