@@ -27,8 +27,8 @@ def value_event():
     return json.dumps({"type": "value", "value": UUID_TRACKER})
 
 async def addToLobby(websocket):
-    # Eww a global variable, would be nice to get rid of this
     global UUID_TRACKER
+    print("new connection")
     try:
         # Wrap the websocket in a User
         user = User(websocket, UUID_TRACKER)
