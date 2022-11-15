@@ -55,8 +55,12 @@ def make_player_stat_table():
     return player_table
 
 def make_weapon_stat_table():
-    # read combat setup
-    weapon_table = pd.read_csv(f'{inputs_dir}/weapons.csv', keep_default_na=False, index_col='Name')
+    weapon_types = ['axes', 'bludgeons', 'bows', 'crossbows', 'greatswords', 'spears', 'special', 'swords', 'gunpowder']
+
+    weapon_table = pd.DataFrame()
+    for weapon_type in weapon_types:
+        weapon_type_table = pd.read_csv(f'{inputs_dir}/weapons/{weapon_type}.csv', keep_default_na=False, index_col='Name')
+        weapon_table = pd.concat([weapon_table, weapon_type_table])
 
     return weapon_table
 

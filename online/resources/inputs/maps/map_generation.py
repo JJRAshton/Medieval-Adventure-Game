@@ -41,7 +41,7 @@ class MapGen:
 
 			file = open(f'map{number}/entities.csv', 'w')
 			csv_writer = csv.writer(file)
-			csv_writer.writerow(['Monsters','NPCs'])
+			csv_writer.writerow(['Monsters', 'NPCs'])
 			file.close()
 
 		file_name = {
