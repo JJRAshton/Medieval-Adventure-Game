@@ -55,7 +55,7 @@ def make_player_stat_table():
     return player_table
 
 def make_weapon_stat_table():
-    weapon_types = ['axes', 'bludgeons', 'bows', 'crossbows', 'greatswords', 'spears', 'special', 'swords', 'gunpowder']
+    weapon_types = ['axes', 'bludgeons', 'bows', 'crossbows', 'special', 'gunpowder']
 
     weapon_table = pd.DataFrame()
     for weapon_type in weapon_types:

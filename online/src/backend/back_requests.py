@@ -30,9 +30,9 @@ class Requests:
 		return completed
 	
 	# Requests the generation of the given map
-	def startRequest(self, map_number, player_quantity):
+	def startRequest(self, player_quantity, map_number=1):
 
-		self.functions.requestMapStart(map_number, player_quantity)
+		self.functions.requestMapStart(player_quantity, map_number)
 
 		return self.functions.returnPlayers(), self.functions.map_size
 

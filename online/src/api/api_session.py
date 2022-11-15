@@ -1,6 +1,6 @@
 import json
 import websockets
-import backend as bk
+from backend.back_requests import Requests
 
 
 class APISession:
@@ -10,9 +10,23 @@ class APISession:
         self.playerPool = playerPool # This is a set of api.users.User
         for player in playerPool:
             player.session = self
-        self.backend = BackRequests()
+        self.backend = Requests()
         self.translator = PythonToJSONTranslator()
-        # This should create a DnD session in the backend, 
+
+        # Starting the DnD encounter:
+        character_info_list, size = self.backend.startRequest(len(playerPool), 1)
+        mapWidth, mapHeight = size
+        if len(character_info_list) != len(playerPool):
+            raise ValueError("Wrong number of players created on games start")
+        for character_info, user in zip(character_info_list, playerPool):
+            websockets.broadcast(
+                user.socket,
+                self.translator.translate({
+                    "responseType": "gameStart",
+                    "mapStatust": {"mapWidth": mapWidth, "mapHeight": mapHeight},
+                    "playerID": character_info[0],
+                    "players": "players"
+                }))
 
     # Called by the backend, sends a json message
     def broadcast(self, message):
@@ -61,10 +75,8 @@ class APISession:
 
 
 class PythonToJSONTranslator:
-    def __init__(self):
-        raise NotImplementedError
 
-    def __init__(self, jsonDictionary):
+    def translate(self, jsonDictionary):
         return json.dumps(jsonDictionary)
  
     def map_to_json(self, loc):
@@ -74,4 +86,5 @@ class PythonToJSONTranslator:
             coords=info[1]
             x,y = coords
             dictionary[f'ID{id_number}']=[str(x), str(y)]
+        return dictionary
 

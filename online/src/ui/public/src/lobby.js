@@ -23,7 +23,7 @@ export class Lobby extends Context {
                     { this.leaveGameButon }
                 </div>
                 <div className="state">
-                    <span className="users">{this.inLobby}</span> online
+                    <span className="users">{this.inLobby} online, {this.ready} players are ready</span>
                 </div>
             </div>);
     }
@@ -44,6 +44,7 @@ export class Lobby extends Context {
             default:
         if (event.type === "users") {
             this.inLobby = event.inLobby;
+            this.ready = event.ready;
         }
         }
         if (event.responseType === "gameStart") {

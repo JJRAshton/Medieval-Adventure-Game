@@ -51,7 +51,6 @@ class MapGen:
 			'Monster Spawn': f'map{number}/monster_spawn.pkl',
 			'Player Spawn': f'map{number}/player_spawn.pkl'
 		}
-
 		pkl.dump(self.spawn['Player'], open(file_name['Player Spawn'], 'wb'))
 		pkl.dump(self.mapGrid, open(file_name['Terrain'], 'wb'))
 		pkl.dump(self.spawn['Monster'], open(file_name['Monster Spawn'], 'wb'))
