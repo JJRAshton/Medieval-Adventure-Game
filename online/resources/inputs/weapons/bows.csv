@@ -1,1 +1,5 @@
 ﻿Name,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Reach,Loading
+recurve_bow,50,1d6,,,,,,,,,
+sling,40,1d4,,,,,,,,,
+shortbow,40,1d6,,,,,,,,,
+longbow,100,1d8,,,,,,,,,

@@ -25,6 +25,7 @@ class Track:
 
 	def __init__(self):
 		self.map = 0
+		self.map_size = (0, 0)
 
 		self.chart = None
 		self.time = None
@@ -87,10 +88,11 @@ class Track:
 			return False
 
 	# Generates the map
-	def requestMapStart(self, mapNumber, n_players):
+	def requestMapStart(self, n_players, mapNumber=1):
 		self.map = mapNumber
 		self.chart = bk.Back(self.map, n_players)
 		self.time = tn.Time(self.chart)
+		self.map_size = self.chart.size
 
 	# Starts the turns
 	def requestTimeStart(self):

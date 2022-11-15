@@ -34,7 +34,7 @@ class Requests:
 
 		self.functions.requestMapStart(map_number, player_quantity)
 
-		return self.functions.returnPlayers()
+		return self.functions.returnPlayers(), self.functions.map_size
 
 	# Requests the coords of characters with their IDs
 	def locationsRequest(self):

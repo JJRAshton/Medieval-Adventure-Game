@@ -1,1 +1,8 @@
 ﻿Name,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Reach,Loading
+blunderbuss,20,3d4,,,,,,,,,
+pistol,30,1d8,,,,,,,,,
+hand_cannon,30,2d6,,,,,,,,,
+arquebus,40,1d10,,,,,,,,,
+musketoon,50,1d10,,,,,,,,,
+musket,80,1d12,,,,,,,,,
+wall_gun,100,1d14,,,,,,,,,

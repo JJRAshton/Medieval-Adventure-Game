@@ -33,6 +33,7 @@ class Back:
 	def __init__(self, mapLevel=1, nPlayers=1):
 		self.map = mapLevel
 		self.player_n = nPlayers
+		self.size = (0, 0)
 
 		self.terrainGrid = []
 
@@ -61,7 +62,7 @@ class Back:
 		map_dir = f'{Back.maps_dir}/map{self.map}'
 
 		self.terrainGrid = pkl.load(open(f'{map_dir}/terrain.pkl', 'rb'))
-		size = (len(self.terrainGrid), len(self.terrainGrid[0]))
+		self.size = (len(self.terrainGrid), len(self.terrainGrid[0]))
 
 		self.characterGrid = [[None for _ in range(size[1])] for _ in range(size[0])]
 		self.itemGrid = [[None for _ in range(size[1])] for _ in range(size[0])]

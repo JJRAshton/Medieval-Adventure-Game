@@ -1,1 +1,12 @@
 ﻿Name,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Reach,Loading
+greatclub,5,1d8,,,,,,,,,
+quarterstaff,5,1d8,,,,,,,,,
+flanged_mace,5,1d8,,,,,,,,,
+maul,5,2d6,,,,,,,,,
+warhammer,5,2d4,,,,,,,,,
+hammer,5,1d4,,,,,,,,,
+club,5,1d4,,,,,,,,,
+mace,5,1d6,,,,,,,,,
+bec_de_corbin,10,2d4,,,,,,,,,
+flail,5,1d8,,,,,,,,,
+whip,10,1d4,,,,,,,,,
