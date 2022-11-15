@@ -2,6 +2,7 @@ import json
 import websockets
 from backend.back_requests import BackRequests
 
+
 class APISession:
     """The main API, this should probably create a dnd game interacting with the backend?
     Joe needs to decide how he wants this to be done """
@@ -10,6 +11,7 @@ class APISession:
         for player in playerPool:
             player.session = self
         self.backend = BackRequests()
+        self.translator = PythonToJSONTranslator()
         # This should create a DnD session in the backend, 
 
     # Called by the backend, sends a json message
@@ -51,12 +53,12 @@ class APISession:
             })
             user.socket.send(output)
 
-class JSONToPythonTranslator:
-    def __init__(self):
-        raise NotImplementedError
+        if jsonEvent["event"] == "mapRequest":
+            map=self.backend.locationsRequest()
+            output = self.translator.map_to_json(map)
+            user.socket.send(output)
 
-    def translate(json):
-        raise NotImplementedError
+
 
 class PythonToJSONTranslator:
     def __init__(self):
@@ -64,3 +66,12 @@ class PythonToJSONTranslator:
 
     def __init__(self, jsonDictionary):
         return json.dumps(jsonDictionary)
+ 
+    def map_to_json(self, loc):
+        dictionary={}
+        for info in loc:
+            id_number=info[0]
+            coords=info[1]
+            x,y = coords
+            dictionary[f'ID{id_number}']=[str(x), str(y)]
+
