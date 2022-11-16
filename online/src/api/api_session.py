@@ -20,10 +20,10 @@ class APISession:
             raise ValueError("Wrong number of players created on games start")
         for character_info, user in zip(character_info_list, playerPool):
             websockets.broadcast(
-                user.socket,
+                {user.socket},
                 self.translator.translate({
                     "responseType": "gameStart",
-                    "mapStatust": {"mapWidth": mapWidth, "mapHeight": mapHeight},
+                    "mapStatus": {"mapWidth": mapWidth, "mapHeight": mapHeight},
                     "playerID": character_info[0],
                     "players": "players"
                 }))

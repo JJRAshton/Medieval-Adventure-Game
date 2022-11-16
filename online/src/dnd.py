@@ -21,10 +21,10 @@ def broadcast(event):
     websockets.broadcast({user.socket for user in currentUsers}, event)
 
 def users_event():
-    return json.dumps({"type": "users", "inLobby": len(currentUsers), "ready": len(playerPool)})
+    return json.dumps({"responseType": "users", "inLobby": len(currentUsers), "ready": len(playerPool)})
 
 def value_event():
-    return json.dumps({"type": "value", "value": UUID_TRACKER})
+    return json.dumps({"responseType": "value", "value": UUID_TRACKER})
 
 async def addToLobby(websocket):
     global UUID_TRACKER
@@ -47,7 +47,7 @@ async def addToLobby(websocket):
             if event["action"] == "joinGame":
                 playerPool.add(user)
                 broadcast(users_event())
-                if len(playerPool) > 2:
+                if len(playerPool) > 0:
                     APISession(playerPool)
                     # All players should now have been added to the game, so removes them from the pool.
                     playerPool.clear()
