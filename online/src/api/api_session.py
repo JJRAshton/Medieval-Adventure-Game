@@ -25,7 +25,7 @@ class APISession:
                     "responseType": "gameStart",
                     "mapStatus": {"mapWidth": mapWidth, "mapHeight": mapHeight},
                     "playerID": character_info[0],
-                    "players": "players"
+                    "characters": "characters"
                 }))
 
     # Called by the backend, sends a json message

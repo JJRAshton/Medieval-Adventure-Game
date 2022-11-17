@@ -59,6 +59,8 @@ async def addToLobby(websocket):
                 print(f"unsupported event: {event}")
     finally:
         # Unregister user
+        if user in playerPool:
+            playerPool.remove(user)
         currentUsers.remove(user)
         websockets.broadcast({user.socket for user in currentUsers}, users_event())
 

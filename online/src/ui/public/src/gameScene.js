@@ -17,6 +17,7 @@ export class Game extends Context {
     }
 
     render(reactRoot) {
+        this.drawCanvas();
         reactRoot.render(
         <div>
             <h2>
@@ -25,6 +26,10 @@ export class Game extends Context {
             { this.canvas }
         </div>
         );
+    }
+
+    drawCanvas() {
+        
     }
 
     handleEvent(contextHandler, socket) {
