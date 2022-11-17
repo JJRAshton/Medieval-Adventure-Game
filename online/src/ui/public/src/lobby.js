@@ -36,6 +36,7 @@ export class Lobby extends Context {
                 const playerID = event.playerID;
                 const characters = event.characters;
                 contextHandler.context = new Game(
+                    this.socket,
                     mapStatus.mapWidth,
                     mapStatus.mapHeight,
                     playerID,
