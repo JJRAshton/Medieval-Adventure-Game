@@ -16,7 +16,15 @@ class Entity:
         self.baseHealth = 0
         self.health = 0
 
-        self.armourClass = 0
+        self.vulnerabilities = []
+        self.resistances = []
+
+        self.armour = {
+            'pierce': 0,
+            'slash': 0,
+            'bludgeon': 0
+        }
+        self.evasion = 0
 
         self.is_alive = True
         
@@ -35,23 +43,10 @@ class Entity:
         self.size = self.baseSize
     
     # Checks if entity is still alive
-    def checkHealth(self):
+    def checkAlive(self):
         if self.health <= 0:
             self.is_alive = False
             self.health = 0
-            
-    # Damages the entity
-    def takeDamage(self, damage):
-        (number, dice, bonus) = damage
-        base = 0
-        for _ in range(number):
-            base += rd.randint(1, dice)
-        appliedDamage = base + bonus
-        self.health -= appliedDamage
-        
-        self.checkHealth()
-        
-        return appliedDamage
 
 
 class Object(Entity):
@@ -62,6 +57,40 @@ class Object(Entity):
 
     def getStats(self):
         Entity.entityStats.getObjectStats(self)
+
+    # Damages the entity
+    def takeDamage(self, damage, bonus, dmg_type, heavy_hit = False, critical=False):
+        (number, dice) = damage
+        base = 0
+        for _ in range(number):
+            base += rd.randint(1, dice)
+
+        if dmg_type in self.vulnerabilities:
+            appliedDamage = 2*(base + bonus)
+        elif dmg_type in self.resistances:
+            appliedDamage = int(0.5*(base + bonus))
+        else:
+            appliedDamage = base + bonus
+
+        armour = 0
+        if not critical:
+            if dmg_type in self.armour:
+                armour = self.armour[dmg_type]
+        if heavy_hit:
+            if dmg_type == 'pierce':
+                armour *= 0.5
+            elif dmg_type == 'slash':
+                appliedDamage *= 1.2
+
+        appliedDamage -= armour
+
+        if appliedDamage > 0:
+            self.health -= appliedDamage
+            self.checkHealth()
+        else:
+            appliedDamage = 0
+
+        return appliedDamage
 
 
 class Item(Entity):
@@ -75,18 +104,21 @@ class Weapon(Item):
         super().__init__(weaponName)
         self.damage = (0, 0)
         self.reach = 5
+        self.dmg_type = ''
+        self.type = ''
         
         self.is_ranged = False
         
         self.is_loading = False
+        self.is_twoHanded = False
         self.is_arrows = False
         self.is_bolts = False
         self.is_light = False
         self.is_heavy = False
-        self.is_versatile = False
         self.is_finesse = False
         
         self.getStats()
+        self.avdmg = self.damage[0] * (self.damage[1] + 1) / 2
     
     # Collects entity base stats
     def getStats(self):  # yet to get from jamie
@@ -97,7 +129,7 @@ class Armour(Item):
     def __init__(self, armourName):
         super().__init__(armourName)
         self.type = ''
-        self.armourValue = 0
+        self.value = 0
         
         self.getStats()
     

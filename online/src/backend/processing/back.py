@@ -41,6 +41,8 @@ class Back:
 		self.objectGrid = []
 		self.itemGrid = []
 
+		self.spawn = {}
+
 		self.characters = []
 		self.objects = []
 		self.items = []
@@ -111,14 +113,16 @@ class Back:
 		if character.reach > self.maxReach:
 			self.maxReach = character.reach
 
-		if character.primaryWeapon is not None:
-			character.primaryWeapon.id = itemIDNum
-			self.items.append(character.primaryWeapon)
-			itemIDNum += 1
-		if character.armour is not None:
-			character.armour.id = itemIDNum
-			self.items.append(character.armour)
-			itemIDNum += 1
+		for hand in character.equippedWeapons:
+			if character.equippedWeapons[hand] is not None:
+				character.equippedWeapons[hand].id = itemIDNum
+				self.items.append(character.equippedWeapons[hand])
+				itemIDNum += 1
+		for armour_type in character.equippedArmour:
+			if character.equippedArmour[armour_type] is not None:
+				character.equippedArmour[armour_type].id = itemIDNum
+				self.items.append(character.equippedArmour[armour_type])
+				itemIDNum += 1
 		for item in character.inventory:
 			item.id = itemIDNum
 			self.items.append(item)
@@ -184,8 +188,8 @@ class Back:
 
 	# Drops the characters weapon
 	def dropWeapon(self, character):
-		weapon = character.primaryWeapon
-		character.primaryWeapon = None
+		weapon = character.equippedWeapons
+		character.equippedWeapons = None
 
 		weapon.coords = character.coords
 		self.itemGrid[weapon.coords[0]][weapon.coords[1]] = weapon
@@ -194,8 +198,8 @@ class Back:
 
 	# Drops the characters armour
 	def dropArmour(self, character):
-		armour = character.armour
-		character.armour = None
+		armour = character.equippedArmour
+		character.equippedArmour = None
 
 		armour.coords = character.coords
 		self.itemGrid[armour.coords[0]][armour.coords[1]] = armour

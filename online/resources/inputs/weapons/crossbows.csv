@@ -1,4 +1,4 @@
-﻿Name,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Reach,Loading
-heavy_crossbow,80,1d10,,,,,,,,,
-light_crossbow,50,1d8,,,,,,,,,
-repeating_crossbow,50,1d8,,,,,,,,,
+﻿Name,Tier,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Loading
+light_crossbow,2,50,1d12,,,y,y,,y,,y
+repeating_crossbow,3,50,1d10,,,y,y,,y,y,
+heavy_crossbow,4,60,1d20,,,y,y,,y,y,y

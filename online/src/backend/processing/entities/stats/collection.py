@@ -1,6 +1,19 @@
+import random as rd
+import pandas as pd
+
 from .tables import Tables
 
-import random as rd
+
+# Order of stats for classes
+class_stat_order = {
+    'Beserker': ['STR', 'CON', 'DEX', 'WIT'],
+    'Gladiator': ['CON', 'DEX', 'STR', 'WIT'],
+    'Ranger': ['STR', 'WIT', 'DEX', 'CON'],
+    'Knight': ['CON', 'STR', 'WIT', 'DEX'],
+    'Archer': ['DEX', 'STR', 'WIT', 'CON'],
+    'Professor': ['WIT', 'DEX', 'CON', 'STR'],
+    'Samurai': ['DEX', 'WIT', 'STR', 'CON']
+}
 
 
 def convertDice(dice):
@@ -63,11 +76,6 @@ class Stats:
         armourDict = self.tables.get_armour_stats_dict(armourName)
         return armourDict
 
-    # Returns a dictionary of stats for the given player
-    def getPlayerDict(self, number):
-        playerDict = self.tables.get_player_stats_dict(number)
-        return playerDict
-
     # Adds the stats to the given weapon
     def getWeaponStats(self, weapon):   # Doesn't collect all data
         wepDict = self.getWeaponDict(weapon.name)
@@ -86,7 +94,7 @@ class Stats:
     def getObjectStats(self, i_object):
         objDict = self.getArmourDict(i_object.name)
 
-        i_object.armourClass = int(objDict['AC'])
+        i_object.armour = int(objDict['AC'])
         i_object.baseHealth = int(objDict['Health'])
 
         is_inv = bool(objDict['Inventory'])
@@ -101,11 +109,11 @@ class Stats:
         
         size = charDict['Size']
         if not isinstance(charDict['Weapon'], float):
-            character.primaryWeapon = charDict['Weapon']
+            character.equippedWeapons = charDict['Weapon']
         if not isinstance(charDict['Base Damage'], float):
             character.baseDamage = convertDice(charDict['Base Damage'])
         if not isinstance(charDict['Armour'], float):
-            character.armour = charDict['Armour']
+            character.equippedArmour = charDict['Armour']
         if not isinstance(charDict['Base Armour'], float):
             character.baseArmour = charDict['Base Armour']
 
@@ -122,16 +130,14 @@ class Stats:
             character.inventory = convertList(charDict['Inventory'])
 
         character.attacksTotal = int(charDict['Attacks'])
-        character.profBonus = int(charDict['Proficiency Bonus'])
-        character.maxMovement = int(charDict['Speed'])
+        character.hitProf = int(charDict['Proficiency Bonus'])
+        character.baseMovement = int(charDict['Speed'])
         character.drop_rate = int(charDict['Drop Rate'])
         
         character.baseStat['STR'] = int(charDict['STR'])
         character.baseStat['DEX'] = int(charDict['DEX'])
         character.baseStat['CON'] = int(charDict['CON'])
-        character.baseStat['INT'] = int(charDict['INT'])
-        character.baseStat['WIS'] = int(charDict['WIS'])
-        character.baseStat['CHA'] = int(charDict['CHA'])
+        character.baseStat['WIT'] = int(charDict['WIT'])
         
         if size == 'small':
             character.baseSize = 5
@@ -143,33 +149,40 @@ class Stats:
             character.baseSize = 15
 
     # Adds the stats to the given player
-    def getPlayerStats(self, player):   # Doesn't collect all data
-        statNumber = str(rd.randint(1, 10))
-        statNumber = 1
-        charDict = self.getPlayerDict(statNumber)   # Needs to pick random stat
-        
-        size = charDict['Size']
-        player.primaryWeapon = charDict['Weapon']
-        player.armour = charDict['Armour']
-        player.type = charDict['Class']
+    def getPlayerStats(self, player):
+        x, n, top = 5, 8, 40  # roll 8, take best 5 - max of 40
+        stat_rolls = []
 
-        player.lvl = int(charDict['Level'])
-        player.maxMovement = int(charDict['Speed'])
-        
-        player.baseStat['STR'] = int(charDict['STR'])
-        player.baseStat['DEX'] = int(charDict['DEX'])
-        player.baseStat['CON'] = int(charDict['CON'])
-        player.baseStat['INT'] = int(charDict['INT'])
-        player.baseStat['WIS'] = int(charDict['WIS'])
-        player.baseStat['CHA'] = int(charDict['CHA'])
+        for _ in range(4):  # Number of stats to assign
+            one_stat_roll = []
+            for _ in range(n):  # Rolls n dice
+                roll = rd.randint(1, int(top/x))
+                one_stat_roll.append(roll)
 
-        
-        if size == 'small':
-            player.baseSize = 5
-        elif size == 'medium':
-            player.baseSize = 5
-        elif size == 'large':
-            player.baseSize = 10
-        elif size == 'huge':
-            player.baseSize = 15
+            for _ in range(n-x):  # Get rid of the lowest values
+                one_stat_roll.pop(one_stat_roll.index(min(one_stat_roll)))
+
+            stat_rolls.append(sum(one_stat_roll))
+        stat_rolls.sort(reverse=True)
+
+        for stat in class_stat_order[player.type]:
+            player.baseStat[stat] = stat_rolls.pop(0)
+
+        df = self.tables.weapons
+        wep_option_df = pd.DataFrame()
+        for wep_type in player.class_weapons[player.type]:
+            wepData = df[(df.Type == wep_type) & (df.Tier == 0)]
+            wep_option_df = pd.concat([wep_option_df, wepData])
+
+        choices = wep_option_df.index.tolist()
+        player.equippedWeapons['Right'] = rd.choice(choices)
+
+        if player.type in ['Knight', 'Samurai']:
+            player.equippedArmour['Light'] = 'Leather'
+
+        class_dict = self.tables.get_class_stats_dict(player.type)
+        player.baseMovement = int(class_dict['Base Movement'])
+        player.baseEvasion = int(class_dict['Base Evasion'])
+        player.baseArmour = int(class_dict['Base Armour'])
+        player.healthIncrement = int(class_dict['Health Increment'])
     

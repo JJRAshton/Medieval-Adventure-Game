@@ -28,13 +28,13 @@ class Time:
                 if not character.is_alive:
                     continue
 
-                character.initialiseTurn()
-
                 if character.behaviour_type == 1:
                     self.playerTurn(character)
 
                 if character.behaviour_type == 2:
                     self.npcTurn(character)
+
+                character.initialiseTurn()
 
             self.checkCombat()
 

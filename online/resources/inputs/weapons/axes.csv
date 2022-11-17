@@ -1,7 +1,5 @@
-﻿Name,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Reach,Loading
-greataxe,5,1d12,,,,,,,,,
-handaxe,5,1d6,,,,,,,,,
-battleaxe,5,1d8,,,,,,,,,
-bardiche,10,1d10,,,,,,,,,
-halberd,10,1d10,,,,,,,,,
-pollaxe,5,1d10,,,,,,,,,
+﻿Name,Tier,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Loading
+handaxe,1,5,2d3,,y,,,,,,
+battleaxe,2,5,2d8,,,,y,,,,
+bardiche,3,10,2d10,,,,y,,,y,
+greataxe,4,5,2d14,,,,y,,,y,
