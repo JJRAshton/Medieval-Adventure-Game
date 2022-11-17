@@ -1,5 +1,5 @@
 import { Context } from "./context";
-import { React } from "react";
+import React from "react";
 
 const TILE_WIDTH = 32;
 
@@ -7,6 +7,7 @@ export class Game extends Context {
 
     constructor(socket, mapWidth, mapHeight, playerID, characters) {
         super(socket, "game");
+        console.log(mapWidth, mapHeight, playerID, characters);
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.playerID = playerID;

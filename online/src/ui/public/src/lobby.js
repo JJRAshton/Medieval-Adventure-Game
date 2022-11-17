@@ -41,22 +41,15 @@ export class Lobby extends Context {
                     playerID,
                     characters);
                 break;
+            case "users":
+                this.inLobby = event.inLobby;
+                this.ready = event.ready;
+                break;
             default:
-        if (event.type === "users") {
-            this.inLobby = event.inLobby;
-            this.ready = event.ready;
         }
-        }
-        if (event.responseType === "gameStart") {
-            console.log("starting game");
-            contextHandler.context = new Game();
-        }
-        console.log("message received " + event);
-        return this;
     }
 
     transmit(eventType) {
-        console.log(eventType);
         this.socket.send(JSON.stringify({ action: eventType }));
     }
     
