@@ -47,7 +47,7 @@ async def addToLobby(websocket):
             if event["action"] == "joinGame":
                 playerPool.add(user)
                 broadcast(users_event())
-                if len(playerPool) > 0:
+                if len(playerPool) > 1:
                     APISession(playerPool)
                     # All players should now have been added to the game, so removes them from the pool.
                     playerPool.clear()
