@@ -89,7 +89,9 @@ class Stats:
         arDict = self.getArmourDict(armour.name)
 
         armour.type = arDict['Type']
-        armour.armourValue = int(arDict['Value'])
+        armour.value = int(arDict['Value'])
+        armour.restriction = int(arDict['Dex Penalty'])
+        armour.weight = int(arDict['Movement Penalty'])
 
     def getObjectStats(self, i_object):
         objDict = self.getArmourDict(i_object.name)

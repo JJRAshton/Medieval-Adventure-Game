@@ -47,7 +47,6 @@ class Character(obj.Entity):
 
         self.equippedArmour = {
             'Light': None,
-            'Medium': None,
             'Heavy': None
         }
 
@@ -62,7 +61,7 @@ class Character(obj.Entity):
         self.reach = 0
         
         self.is_conscious = True
-        self.is_stable = False
+        self.is_stable = True
         self.savingThrows = (0, 0)
         self.drop_rate = 0
         
@@ -206,6 +205,7 @@ class Character(obj.Entity):
                 self.is_alive = False
             else:
                 self.is_conscious = False
+                self.is_stable = False
             self.health = 0
             
     # Heals the entity
@@ -233,26 +233,28 @@ class Character(obj.Entity):
             self.armour[dmg_type] = self.baseArmour
         self.maxMovement = self.baseMovement
         self.evasion = self.baseEvasion
+        self.stat['DEX'] = self.baseStat['DEX']
 
         for i, armour_type in enumerate(self.equippedArmour):
             eq_armour = self.equippedArmour[armour_type]
             if eq_armour is None:
                 continue
             if i == 0:
-                self.evasion -= 1
-                for dmg_type in self.armour:
-                    self.armour[dmg_type] += eq_armour.value
+                self.stat['DEX'] -= eq_armour.restriction
+                self.armour['slash'] += eq_armour.value
+                self.armour['pierce'] += eq_armour.value
+                self.armour['bludgeon'] += eq_armour.value
             elif i == 1:
-                self.evasion -= 3
+                self.stat['DEX'] -= eq_armour.restriction
+                self.evasion -= eq_armour.restriction
+                self.maxMovement -= eq_armour.weight
                 self.armour['slash'] += eq_armour.value
-                self.armour['pierce'] += 0.3*eq_armour.value
-                self.armour['bludgeon'] += 0.1*eq_armour.value
-            elif i == 2:
-                self.evasion -= 6
-                self.maxMovement -= 10
-                self.armour['slash'] += eq_armour.value
-                self.armour['pierce'] += 0.9*eq_armour.value
-                self.armour['bludgeon'] += 0.15*eq_armour.value
+                self.armour['pierce'] += 0.8*eq_armour.value
+                self.armour['bludgeon'] += 0.2*eq_armour.value
+
+        self.armour['slash'] = int(self.armour['slash'])
+        self.armour['pierce'] = int(self.armour['pierce'])
+        self.armour['bludgeon'] = int(self.armour['bludgeon'])
         
     # Recalculates the entity damage and reach
     def refreshWeaponStat(self):
@@ -262,12 +264,15 @@ class Character(obj.Entity):
             if eq_weapon is None:
                 self.dmgMod[hand] = self.mod['STR']
                 continue
-            if eq_weapon.reach > self.reach:
-                self.reach = eq_weapon.reach
-            if eq_weapon.is_finesse:
-                self.dmgMod[hand] = max(self.mod['STR'], self.mod['DEX'])
+            if not eq_weapon.is_ranged:
+                if eq_weapon.reach > self.reach:
+                    self.reach = eq_weapon.reach
+                if eq_weapon.is_finesse:
+                    self.dmgMod[hand] = max(self.mod['STR'], self.mod['DEX'])
+                else:
+                    self.dmgMod[hand] = self.mod['STR']
             else:
-                self.dmgMod[hand] = self.mod['STR']
+                self.dmgMod[hand] = self.mod['DEX']
 
     # Makes a saving throw
     def makeSavingThrow(self):
@@ -294,7 +299,7 @@ class Character(obj.Entity):
             dies = True
             
         if saved:
-            self.health = 1
+            self.health = 10
             self.is_stable = True
             output = 'Saved'
         if dies:

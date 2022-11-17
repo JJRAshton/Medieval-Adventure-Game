@@ -1,3 +1,12 @@
-﻿Name,Type,Value
-chainmail,heavy,16
-hide,light,11
+﻿Name,Type,Value,Movement Penalty,Dex Penalty
+hide,light,1,0,0
+boiled_leather,light,2,0,1
+lamellar,light,4,0,3
+gambeson,light,5,0,2
+cuirass,heavy,5,5,2
+ring,heavy,6,5,3
+scale,heavy,6,5,3
+laminar,heavy,7,5,2
+maille,heavy,8,10,3
+splint,heavy,8,10,3
+plate,heavy,14,15,5

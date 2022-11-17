@@ -1,7 +1,7 @@
-﻿Name,Tier,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Loading
-bec_de_corbin,4,10,2d8,,,,y,,,y,
-voulge,3,10,2d6,,,,y,,,y,
-halberd,4,10,2d8,,,,y,,,y,
-pollaxe,3,10,2d6,,,,y,,,y,
-cavalry_morningstar,2,5,2d4,,,,,,,,
-infantry_morningstar,3,10,2d6,,,,y,,,y,
+﻿Name,Tier,Range,Damage,Two-handed,Heavy,Protection,Defense Type,Devastating
+bec_de_corbin,4,10,2d8,y,y,3,sword,
+voulge,3,10,2d6,y,y,4,sword,
+halberd,4,10,2d8,y,y,5,sword,y
+pollaxe,3,10,2d6,y,y,4,sword,
+cavalry_morningstar,2,5,2d4,,,,,
+infantry_morningstar,3,10,2d6,y,y,2,sword,y

@@ -1,5 +1,5 @@
-﻿Name,Tier,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Loading
-handaxe,1,5,2d3,,y,,,,,,
-battleaxe,2,5,2d8,,,,y,,,,
-bardiche,3,10,2d10,,,,y,,,y,
-greataxe,4,5,2d14,,,,y,,,y,
+﻿Name,Tier,Range,Damage,Light,Two-handed,Heavy,Devastating
+handaxe,1,5,2d3,y,,,
+battleaxe,2,5,2d8,,y,,
+bardiche,3,10,2d10,,y,y,
+greataxe,4,5,2d14,,y,y,y
