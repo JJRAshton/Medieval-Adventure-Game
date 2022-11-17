@@ -135,13 +135,14 @@ dmypy.json
 *.pkl
 */*.pkl
 */*/*.pkl
+*.xml
 .DS_Store
 */.DS_Store
 online/.DS_Store
 **/.DS_Store
 **/.Test_map12.pkl.icloud
 
-# Molly's python (try if you dare)
+# Molly's python (molly smells)
 **/__pycache__
 .vscode/settings.json
 **/node_modules/*

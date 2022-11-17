@@ -1,0 +1,8 @@
+﻿Name,Tier,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Loading
+dagger,0,5,1d4,,y,,,,,,
+shortsword,1,5,1d7,,y,,,,,,
+arming_sword,2,5,2d5,,,,,,,,
+longsword,3,5,2d8,,,,y,,,,
+claymore,2,5,3d4,,,,y,,,y,
+greatsword,3,5,3d6,,,,y,,,y,
+zweihander,4,5,3d8,,,,y,,,y,

@@ -1,0 +1,7 @@
+﻿Name,Tier,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Loading
+bec_de_corbin,4,10,2d8,,,,y,,,y,
+voulge,3,10,2d6,,,,y,,,y,
+halberd,4,10,2d8,,,,y,,,y,
+pollaxe,3,10,2d6,,,,y,,,y,
+cavalry_morningstar,2,5,2d4,,,,,,,,
+infantry_morningstar,3,10,2d6,,,,y,,,y,

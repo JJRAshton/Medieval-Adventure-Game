@@ -1,0 +1,45 @@
+axes
+slashing and heavy slashing with a quarter bludgeoning damage
+
+bludgeons
+bludgeoning damage
+
+bows
+piercing damage
+
+crossbows
+piercing damage
+
+double edged swords
+slashing damage and heavy slashing, also provides some bonus evasion against melee attacks
+
+hybrids
+weapons with more than one damage type
+
+mythical
+weapons with varying magical damage types
+
+pierces
+pierce and heavy pierce damage
+
+single edged swords
+slashing, also provides some bonus evasion against melee attacks
+
+slashes
+slashing and heavy slashing
+
+special
+creature related weapons
+
+staves
+supply powerful ranged spells
+
+throwables
+weapons that can be thrown
+
+wands
+less powerful ranged spells
+
+
+
+

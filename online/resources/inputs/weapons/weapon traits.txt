@@ -1,0 +1,27 @@
+heavy
+limited number can be held in the inventory
+
+pierce
+average damage
+good for getting through some armour
+
+slash
+high damage
+mittigated by most armour
+
+bludgeon
+low damage
+largely ignores armour
+
+heavy pierce
+average damage
+high chance to get through all armour
+
+heavy slash
+very high damage
+mittigated by most armour
+
+heavy bludgeon
+average damage
+largely ignores armour
+opponent looses an action

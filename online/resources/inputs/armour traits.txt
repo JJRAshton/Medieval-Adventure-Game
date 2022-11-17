@@ -1,0 +1,24 @@
+heavy
+limited number can be held in the inventory
+
+size
+a size for each character size can be found
+need matching size to wear
+can wear larger size but less effective
+
+types
+three types can be found and worn at the same time
+light armour up to gambeson
+medium up to a set of mail
+heavy up to plate with helm
+
+light
+doesnt restrict movement and slightly decreases all damage types
+
+medium
+doesnt restrict movement and decreases slashing damage
+
+heavy
+somewhat restricts movement and heavily decreases slashing and pierce damage
+
+NB - critical hit will ignore armour damage decreases
