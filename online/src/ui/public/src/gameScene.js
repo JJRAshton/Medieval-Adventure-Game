@@ -8,7 +8,6 @@ export class Game extends Context {
 
     constructor(socket, mapWidth, mapHeight, playerID, characters) {
         super(socket, "game");
-        console.log(mapWidth, mapHeight, playerID, characters);
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.playerID = playerID;
@@ -16,7 +15,8 @@ export class Game extends Context {
         this.characters = characters;
         this.canvas = <Canvas 
             draw={(ctx) => {this.drawCanvas(ctx)}}
-            resize={(canvas) => {this.resize(canvas)}}></Canvas>
+            resize={(canvas) => {this.resize(canvas)}}
+            handleClick={this.handleClick}></Canvas>
         // this.canvas = <canvas ref="canvas" width={mapWidth * TILE_WIDTH} height={mapHeight * TILE_WIDTH}></canvas>
     }
 
@@ -29,6 +29,7 @@ export class Game extends Context {
             { this.canvas }
         </div>
         );
+        this.canvas.getBoundingClientRect
     }
 
     drawCanvas(ctx) {
@@ -42,6 +43,12 @@ export class Game extends Context {
     
         ctx.fillStyle = 'red';
         ctx.fill()
+    }
+
+    handleClick(x, y) {
+        //console.log(event.pageX, event.pageY);
+        console.log(x, y);
+        //console.log(this.canvas.getBoundingClientRect());
     }
 
     resize(canvas) {

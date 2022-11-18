@@ -2,12 +2,17 @@ import React, { useRef, useEffect } from 'react'
 
 const Canvas = props => {
   
-  const { draw, resize, ...rest } = props;
+  const { draw, resize, handleClick, ...rest } = props;
   const canvasRef = useRef(null);
-  
   useEffect(() => {
     
     const canvas = canvasRef.current;
+    canvas.addEventListener("click", (event) => {
+        handleClick(
+            event.pageX - canvas.offsetLeft - canvas.clientLeft, 
+            event.pageY - canvas.offsetTop - canvas.clientTop
+            );
+    }, false);
     resize(canvas);
     const context = canvas.getContext('2d');
     let animationFrameId;
