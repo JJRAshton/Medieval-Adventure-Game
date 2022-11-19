@@ -103,6 +103,7 @@ class Weapon(Item):
     def __init__(self, weaponName):
         super().__init__(weaponName)
         self.type = ''
+        self.range = 0
 
         self.attacks = []
 

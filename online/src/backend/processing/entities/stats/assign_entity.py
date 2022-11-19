@@ -88,6 +88,7 @@ class EntityStats:
         wepDict = self.getWeaponDict(weapon.name)
 
         weapon.type = wepDict['Type']
+        weapon.range = int(wepDict['Range'])
 
         if wepDict['Ranged']:
             weapon.is_ranged = True
