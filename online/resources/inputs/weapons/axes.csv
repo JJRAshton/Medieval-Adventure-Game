@@ -1,4 +1,5 @@
 ﻿Name,Tier,Range,Damage,Light,Two-handed,Heavy,Devastating
+hatchet,0,5,1d4,y,,,
 handaxe,1,5,2d3,y,,,
 battleaxe,2,5,2d8,,y,,
 bardiche,3,10,2d10,,y,y,

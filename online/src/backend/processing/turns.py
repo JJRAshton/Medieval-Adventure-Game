@@ -61,12 +61,12 @@ class Time:
 
     # Gets a player to make their turn
     def playerTurn(self, character):
-        if not character.is_conscious:
+        if not character.is_conscious and not character.is_stable:
             outcome = character.makeSavingThrow()
         pass
 
     # Gets an NPC to make their turn
     def npcTurn(self, character):
-        if not character.is_conscious:
+        if not character.is_conscious and not character.is_stable:
             outcome = character.makeSavingThrow()
         pass

@@ -21,7 +21,7 @@ def id_to_local(globalID):
 
 
 # Function comments are in back_requests
-class Track:
+class Hub:
 
 	def __init__(self):
 		self.map = 0

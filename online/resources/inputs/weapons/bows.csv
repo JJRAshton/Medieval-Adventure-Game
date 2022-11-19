@@ -1,4 +1,4 @@
 ﻿Name,Tier,Range,Damage,Ranged,Two-handed,Arrows,Heavy,Devastating
-shortbow,2,40,2d4,y,y,y,,
-recurve_bow,3,50,2d6,y,y,y,y,
+shortbow,1,40,2d4,y,y,y,,
+recurve_bow,2,50,2d6,y,y,y,y,
 longbow,4,80,2d8,y,y,y,y,y

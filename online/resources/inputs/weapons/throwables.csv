@@ -1,10 +1,3 @@
-﻿Name,Range,Damage,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Heavy,Loading
-javelin,5,1d6,,,,,,,,
-morningstar,5,1d10,,,,,,,,
-pike,15,1d10,,,,,,,,
-spear,5,1d6,,,,,,,,
-trident,5,1d8,,,,,,,,
-war_pick,5,1d8,,,,,,,,
-partisan,10,1d10,,,,,,,,
-sai,5,1d6,,,,,,,,
-rapier,5,1d8,,,,,,,,
+﻿Name,Tier,Range,Damage,Light,Throwable
+javelin,2,30,3d6,,y
+kunai,1,20,1d6,y,y

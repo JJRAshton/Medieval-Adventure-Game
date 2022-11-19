@@ -1,5 +1,7 @@
 ﻿Name,Tier,Range,Damage,Finesse,Light,Two-handed,Heavy
+sharp_stick,0,5,1d4,,,y,
 sai,1,5,1d6,y,y,,
+fork,1,5,2d4,,,y,
 trident,2,5,3d3,y,,,
 spear,2,5,1d10,,,y,
 partisan,3,10,1d12,,,y,y

@@ -1,10 +1,10 @@
 import random as rd
 
-from .stats import Stats
+from .stats import EntityStats
 
 
 class Entity:
-    entityStats = Stats()
+    entityStats = EntityStats()
 
     def __init__(self, entityName):
         self.name = entityName
@@ -20,9 +20,9 @@ class Entity:
         self.resistances = []
 
         self.armour = {
-            'pierce': 0,
-            'slash': 0,
-            'bludgeon': 0
+            'piercing': 0,
+            'slashing': 0,
+            'bludgeoning': 0
         }
         self.evasion = 0
 
@@ -59,7 +59,7 @@ class Object(Entity):
         Entity.entityStats.getObjectStats(self)
 
     # Damages the entity
-    def takeDamage(self, damage, bonus, dmg_type, heavy_hit = False, critical=False):
+    def takeDamage(self, damage, bonus, dmg_type, heavy_hit=False, critical=False):
         (number, dice) = damage
         base = 0
         for _ in range(number):
@@ -86,7 +86,7 @@ class Object(Entity):
 
         if appliedDamage > 0:
             self.health -= appliedDamage
-            self.checkHealth()
+            self.checkAlive()
         else:
             appliedDamage = 0
 
@@ -102,13 +102,14 @@ class Item(Entity):
 class Weapon(Item):
     def __init__(self, weaponName):
         super().__init__(weaponName)
-        self.damage = (0, 0)
-        self.reach = 5
-        self.dmg_type = ''
         self.type = ''
+
+        self.attacks = []
+
+        self.protection = 0
+        self.defense_type = ''
         
         self.is_ranged = False
-        
         self.is_loading = False
         self.is_twoHanded = False
         self.is_arrows = False
@@ -118,7 +119,6 @@ class Weapon(Item):
         self.is_finesse = False
         
         self.getStats()
-        self.avdmg = self.damage[0] * (self.damage[1] + 1) / 2
     
     # Collects entity base stats
     def getStats(self):  # yet to get from jamie

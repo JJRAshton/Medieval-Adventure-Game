@@ -1,7 +1,7 @@
 import random as rd
 import pandas as pd
 
-from .tables import Tables
+from .make_dataframes import EntityTables
 
 
 # Order of stats for classes
@@ -15,6 +15,20 @@ class_stat_order = {
     'Samurai': ['DEX', 'WIT', 'STR', 'CON']
 }
 
+# Different armour levels for characters
+armour_levels = {
+    '1': ['hide', 'leather'],
+    '2': ['hide', 'leather', 'lamellar', 'gambeson'],
+    '3': {
+        'Light': ['leather', 'lamellar', 'gambeson'],
+        'Heavy':  ['cuirass', 'ring', 'scale', 'laminar', 'maille']
+    },
+    '4': {
+        'Light': ['lamellar', 'gambeson'],
+        'Heavy':  ['maille', 'splint', 'plate']
+    }
+}
+
 
 def convertDice(dice):
     dIndex = dice.index('d')
@@ -25,19 +39,13 @@ def convertDice(dice):
     return nDice, sDice
 
 
-def convertDiceEx(dice):
-    dIndex = dice.index('d')
-    nDice = int(dice[:dIndex])
-    if '+' in dice:
-        plusIndex = dice.index('+')
+def rollStat(number, dice, bonus):
+    base = 0
+    for _ in range(number):
+        base += rd.randint(1, dice)
+    stat = base + bonus
 
-        sDice = int(dice[dIndex + 1:plusIndex-1])
-        bonus = int(dice[plusIndex + 2:])
-    else:
-        sDice = int(dice[dIndex + 1:])
-        bonus = 0
-
-    return nDice, sDice, bonus
+    return stat
 
 
 def convertList(str):
@@ -55,11 +63,10 @@ def convertList(str):
     return list
 
 
-
-class Stats:
+class EntityStats:
     
     def __init__(self):
-        self.tables = Tables(1)
+        self.tables = EntityTables(1)
 
     # Returns a dictionary of stats for the given weapon
     def getWeaponDict(self, weaponName):
@@ -79,11 +86,29 @@ class Stats:
     # Adds the stats to the given weapon
     def getWeaponStats(self, weapon):   # Doesn't collect all data
         wepDict = self.getWeaponDict(weapon.name)
-        
-        damageStr = wepDict['Damage']
-        
-        weapon.reach = int(wepDict['Range'])
-        weapon.damage = convertDice(damageStr)
+
+        weapon.type = wepDict['Type']
+
+        if wepDict['Ranged']:
+            weapon.is_ranged = True
+        if wepDict['Loading']:
+            weapon.is_loading = True
+        if wepDict['Two Handed']:
+            weapon.is_twoHanded = True
+        if wepDict['Arrows']:
+            weapon.is_arrows = True
+        if wepDict['Bolts']:
+            weapon.is_bolts = True
+        if wepDict['Light']:
+            weapon.is_light = True
+        if wepDict['Heavy']:
+            weapon.is_heavy = True
+        if wepDict['Finesse']:
+            weapon.is_finesse = True
+
+        if wepDict['Protection']:
+            weapon.protection = wepDict['Protection']
+            weapon.defense_type = wepDict['Defense Type']
 
     def getArmourStats(self, armour):
         arDict = self.getArmourDict(armour.name)
@@ -96,7 +121,9 @@ class Stats:
     def getObjectStats(self, i_object):
         objDict = self.getArmourDict(i_object.name)
 
-        i_object.armour = int(objDict['AC'])
+        i_object.armour['pierce'] = int(objDict['AC'])
+        i_object.armour['slash'] = int(objDict['AC'])
+        i_object.armour['bludgeon'] = int(objDict['AC'])
         i_object.baseHealth = int(objDict['Health'])
 
         is_inv = bool(objDict['Inventory'])
@@ -110,29 +137,34 @@ class Stats:
         charDict = self.getCharacterDict(characterName)
         
         size = charDict['Size']
-        if not isinstance(charDict['Weapon'], float):
-            character.equippedWeapons = charDict['Weapon']
-        if not isinstance(charDict['Base Damage'], float):
+
+        if charDict['Base Damage']:
             character.baseDamage = convertDice(charDict['Base Damage'])
-        if not isinstance(charDict['Armour'], float):
-            character.equippedArmour = charDict['Armour']
-        if not isinstance(charDict['Base Armour'], float):
+        if charDict['Base Armour']:
             character.baseArmour = charDict['Base Armour']
-
-        if 'd' in charDict['Health']:
-            number, dice, bonus = convertDiceEx(charDict['Health'])
-            base = 0
-            for _ in range(number):
-                base += rd.randint(1, dice)
-            character.baseHealth = base + bonus
-        else:
-            character.baseHealth = int(charDict['Health'])
-
-        if not isinstance(charDict['Inventory'], float):
+        if charDict['Inventory']:
             character.inventory = convertList(charDict['Inventory'])
 
-        character.attacksTotal = int(charDict['Attacks'])
-        character.hitProf = int(charDict['Proficiency Bonus'])
+        if charDict['Armour Level']:
+            level = charDict['Armour Level']
+
+            if int(level) < 3:
+                for armour_type in armour_levels[level]:
+                    armour_list = armour_levels[level][armour_type]
+                    character.armour[armour_type] = rd.choice(armour_list)
+            else:
+                armour_list = armour_levels[level]
+                character.armour['Light'] = rd.choice(armour_list)
+
+        if charDict['Vulnerabilities']:
+            vulnerabilities = convertList(charDict['Vulnerabilities'])
+            character.vulnerabilities += vulnerabilities
+        if charDict['Resistances']:
+            resistances = convertList(charDict['Resistances'])
+            character.resistances += resistances
+
+        character.actionsTotal = int(charDict['Actions'])
+        character.hitProf = int(charDict['Experience'])
         character.baseMovement = int(charDict['Speed'])
         character.drop_rate = int(charDict['Drop Rate'])
         
@@ -141,14 +173,17 @@ class Stats:
         character.baseStat['CON'] = int(charDict['CON'])
         character.baseStat['WIT'] = int(charDict['WIT'])
         
-        if size == 'small':
-            character.baseSize = 5
-        elif size == 'medium':
-            character.baseSize = 5
-        elif size == 'large':
+        character.baseHealth = rollStat(character.hitProf, character.baseStat['CON'], character.baseStat['CON'])
+        if size == 'large':
             character.baseSize = 10
         elif size == 'huge':
             character.baseSize = 15
+        elif size == 'gargantuan':
+            character.baseSize = 20
+        else:
+            character.baseSize = 5
+
+        character.baseReach = character.baseSize
 
     # Adds the stats to the given player
     def getPlayerStats(self, player):

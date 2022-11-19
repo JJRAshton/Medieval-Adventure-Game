@@ -1,1 +1,1 @@
-from .collection import Stats
+from .assign_entity import EntityStats

@@ -25,11 +25,9 @@ class Character(obj.Entity):
         self.initiative = 0
 
         self.actionsTotal = 2
-        self.attacksTotal = 1
         self.reactionsTotal = 1
 
         self.actions = 2
-        self.attacks = 1
         self.reactions = 1
 
         self.movement = 0
@@ -42,7 +40,8 @@ class Character(obj.Entity):
 
         self.equippedWeapons = {
             'Left': None,
-            'Right': None
+            'Right': None,
+            'Both': None
         }
 
         self.equippedArmour = {
@@ -91,13 +90,12 @@ class Character(obj.Entity):
         self.movement = self.maxMovement
 
         self.actions = self.actionsTotal
-        self.attacks = self.attacksTotal
         self.reactions = self.reactionsTotal
 
     # Calculates the initiative roll
     def calcInitiative(self):
-        init_roll = rd.randint(1, 20)
-        self.initiative = init_roll + self.mod['DEX']
+        init_roll = rd.randint(1, self.stat['DEX'])
+        self.initiative = init_roll
 
     # Makes an attack roll returning whether it 0:miss, 1:hit, 2:critical hit
     def hitRoll(self, hitBonus, opponent_evasion):

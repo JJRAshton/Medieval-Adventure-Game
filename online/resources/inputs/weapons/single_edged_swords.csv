@@ -1,5 +1,5 @@
 ﻿Name,Range,Damage,Finesse,Light,Two-handed,Heavy,Protection,Defense Type,Devastating
-knife,5,1d2,y,y,,,,,
+knife,5,1d3,y,y,,,,,
 falchion,5,1d6,y,,,,,,
 scimitar,5,1d8,y,,,,2,sword,
 tanto,5,1d10,y,,y,,3,sword,
