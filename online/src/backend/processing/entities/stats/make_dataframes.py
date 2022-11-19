@@ -9,21 +9,8 @@ player_in_dir = f'{inputs_dir}/players.csv'
 weapon_in_dir = f'{inputs_dir}/weapons.csv'
 armour_in_dir = f'{inputs_dir}/armour.csv'
 
-weapon_type_dmg = {
-    'axes': 'slash',
-    'bludgeons': 'bludgeon',
-    'bows': 'pierce',
-    'crossbows': 'pierce',
-    'double_edged_swords': 'slash',
-    'mythical': 'magic',
-    'pierces': 'pierce',
-    'single_edged_swords': 'slash',
-    'slashes': 'slash',
-    'special': 'magic',
-    'staves': 'magic',
-    'throwables': 'pierce',
-    'wands': 'magic'
-}
+weapon_type_atk = ['axes', 'bludgeons', 'bows', 'crossbows', 'double_edged_swords', 'mythical',
+                   'pierces', 'single_edged_swords', 'slashes', 'special', 'staves', 'throwables', 'wands']
 
 
 def read_char_inputs():
@@ -68,13 +55,13 @@ def make_character_stat_table(map_number_str):
 def make_weapon_stat_table():
 
     weapon_table = pd.DataFrame()
-    for weapon_type in weapon_type_dmg:
+    for weapon_type in weapon_type_atk:
         weapon_type_table = pd.read_csv(f'{inputs_dir}/weapons/{weapon_type}.csv', keep_default_na=False, index_col='Name')
         types = [weapon_type for _ in range(weapon_type_table.shape[0])]
         weapon_type_table['Type'] = types
-        dmg_types = [weapon_type_dmg[weapon_type] for _ in range(weapon_type_table.shape[0])]
-        weapon_type_table['Damage Type'] = dmg_types
         weapon_table = pd.concat([weapon_table, weapon_type_table])
+
+        weapon_table = weapon_table.fillna('')
 
     return weapon_table
 
@@ -100,7 +87,7 @@ def make_object_stat_table():
     return armour_table
 
 
-class Tables:
+class EntityTables:
 
     def __init__(self, mapNumber):
         self.map = str(mapNumber)
@@ -133,5 +120,36 @@ class Tables:
     def get_armour_stats_dict(self, armour_name):
         # Make a dictionary of the stats for the entity
         gotten_stats = self.armour.loc[str(armour_name)].to_dict()
+        return gotten_stats
+
+
+def make_raw_attack_stat_table():
+
+    attack_table = pd.read_csv(f'{inputs_dir}/raw_attacks.csv', keep_default_na=False, index_col='Name')
+
+    return attack_table
+
+
+def make_weapon_attack_stat_table():
+
+    weapon_attack_table = pd.read_csv(f'{inputs_dir}/weapon_attacks.csv', keep_default_na=False, index_col='Name')
+
+    return weapon_attack_table
+
+
+class AttackTables:
+
+    def __init__(self):
+        self.weapon_attacks = make_weapon_attack_stat_table()
+        self.raw_attacks = make_raw_attack_stat_table()
+
+    def get_weapon_attack_stats_dict(self, attack_name):
+        # Make a dictionary of the stats for the attack
+        gotten_stats = self.weapon_attacks.loc[str(attack_name)].to_dict()
+        return gotten_stats
+
+    def get_raw_attack_stats_dict(self, attack_name):
+        # Make a dictionary of the stats for the attack
+        gotten_stats = self.raw_attacks.loc[str(attack_name)].to_dict()
         return gotten_stats
 

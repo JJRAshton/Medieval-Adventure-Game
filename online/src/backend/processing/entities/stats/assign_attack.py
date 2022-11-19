@@ -1,42 +1,8 @@
 import random as rd
 import pandas as pd
 
-from .assign_entity import convertList, convertDice, rollStat
+from .assign_entity import convertList
 from .make_dataframes import AttackTables
-
-
-weapon_type_wep_atk = {
-    'axes': 'hack',
-    'bludgeons': ['bludgeon'],
-    'bows': ['arrow'],
-    'crossbows': ['bolt'],
-    'double_edged_swords': ['cut', 'thrust'],
-    'mythical': 'magic',
-    'pierces': 'pierce',
-    'single_edged_swords': 'slash',
-    'slashes': 'slash',
-    'special': 'magic',
-    'staves': 'magic',
-    'throwables': 'pierce',
-    'wands': 'magic'
-}
-
-
-weapon_type_raw_atk = {
-    'axes': 'hack',
-    'bludgeons': ['bludgeon'],
-    'bows': ['arrow'],
-    'crossbows': ['bolt'],
-    'double_edged_swords': ['cut', 'thrust', ''],
-    'mythical': 'magic',
-    'pierces': 'pierce',
-    'single_edged_swords': 'slash',
-    'slashes': 'slash',
-    'special': 'magic',
-    'staves': 'magic',
-    'throwables': 'pierce',
-    'wands': 'magic'
-}
 
 
 class AttackStats:
@@ -66,3 +32,4 @@ class AttackStats:
 
         attack.type = atkDict['Type']
         attack.value = int(atkDict['Value'])
+        
