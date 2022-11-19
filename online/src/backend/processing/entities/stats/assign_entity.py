@@ -93,7 +93,7 @@ class EntityStats:
             weapon.is_ranged = True
         if wepDict['Loading']:
             weapon.is_loading = True
-        if wepDict['Two Handed']:
+        if wepDict['Two-handed']:
             weapon.is_twoHanded = True
         if wepDict['Arrows']:
             weapon.is_arrows = True
