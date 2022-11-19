@@ -263,8 +263,8 @@ class Character(obj.Entity):
                 self.dmgMod[hand] = self.mod['STR']
                 continue
             if not eq_weapon.is_ranged:
-                if eq_weapon.reach > self.reach:
-                    self.reach = eq_weapon.reach
+                if eq_weapon.range > self.reach:
+                    self.reach = eq_weapon.range
                 if eq_weapon.is_finesse:
                     self.dmgMod[hand] = max(self.mod['STR'], self.mod['DEX'])
                 else:
