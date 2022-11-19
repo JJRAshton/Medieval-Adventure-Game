@@ -1,6 +1,7 @@
 from sortedcontainers import SortedList
 from ai.ai_manager import AIManager
 
+
 class Time:
 
     def __init__(self, given_back):
