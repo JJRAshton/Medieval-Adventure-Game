@@ -239,20 +239,20 @@ class Character(obj.Entity):
                 continue
             if i == 0:
                 self.stat['DEX'] -= eq_armour.restriction
-                self.armour['slash'] += eq_armour.value
-                self.armour['pierce'] += eq_armour.value
-                self.armour['bludgeon'] += eq_armour.value
+                self.armour['slashing'] += eq_armour.value
+                self.armour['piercing'] += eq_armour.value
+                self.armour['bludgeoning'] += eq_armour.value
             elif i == 1:
                 self.stat['DEX'] -= eq_armour.restriction
                 self.evasion -= eq_armour.restriction
                 self.maxMovement -= eq_armour.weight
-                self.armour['slash'] += eq_armour.value
-                self.armour['pierce'] += 0.8*eq_armour.value
-                self.armour['bludgeon'] += 0.2*eq_armour.value
+                self.armour['slashing'] += eq_armour.value
+                self.armour['piercing'] += 0.8*eq_armour.value
+                self.armour['bludgeoning'] += 0.2*eq_armour.value
 
-        self.armour['slash'] = int(self.armour['slash'])
-        self.armour['pierce'] = int(self.armour['pierce'])
-        self.armour['bludgeon'] = int(self.armour['bludgeon'])
+        self.armour['slashing'] = int(self.armour['slashing'])
+        self.armour['piercing'] = int(self.armour['piercing'])
+        self.armour['bludgeoning'] = int(self.armour['bludgeoning'])
         
     # Recalculates the entity damage and reach
     def refreshWeaponStat(self):
