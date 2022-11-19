@@ -1,10 +1,11 @@
 from sortedcontainers import SortedList
-
+from ai.ai_manager import AIManager
 
 class Time:
 
     def __init__(self, given_back):
         self.back = given_back
+        self.ai_manager = AIManager(self.back)
         self.initOrder = SortedList()
 
         self.is_combat = True
@@ -69,4 +70,5 @@ class Time:
     def npcTurn(self, character):
         if not character.is_conscious and not character.is_stable:
             outcome = character.makeSavingThrow()
-        pass
+        self.ai_manager.takeTurn(character.id)
+
