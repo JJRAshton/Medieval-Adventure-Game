@@ -25,7 +25,9 @@ export default class Movement {
         const currentLocation = this.moveStack[this.moveStack.length - 1];
         if (Math.abs(x - currentLocation[0]) <= 1 && Math.abs(y - currentLocation[1]) <= 1 ) {
             if (!this.contains(x, y)) { // .includes doesn't work, I think its checking each element
-                this.moveStack.push([x, y])
+                if (Math.abs(mouseX - (x + 1 / 2) * tileWidth) + Math.abs(mouseY - (y + 1 / 2) * tileWidth) < tileWidth / 2) {
+                    this.moveStack.push([x, y]);
+                }
             }
         }
 
@@ -33,14 +35,16 @@ export default class Movement {
 
     contains(x, y) {
         // Javascript was written deliberately to make this difficult
-        console.log(this.moveStack);
         for (let i = this.moveStack.length - 1; i > -1; i--) {
             var move = this.moveStack[i];
-            console.log(move);
             if (move[0] === x && move[1] === y) {
                 return true;
             }
         }
         return false;
+    }
+
+    getMoveRequest(playerID) {
+        return {event: "moveRequest", playerID, route: this.moveStack};
     }
 }

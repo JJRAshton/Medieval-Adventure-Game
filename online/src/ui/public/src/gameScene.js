@@ -32,7 +32,6 @@ export class Game extends Context {
         const characterSet = new Set();
         for (var i = 0; i < characters.length; i++) {
             const character = characters[i];
-            console.log(character[1, 1])
             characterSet.add(new Character(character[0], character[1][0], character[1][1]))
         }
         return characterSet
@@ -121,7 +120,7 @@ export class Game extends Context {
                     ctx.fillRect(this.mouseX - TILE_WIDTH / 2, this.mouseY - TILE_WIDTH / 2, TILE_WIDTH - 6, TILE_WIDTH - 6);
                 }
                 else {
-                    ctx.fillRect((character.x * TILE_WIDTH) + 3, (character.y * TILE_WIDTH) + 3, TILE_WIDTH - 6, TILE_WIDTH - 6);
+                    ctx.fillRect((character.x * TILE_WIDTH) + 3, character.y * TILE_WIDTH + 3, TILE_WIDTH - 6, TILE_WIDTH - 6);
                 }
             }
             else {
@@ -141,6 +140,7 @@ export class Game extends Context {
     // Handling click events, passed in as a callback
     handleClick(clickX, clickY) {
         if (!(this.movement == null)) {
+            this.socket.send(JSON.stringify(this.movement.getMoveRequest(this.playerID)));
             this.movement = null;
         }
         else {
@@ -169,14 +169,19 @@ export class Game extends Context {
 
     // Processing events from server
     handleEvent(contextHandler, event) {
-        switch (event.type) {
-            case turnNotification:
+        switch (event.responseType) {
+            case "turnNotification":
                 // These will probably get sent when our turn starts or ends
                 this.takingTurn = event.onTurn;
                 if (!this.takingTurn) {
                     // Reset the planned movement if we're told it's not our turn
                     this.movement = null;
                 }
+                break;
+            case "mapUpdate":
+                event.characters.forEach(character => {
+                    
+                })
                 break;
             default:
         }
