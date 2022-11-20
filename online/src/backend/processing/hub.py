@@ -110,11 +110,10 @@ class Hub:
 
 	# Gives the locations of all characters
 	def giveCharLoc(self):
-		char_locs = []
+		char_locs = {}
 
 		for character in self.chart.characters:
-			char_info = (character.id, character.coords)
-			char_locs.append(char_info)
+			char_locs[character.id] = character.coords
 
 		return char_locs
 
