@@ -2,6 +2,7 @@ import { Context } from "./context";
 import React from "react";
 import Canvas from "./gameCanvas";
 import Character from "./character";
+import Movement from "./movement";
 
 const TILE_WIDTH = 64;
 
@@ -16,7 +17,7 @@ export class Game extends Context {
         this.characters = this.parseCharacters(characters);
         this.currentMessage = "Currently in a game with " + characters.length + " players";
         this.takingTurn = false; // Boolean value to record whether we're currently making a move
-        this.moving = false; // Boolean value to record whether we're a path is being traced out
+        this.movement = null; // Boolean value to record whether we're a path is being traced out
         this.mouseX, this.mouseY = 0, 0;
         this.canvas = <Canvas
             // Passing in the various call backs as props
@@ -88,12 +89,24 @@ export class Game extends Context {
     handleMouseMove(x, y) {
         this.mouseX = x;
         this.mouseY = y;
+        if (!(this.movement == null)) {
+            if (0 < this.mouseX && this.mouseX < this.mapWidth * TILE_WIDTH && 0 < this.mouseY && this.mouseY < this.mapHeight * TILE_WIDTH) {
+                this.movement.check(x, y, TILE_WIDTH);
+            }
+        }
     }
 
     // Drawing to the canvas, passed in as a callback
     drawCanvas(ctx) {
-        // Draw the grid
+
         ctx.clearRect(0, 0, this.mapWidth * TILE_WIDTH, this.mapHeight * TILE_WIDTH);
+
+        // Draw the move path if its not null
+        if (!(this.movement == null)) {
+            this.movement.draw(ctx, TILE_WIDTH);
+        }
+
+        // Draw the grid
         for (var i = 0; i < this.mapWidth; i++) {
             for (var j = 0; j < this.mapWidth; j++) {
                 ctx.strokeRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
@@ -104,7 +117,7 @@ export class Game extends Context {
         this.characters.forEach((character) => {
             if (character.id === this.playerID) {
                 ctx.fillStyle = 'blue';
-                if (this.moving) {
+                if (!(this.movement == null)) {
                     ctx.fillRect(this.mouseX - TILE_WIDTH / 2, this.mouseY - TILE_WIDTH / 2, TILE_WIDTH - 6, TILE_WIDTH - 6);
                 }
                 else {
@@ -127,16 +140,14 @@ export class Game extends Context {
 
     // Handling click events, passed in as a callback
     handleClick(clickX, clickY) {
-        console.log(clickX, clickY);
-        if (this.moving) {
-            this.moving = false;
+        if (!(this.movement == null)) {
+            this.movement = null;
         }
         else {
             const [playerX, playerY] = this.getPlayerLocation();
             if (playerX * TILE_WIDTH < clickX && clickX < (playerX + 1) * TILE_WIDTH
                     && playerY * TILE_WIDTH < clickY && clickY < (playerY + 1) * TILE_WIDTH) {
-                console.log("clicking player");
-                this.moving = true;
+                this.movement = new Movement(playerX, playerY);
             }
         }
     }
@@ -144,7 +155,6 @@ export class Game extends Context {
     getPlayerLocation() {
         for (const character of this.characters) {
             if (this.playerID === character.id) {
-                console.log("playerX: " + character.x + " playerY: " + character.y);
                 return [character.x, character.y];
             }
         }
@@ -163,6 +173,10 @@ export class Game extends Context {
             case turnNotification:
                 // These will probably get sent when our turn starts or ends
                 this.takingTurn = event.onTurn;
+                if (!this.takingTurn) {
+                    // Reset the planned movement if we're told it's not our turn
+                    this.movement = null;
+                }
                 break;
             default:
         }
