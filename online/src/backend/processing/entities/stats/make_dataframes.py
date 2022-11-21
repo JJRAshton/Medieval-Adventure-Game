@@ -42,12 +42,10 @@ def make_character_stat_table(map_number_str):
     monster_list = [x for x in df['Monsters'] if x != '']
     npc_list = [x for x in df['NPCs'] if x != '']
 
-    char_df = read_char_inputs()
+    all_char_df = read_char_inputs()
 
     # construct dataframes of characters in this game - reference these tables to initialise things
-    character_table = pd.DataFrame()
-    for character in set(monster_list + npc_list):
-        character_table = pd.concat([character_table, char_df])
+    character_table = all_char_df.loc[list(set(monster_list + npc_list))]
 
     character_table = character_table.fillna('')
 
@@ -101,27 +99,27 @@ class EntityTables:
 
     def get_weapon_stats_dict(self, weapon_name):
         # Make a dictionary of the stats for the entity
-        gotten_stats = self.weapons.loc[str(weapon_name)].to_dict()
+        gotten_stats = self.weapons.loc[weapon_name].to_dict()
         return gotten_stats
 
-    def get_class_stats_dict(self, weapon_name):
+    def get_class_stats_dict(self, class_name):
         # Make a dictionary of the stats for the entity
-        gotten_stats = self.classes.loc[str(weapon_name)].to_dict()
+        gotten_stats = self.classes.loc[class_name].to_dict()
         return gotten_stats
 
     def get_object_stats_dict(self, object_name):
         # Make a dictionary of the stats for the entity
-        gotten_stats = self.objects.loc[str(object_name)].to_dict()
+        gotten_stats = self.objects.loc[object_name].to_dict()
         return gotten_stats
 
     def get_character_stats_dict(self, character_name):
         # Make a dictionary of the stats for the entity
-        gotten_stats = self.characters.loc[str(character_name)].to_dict()
+        gotten_stats = self.characters.loc[character_name].to_dict()
         return gotten_stats
 
     def get_armour_stats_dict(self, armour_name):
         # Make a dictionary of the stats for the entity
-        gotten_stats = self.armour.loc[str(armour_name)].to_dict()
+        gotten_stats = self.armour.loc[armour_name].to_dict()
         return gotten_stats
 
 
