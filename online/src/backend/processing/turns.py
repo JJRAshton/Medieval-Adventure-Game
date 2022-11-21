@@ -4,7 +4,7 @@ from ai.ai_manager import AIManager
 
 class Time:
 
-    def __init__(self, given_back):
+    def __init__(self, given_back, turn_notifier):
         self.back = given_back
         self.ai_manager = AIManager(self.back)
         self.initOrder = SortedList()

@@ -1,6 +1,7 @@
 import json
 import websockets
 from backend import Requests
+from backend import TurnNotificationSubscription
 
 
 class APISession:
@@ -10,7 +11,10 @@ class APISession:
         self.playerPool = playerPool # This is a set of api.users.User
         for player in playerPool:
             player.session = self
-        self.backend = Requests()
+        
+        turnNotifier = TurnNotificationSubscription()
+
+        self.backend = Requests(turnNotifier)
         self.translator = PythonToJSONTranslator()
 
         # Starting the DnD encounter:
@@ -99,4 +103,3 @@ class PythonToJSONTranslator:
             x,y = coords
             dictionary[f'ID{id_number}']=[str(x), str(y)]
         return dictionary
-

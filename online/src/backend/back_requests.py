@@ -3,8 +3,8 @@ from . import processing as pr
 
 class Requests:
 
-	def __init__(self):
-		self.functions = pr.Hub()
+	def __init__(self, turn_notification_subscription):
+		self.functions = pr.Hub(turn_notification_subscription)
 
 	# Requests to move an entity with ID 'globalID' to a given coords.
 	# Returns true if the request is carried out and false if not.
