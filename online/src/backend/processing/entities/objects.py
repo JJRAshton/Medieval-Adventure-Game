@@ -92,15 +92,32 @@ class Object(Entity):
 
 
 class Item(Entity):
+    weapon_types = ['axes', 'bludgeons', 'bows', 'crossbows', 'double_edged_swords', 'mythical',
+                   'pierces', 'single_edged_swords', 'slashes', 'special', 'staves', 'throwables', 'wands']
+
     def __init__(self, itemName):
         super().__init__(itemName)
         self.is_carried = True
+        self.type = ''
+
+    # Checks if the item is a weapon
+    def is_Weapon(self):
+        if self.type in Item.weapon_types:
+            return True
+        else:
+            return False
+
+    # Checks if the item is armour
+    def is_Armour(self):
+        if self.type in ['Light', 'Heavy']:
+            return True
+        else:
+            return False
 
 
 class Weapon(Item):
     def __init__(self, weaponName):
         super().__init__(weaponName)
-        self.type = ''
         self.damage_dice = 0
         self.range = 0
 
@@ -116,7 +133,6 @@ class Weapon(Item):
         self.is_arrows = False
         self.is_bolts = False
         self.is_light = False
-        self.is_heavy = False
         self.is_finesse = False
         
         self.getStats()
