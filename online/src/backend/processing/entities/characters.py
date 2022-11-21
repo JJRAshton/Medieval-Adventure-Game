@@ -1,7 +1,8 @@
 import random as rd
 
 from . import objects as obj
-from .session_functions import rollDamage
+from .static_functions import rollDamage
+from . import attacks as at
 
 
 class Character(obj.Entity):
@@ -10,6 +11,7 @@ class Character(obj.Entity):
         self.baseEvasion = 0
         self.baseArmour = 0
         self.baseMovement = 0
+        self.base_attacks = []
 
         self.hitProf = 0
         self.hands = 2
@@ -67,16 +69,6 @@ class Character(obj.Entity):
         self.is_stable = True
         self.savingThrows = (0, 0)
         self.drop_rate = 0
-        
-        self.getStats()
-
-        self.resetStats()
-        self.resetHealth()
-
-        self.refreshStatAfterWeapon()
-        self.refreshStatAfterArmour()
-
-        self.calcInitiative()
 
     # Allows for sorting by initiative order in sorted list
     def __lt__(self, other):
@@ -216,20 +208,16 @@ class Character(obj.Entity):
     def resetStats(self):
         for stat in self.baseStat:
             self.stat[stat] = self.baseStat[stat]
-        for dmg_type in self.armour:
-            self.armour[dmg_type] = self.baseArmour
-        self.maxMovement = self.baseMovement
-        self.evasion['Melee']['piercing'] = self.baseEvasion
-        self.evasion['Melee']['slashing'] = self.baseEvasion
-        self.evasion['Melee']['bludgeoning'] = self.baseEvasion
-        self.evasion['Ranged'] = self.baseEvasion
-        self.reach = self.baseReach
         
     def refreshMovement(self):
         self.movement = self.maxMovement
 
     # Recalculates the entity AC
     def refreshStatAfterArmour(self):
+
+        for dmg_type in self.armour:
+            self.armour[dmg_type] = self.baseArmour
+        self.maxMovement = self.baseMovement
 
         for i, armour_type in enumerate(self.equippedArmour):
             eq_armour = self.equippedArmour[armour_type]
@@ -252,24 +240,6 @@ class Character(obj.Entity):
         self.armour['piercing'] = int(self.armour['piercing'])
         self.armour['bludgeoning'] = int(self.armour['bludgeoning'])
         self.stat['DEX'] = int(self.stat['DEX'])
-        
-    # Recalculates the entity damage and reach
-    def refreshStatAfterWeapon(self):
-        for hand in self.equippedWeapons:
-            eq_weapon = self.equippedWeapons[hand]
-            if eq_weapon is None:
-                continue
-            if not eq_weapon.is_ranged:
-                if eq_weapon.range > self.reach:
-                    self.reach = eq_weapon.range
-            if eq_weapon.defense_type:
-                self.evasion['Melee']['piercing'] += eq_weapon.protection
-                self.evasion['Melee']['slashing'] += eq_weapon.protection
-                self.evasion['Melee']['bludgeoning'] += eq_weapon.protection
-                if eq_weapon.defense_type == 'shield':
-                    self.evasion['Ranged'] += eq_weapon.protection
-                    self.evasion['Melee']['bludgeoning'] -= eq_weapon.protection
-                    self.armour['bludgeoning'] += int(eq_weapon.protection/2)
 
     # Makes a saving throw
     def makeSavingThrow(self):
@@ -304,13 +274,8 @@ class Character(obj.Entity):
             output = 'Died'
             
         return output
-        
-    # Collects entity base stats
-    def getStats(self):
-        obj.Entity.entityStats.getCharacterStats(self)
-        self.getEquipment()
 
-    # Turns the weapon and armour strings into entities
+    # Turns the weapon, armour and inventory strings into entities
     def getEquipment(self):
         for hand in self.equippedWeapons:
             if self.equippedWeapons[hand] is not None:
@@ -319,15 +284,40 @@ class Character(obj.Entity):
             if self.equippedArmour[armour_type] is not None:
                 self.equippedArmour[armour_type] = obj.Armour(self.equippedArmour[armour_type])
 
-    # Adds ids to the character's attacks
-    def idAttacks(self):
+        self.createInventory()
+
+    # Converts the list of base attacks from strings to classes
+    def convAttacks(self):
+        new_list = []
+        for i, attack_str in enumerate(self.base_attacks):
+            attack = at.Attack(attack_str)
+            attack.id = i
+            new_list.append(attack)
+        self.base_attacks = new_list
+
+    # Gets what attacks are available and adds them to the options list - also ids them
+    def getAttackOptions(self):
         i = 0
+        self.attack_options = []
         for location in self.equippedWeapons:
-            for weapon in self.equippedWeapons[location]:
-                for attack in weapon.attacks:
-                    self.attack_options.append(attack)
-                    attack.id = i
-                    i += 1
+            weapon = self.equippedWeapons[location]
+            if weapon is None:
+                continue
+            for attack in weapon.attacks:
+                self.attack_options.append(attack)
+                attack.id = i
+                i += 1
+
+        if not self.attack_options:
+            self.attack_options = self.base_attacks
+
+    # Turns the inventory into class object
+    def createInventory(self):
+        new_list = []
+        for item_str in self.inventory:
+            item = obj.Weapon(item_str)  # Converts to weapon for now
+            new_list.append(item)
+        self.inventory = new_list
 
 
 # A playable character
@@ -356,7 +346,20 @@ class Player(Character):
         self.behaviour_type = 1
         self.team = 1
 
+        self.base_attacks = ['hit']
+
         super().__init__(playerName)
+
+        self.getStats()
+
+        self.resetStats()
+        self.resetHealth()
+
+        self.refreshStatAfterWeapon()
+        self.refreshStatAfterArmour()
+
+        self.calcInitiative()
+
         self.calcProfB()
         self.calcHealth()
     
@@ -364,6 +367,7 @@ class Player(Character):
     def getStats(self):
         obj.Entity.entityStats.getPlayerStats(self)
         self.getEquipment()
+        self.convAttacks()
         self.getClass()
     
     # Recalculates the entity stats after a level up
@@ -476,17 +480,25 @@ class Player(Character):
 
     # Recalculates the entity damage and reach
     def refreshStatAfterWeapon(self):
+
+        self.evasion['Melee']['piercing'] = self.baseEvasion
+        self.evasion['Melee']['slashing'] = self.baseEvasion
+        self.evasion['Melee']['bludgeoning'] = self.baseEvasion
+        self.evasion['Ranged'] = self.baseEvasion
+        self.reach = self.baseReach
+        self.getAttackOptions()
+
         for hand in self.equippedWeapons:
             eq_weapon = self.equippedWeapons[hand]
             if eq_weapon is None:
                 continue
-            protection = eq_weapon.protection
-            if eq_weapon.type in self.chosen_weapons:
-                protection *= 2
             if not eq_weapon.is_ranged:
                 if eq_weapon.range > self.reach:
                     self.reach = eq_weapon.range
             if eq_weapon.defense_type:
+                protection = eq_weapon.protection
+                if eq_weapon.type in self.chosen_weapons:
+                    protection *= 2
                 self.evasion['Melee']['piercing'] += protection
                 self.evasion['Melee']['slashing'] += protection
                 self.evasion['Melee']['bludgeoning'] += protection
@@ -503,11 +515,59 @@ class Player(Character):
 # A non-playable character
 class NPC(Character):
     def __init__(self, npcName):
-        super().__init__(npcName)
         self.target = None
         self.behaviour_type = 2
         self.team = 1
         self.hitProf = 0
+
+        self.starting_items = []
+
+        super().__init__(npcName)
+
+        self.getStats()
+
+        self.resetStats()
+        self.resetHealth()
+
+        self.refreshStatAfterWeapon()
+        self.refreshStatAfterArmour()
+
+        self.calcInitiative()
+
+    # Collects entity base stats
+    def getStats(self):
+        obj.Entity.entityStats.getCharacterStats(self)
+        self.getEquipment()
+        self.convAttacks()
+
+    # Recalculates the entity damage and reach
+    def refreshStatAfterWeapon(self):
+
+        self.evasion['Melee']['piercing'] = self.baseEvasion
+        self.evasion['Melee']['slashing'] = self.baseEvasion
+        self.evasion['Melee']['bludgeoning'] = self.baseEvasion
+        self.evasion['Ranged'] = self.baseEvasion
+        self.reach = self.baseReach
+        self.getAttackOptions()
+
+        for hand in self.equippedWeapons:
+            eq_weapon = self.equippedWeapons[hand]
+            if eq_weapon is None:
+                continue
+            if not eq_weapon.is_ranged:
+                if eq_weapon.range > self.reach:
+                    self.reach = eq_weapon.range
+            if eq_weapon.defense_type:
+                protection = eq_weapon.protection
+                if eq_weapon.name in self.starting_items:
+                    protection *= 2
+                self.evasion['Melee']['piercing'] += protection
+                self.evasion['Melee']['slashing'] += protection
+                self.evasion['Melee']['bludgeoning'] += protection
+                if eq_weapon.defense_type == 'shield':
+                    self.evasion['Ranged'] += protection
+                    self.evasion['Melee']['bludgeoning'] -= protection
+                    self.armour['bludgeoning'] += int(protection / 2)
 
 
 # A hostile character

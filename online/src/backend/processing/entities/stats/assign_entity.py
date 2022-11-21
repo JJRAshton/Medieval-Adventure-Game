@@ -17,13 +17,13 @@ class_stat_order = {
 
 # Different armour levels for characters
 armour_levels = {
-    '1': ['hide', 'leather'],
-    '2': ['hide', 'leather', 'lamellar', 'gambeson'],
-    '3': {
+    1: ['hide', 'leather'],
+    2: ['hide', 'leather', 'lamellar', 'gambeson'],
+    3: {
         'Light': ['leather', 'lamellar', 'gambeson'],
         'Heavy':  ['cuirass', 'ring', 'scale', 'laminar', 'maille']
     },
-    '4': {
+    4: {
         'Light': ['lamellar', 'gambeson'],
         'Heavy':  ['maille', 'splint', 'plate']
     }
@@ -141,20 +141,33 @@ class EntityStats:
     def getCharacterStats(self, character):  # Doesn't collect all data
         characterName = character.name
         charDict = self.getCharacterDict(characterName)
-        
+        startingItems = []
+
         size = charDict['Size']
 
-        if charDict['Base Damage']:
-            character.baseDamage = convertDice(charDict['Base Damage'])
+        for location in ['Left', 'Right', 'Both']:
+            if charDict[location]:
+                character.equippedWeapons[location] = charDict[location]
+                startingItems.append(charDict[location])
+
         if charDict['Base Armour']:
             character.baseArmour = charDict['Base Armour']
         if charDict['Inventory']:
-            character.inventory = convertList(charDict['Inventory'])
+            inventory = convertList(charDict['Inventory'])
+            character.inventory = inventory
+            startingItems += inventory
+        if charDict['Hit Proficiency']:
+            character.hitProf = int(charDict['Hit Proficiency'])
 
+        character.base_attacks = convertList(charDict['Attacks'])
+
+        character.starting_items = startingItems
+
+        # Randomly selects armour according to armour level
         if charDict['Armour Level']:
-            level = charDict['Armour Level']
+            level = int(charDict['Armour Level'])
 
-            if int(level) < 3:
+            if level > 2:
                 for armour_type in armour_levels[level]:
                     armour_list = armour_levels[level][armour_type]
                     character.armour[armour_type] = rd.choice(armour_list)
@@ -170,7 +183,6 @@ class EntityStats:
             character.resistances += resistances
 
         character.actionsTotal = int(charDict['Actions'])
-        character.hitProf = int(charDict['Experience'])
         character.baseMovement = int(charDict['Speed'])
         character.drop_rate = int(charDict['Drop Rate'])
         
@@ -179,7 +191,7 @@ class EntityStats:
         character.baseStat['CON'] = int(charDict['CON'])
         character.baseStat['WIT'] = int(charDict['WIT'])
         
-        character.baseHealth = rollStat(character.hitProf, character.baseStat['CON'], character.baseStat['CON'])
+        character.baseHealth = rollStat(int(charDict['Difficulty']), character.baseStat['CON'], character.baseStat['CON'])
         if size == 'large':
             character.baseSize = 10
         elif size == 'huge':

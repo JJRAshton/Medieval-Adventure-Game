@@ -35,8 +35,8 @@ class AttackStats:
         attack.damage_types[dmg_type1] = int(atkDict['Fraction 1'])
         attack.damage_maintype = dmg_type1
         if atkDict['Dmg Typ 2']:
-            with atkDict['Dmg Typ 2'] as dmg_type2:
-                attack.damage_types[dmg_type2] = 1 - int(atkDict['Fraction 1'])
+            dmg_type2 = atkDict['Dmg Typ 2']
+            attack.damage_types[dmg_type2] = 1 - int(atkDict['Fraction 1'])
 
         attack.damage = (int(atkDict['Dice No.']), 0)
 
@@ -44,10 +44,11 @@ class AttackStats:
         atkDict = self.getRawAttackDict(attack.name)
         attack.type = 'raw'
 
-        with atkDict['Dmg Typ 1'] as dmg_type1:
-            attack.damage_types[dmg_type1] = int(atkDict['Fraction 1'])
+        dmg_type1 = atkDict['Dmg Typ 1']
+        attack.damage_types[dmg_type1] = int(atkDict['Fraction 1'])
+        attack.damage_maintype = dmg_type1
         if atkDict['Dmg Typ 2']:
-            with atkDict['Dmg Typ 2'] as dmg_type2:
-                attack.damage_types[dmg_type2] = 1 - int(atkDict['Fraction 1'])
+            dmg_type2 = atkDict['Dmg Typ 2']
+            attack.damage_types[dmg_type2] = 1 - int(atkDict['Fraction 1'])
 
         attack.damage = convertDice(atkDict['Damage'])

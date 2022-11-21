@@ -1,7 +1,7 @@
 import random as rd
 
 from .stats import EntityStats
-from .session_functions import rollDamage
+from .static_functions import rollDamage
 from . import attacks as at
 
 
@@ -145,6 +145,7 @@ class Weapon(Item):
             attack = at.Attack(attack_str)
             attack.from_weapon = self
             attacks_list.append(attack)
+        self.attacks = attacks_list
 
 
 class Armour(Item):

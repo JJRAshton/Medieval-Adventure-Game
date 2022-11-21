@@ -1,4 +1,4 @@
-﻿Name,Tier,Range,Damage,Light,Throwable,Attacks
+﻿Name,Tier,Range,Damage Dice,Light,Throwable,Attacks
 javelin,2,30,d6,,y,impale
 kunai,1,20,d6,y,y,stab
 shuriken,1,20,d6,y,y,slash

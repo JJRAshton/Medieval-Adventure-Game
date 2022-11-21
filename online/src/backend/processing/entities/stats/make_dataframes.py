@@ -49,6 +49,8 @@ def make_character_stat_table(map_number_str):
     for character in set(monster_list + npc_list):
         character_table = pd.concat([character_table, char_df])
 
+    character_table = character_table.fillna('')
+
     return character_table
 
 

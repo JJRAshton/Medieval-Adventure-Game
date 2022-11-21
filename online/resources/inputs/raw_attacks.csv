@@ -1,2 +1,18 @@
 ﻿Name,Damage,Dmg Typ 1,Dmg Typ 2,Fraction 1
 bash,2d4,bludgeoning,,1
+scratch,2d4,slashing,,1
+claw,2d8,slashing,,1
+wing,1d8,bludgeoning,,1
+tail,1d6,bludgeoning,,1
+sting,1d6,piercing,,1
+bite,2d6,piercing,,1
+pseudopod,2d6,bludgeoning,,1
+engulf,2d6,bludgeoning,piercing,0.6
+beak,3d4,piercing,,1
+talons,1d6,slashing,,1
+tendrils,1d10,slashing,,1
+stomp,2d8,bludgeoning,,1
+hit,1d2,bludgeoning,,1
+hooves,3d4,bludgeoning,,1
+drain,2d6,emotional,,1
+zap,2d8,energy,,1

@@ -1,12 +1,12 @@
-﻿Name,Type,Value,Movement Penalty,Dex Penalty
-hide,light,1,0,0
+﻿Name,Type,Value,Movement Penalty,Dex Multiplier
+hide,light,1,0,1
 boiled_leather,light,2,0,1
-lamellar,light,4,0,3
-gambeson,light,5,0,2
-cuirass,heavy,5,5,2
-ring,heavy,6,5,3
-scale,heavy,6,5,3
-laminar,heavy,7,5,2
-maille,heavy,8,10,3
-splint,heavy,9,10,3
-plate,heavy,14,15,5
+lamellar,light,4,0,0.9
+gambeson,light,5,0,0.95
+cuirass,heavy,5,5,0.9
+ring,heavy,6,5,0.85
+scale,heavy,6,5,0.85
+laminar,heavy,7,5,0.85
+maille,heavy,8,10,0.75
+splint,heavy,9,10,0.7
+plate,heavy,14,15,0.6
