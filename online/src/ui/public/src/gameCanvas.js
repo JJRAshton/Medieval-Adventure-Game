@@ -2,13 +2,23 @@ import React, { useRef, useEffect } from 'react'
 
 const Canvas = props => {
   
-  const { draw, resize, handleClick, ...rest } = props;
+  const { draw, resize, handleClick, handleKeyPress, handleMouseMove, ...rest } = props;
   const canvasRef = useRef(null);
+  window.addEventListener("keyup", handleKeyPress);
+
   useEffect(() => {
     
     const canvas = canvasRef.current;
     canvas.addEventListener("click", (event) => {
         handleClick(
+            // Adjust the click to get it relative to the canvas
+            event.pageX - canvas.offsetLeft - canvas.clientLeft, 
+            event.pageY - canvas.offsetTop - canvas.clientTop
+            );
+    }, false);
+    canvas.addEventListener("mousemove", (event) => {
+        handleMouseMove(
+            // Adjust the click to get it relative to the canvas
             event.pageX - canvas.offsetLeft - canvas.clientLeft, 
             event.pageY - canvas.offsetTop - canvas.clientTop
             );

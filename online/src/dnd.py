@@ -41,17 +41,16 @@ async def addToLobby(websocket):
         # Manage state changes
         async for message in websocket:
             event = json.loads(message)
-            print(event)
-            if user.session:
+            if user.session != None:
                 user.sessionRequest(event)
-            if event["action"] == "joinGame":
+            elif event["event"] == "joinGame":
                 playerPool.add(user)
                 broadcast(users_event())
                 if len(playerPool) > 1:
                     APISession(playerPool)
                     # All players should now have been added to the game, so removes them from the pool.
                     playerPool.clear()
-            elif event["action"] == "leaveGame":
+            elif event["event"] == "leaveGame":
                 if user in playerPool:
                     playerPool.remove(user)
                     broadcast(users_event())

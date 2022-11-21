@@ -51,7 +51,7 @@ export class Lobby extends Context {
     }
 
     transmit(eventType) {
-        this.socket.send(JSON.stringify({ action: eventType }));
+        this.socket.send(JSON.stringify({ event: eventType }));
     }
     
 }
