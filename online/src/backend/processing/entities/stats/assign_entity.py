@@ -194,12 +194,16 @@ class EntityStats:
         character.baseHealth = rollStat(int(charDict['Difficulty']), character.baseStat['CON'], character.baseStat['CON'])
         if size == 'large':
             character.baseSize = 10
+            character.dmg_mult = 2
         elif size == 'huge':
             character.baseSize = 15
+            character.dmg_mult = 4
         elif size == 'gargantuan':
             character.baseSize = 20
+            character.dmg_mult = 8
         else:
             character.baseSize = 5
+            character.dmg_mult = 1
 
         character.baseReach = character.baseSize
 

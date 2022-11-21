@@ -120,6 +120,7 @@ class Weapon(Item):
         super().__init__(weaponName)
         self.damage_dice = 0
         self.range = 0
+        self.holder_size = 0
 
         self.attacks = {}
 

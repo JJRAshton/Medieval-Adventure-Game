@@ -21,9 +21,9 @@ class Attack:
     def getStats(self):
         Attack.stats.getAttackStats(self)
 
-    def updateDamage(self, weapon):
-        if self.type == 'weapon':
+    def updateDamage(self):
+        if self.type == 'weapon' and self.from_weapon is not None:
             dice_no = self.damage[0]
-            self.damage = (dice_no, weapon.damage_dice)
+            self.damage = (dice_no, self.from_weapon.damage_dice)
 
         self.avdmg = self.damage[0] * (self.damage[1] + 1) / 2

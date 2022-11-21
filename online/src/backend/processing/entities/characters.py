@@ -13,8 +13,9 @@ class Character(obj.Entity):
         self.baseMovement = 0
         self.base_attacks = []
 
+        self.dmg_mult = 1  # For larger creatures to do more damage
+
         self.hitProf = 0
-        self.hands = 2
         
         self.baseStat = {
             'STR': 0,
