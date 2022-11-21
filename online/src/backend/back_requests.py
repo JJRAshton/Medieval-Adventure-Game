@@ -16,7 +16,6 @@ class Requests:
 
 	# Requests to verify whether a move is valid
 	def moveVerificationRequest(self, globalID, coords):
-
 		valid = self.functions.requestMoveVerification(globalID, coords)
 
 		return valid

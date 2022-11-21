@@ -32,7 +32,7 @@ class APISession:
 
     # Called by the backend, sends a json message
     def broadcast(self, message):
-        websockets.broadcast({user.socket for user in self.playerPool}, message)
+        websockets.broadcast({user.socket for user in self.playerPool}, json.dumps(message))
 
     def sendToUserWithID(self, message, uuid):
         for user in self.playerPool:
@@ -54,13 +54,22 @@ class APISession:
                 print(f"Could not convert player ID to int {jsonEvent['playerID']}")
                 return
             # move = self.backend.moveRequest(jsonEvent["playerID"], jsonEvent["coords"])
-            for coord in jsonEvent["route"]:
+            if len(jsonEvent["route"]) < 2:
+                return
+            for coord in jsonEvent["route"][1:]:
+                print(f"coord {coord}")
                 if self.backend.moveVerificationRequest(playerID, coord):
-                    if self.backend.moveRequest(playerID, coord):
+                    print("Move verified")
+                    if not self.backend.moveRequest(playerID, coord):
                         # If the move goes through, update the player
-                        locations = self.backend.locationsRequest()
-                        characterLocations = [(characterID, locations[characterID]) for characterID in locations]
-                        self.broadcast({"responseType": "mapUpdate", "characters": characterLocations})
+                        break
+                    print("Move succeeded") 
+                else:
+                    break
+                                    
+            locations = self.backend.locationsRequest()
+            characterLocations = [(characterID, locations[characterID]) for characterID in locations]
+            self.broadcast({"responseType": "mapUpdate", "characters": characterLocations})
             
         if jsonEvent["event"] == "attackRequest":
             attack=self.backend.attackRequest(jsonEvent["playerID"], jsonEvent["enemyID"])

@@ -29,12 +29,12 @@ export class Game extends Context {
     }
 
     parseCharacters(characters) {
-        const characterSet = new Set();
+        const characterMap = new Map();
         for (var i = 0; i < characters.length; i++) {
             const character = characters[i];
-            characterSet.add(new Character(character[0], character[1][0], character[1][1]))
+            characterMap.set(character[0], new Character(character[0], character[1][0], character[1][1]))
         }
-        return characterSet
+        return characterMap
     }
 
     render(reactRoot) {
@@ -144,21 +144,12 @@ export class Game extends Context {
             this.movement = null;
         }
         else {
-            const [playerX, playerY] = this.getPlayerLocation();
-            if (playerX * TILE_WIDTH < clickX && clickX < (playerX + 1) * TILE_WIDTH
-                    && playerY * TILE_WIDTH < clickY && clickY < (playerY + 1) * TILE_WIDTH) {
-                this.movement = new Movement(playerX, playerY);
+            const player = this.characters.get(this.playerID);
+            if (player.x * TILE_WIDTH < clickX && clickX < (player.x + 1) * TILE_WIDTH
+                    && player.y * TILE_WIDTH < clickY && clickY < (player.y + 1) * TILE_WIDTH) {
+                this.movement = new Movement(player.x, player.y);
             }
         }
-    }
-
-    getPlayerLocation() {
-        for (const character of this.characters) {
-            if (this.playerID === character.id) {
-                return [character.x, character.y];
-            }
-        }
-        console.log("WARNING! could not find player with id.")
     }
 
     // Resizes the canvas, for some reason this has to be passed as a callback
@@ -180,7 +171,7 @@ export class Game extends Context {
                 break;
             case "mapUpdate":
                 event.characters.forEach(character => {
-                    
+                    this.characters.get(character.id).setPosition(character.x, character.y);
                 })
                 break;
             default:
