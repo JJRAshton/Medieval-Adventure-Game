@@ -1,4 +1,4 @@
-﻿Name,Tier,Range,Damage,Ranged,Two-handed,Bolts,Heavy,Loading,Devastating
-light_crossbow,2,50,1d12,y,y,y,,y,
-repeating_crossbow,3,50,1d10,y,y,y,y,,
-heavy_crossbow,4,60,1d20,y,y,y,y,y,y
+﻿Name,Tier,Range,Damage Dice,Ranged,Two-handed,Bolts,Heavy,Loading,Devastating,Attacks
+light_crossbow,2,50,d12,y,y,y,,y,,stab
+repeating_crossbow,3,50,d10,y,y,y,y,,,stab
+heavy_crossbow,4,60,d20,y,y,y,y,y,y,stab

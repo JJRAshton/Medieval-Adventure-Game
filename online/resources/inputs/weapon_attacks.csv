@@ -1,1 +1,12 @@
-﻿Name,Damage,Dmg Typ 1,Percentage,Dmg Typ 2,Percentage
+﻿Name,Dice No.,Dmg Typ 1,Dmg Typ 2,Fraction 1
+strike,1,bludgeoning,,1
+pound,2,bludgeoning,,1
+slam,3,bludgeoning,,1
+crush,4,bludgeoning,,1
+slash,1,slashing,,1
+cut,2,slashing,,1
+cleave,3,slashing,,1
+stab,1,piercing,,1
+impale,2,piercing,,1
+hack,2,slashing,bludgeoning,0.7
+smash,2,piercing,bludgeoning,0.5

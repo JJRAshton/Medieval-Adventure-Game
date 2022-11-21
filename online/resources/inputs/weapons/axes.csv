@@ -1,6 +1,6 @@
-﻿Name,Tier,Range,Damage,Light,Two-handed,Heavy,Devastating
-hatchet,0,5,1d4,y,,,
-handaxe,1,5,2d3,y,,,
-battleaxe,2,5,2d8,,y,,
-bardiche,3,10,2d10,,y,y,
-greataxe,4,5,2d14,,y,y,y
+﻿Name,Tier,Range,Damage Dice,Light,Two-handed,Heavy,Devastating,Attacks
+hatchet,0,5,d2,y,,,,cut
+handaxe,1,5,d4,y,,,,cut
+battleaxe,2,5,d10,,y,,,hack
+bardiche,3,10,d10,,y,y,,"cut, hack"
+greataxe,4,5,d14,,y,y,y,hack

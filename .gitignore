@@ -136,6 +136,7 @@ dmypy.json
 */*.pkl
 */*/*.pkl
 *.xml
+*.patch
 .DS_Store
 */.DS_Store
 online/.DS_Store

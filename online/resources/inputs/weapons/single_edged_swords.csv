@@ -1,7 +1,7 @@
-﻿Name,Range,Damage,Finesse,Light,Two-handed,Heavy,Protection,Defense Type,Devastating
-knife,5,1d3,y,y,,,,,
-falchion,5,1d6,y,,,,,,
-scimitar,5,1d8,y,,,,2,sword,
-tanto,5,1d10,y,,y,,3,sword,
-katana,5,1d16,y,,y,,4,sword,y
-odachi,5,1d24,y,,y,y,4,sword,y
+﻿Name,Tier,Range,Damage Dice,Finesse,Light,Two-handed,Heavy,Protection,Defense Type,Devastating,Attack
+knife,0,5,d3,y,y,,,,,,"slash, stab"
+falchion,1,5,d6,y,,,,,,,slash
+scimitar,1,5,d8,y,,,,2,parry,,slash
+tanto,2,5,d10,y,,y,,3,parry,,slash
+katana,3,5,d18,y,,y,,4,parry,y,slash
+odachi,4,5,d26,y,,y,y,4,parry,y,slash

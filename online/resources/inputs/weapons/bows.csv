@@ -1,4 +1,4 @@
-﻿Name,Tier,Range,Damage,Ranged,Two-handed,Arrows,Heavy,Devastating
-shortbow,1,40,2d4,y,y,y,,
-recurve_bow,2,50,2d6,y,y,y,y,
-longbow,4,80,2d8,y,y,y,y,y
+﻿Name,Tier,Range,Damage Dice,Ranged,Two-handed,Arrows,Heavy,Devastating,Attacks
+shortbow,1,40,d4,y,y,y,,,impale
+recurve_bow,2,50,d6,y,y,y,y,,impale
+longbow,4,80,d8,y,y,y,y,y,impale

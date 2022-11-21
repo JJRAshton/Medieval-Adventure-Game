@@ -1,6 +1,8 @@
 import random as rd
 
 from .stats import EntityStats
+from .session_functions import rollDamage
+from . import attacks as at
 
 
 class Entity:
@@ -59,18 +61,8 @@ class Object(Entity):
         Entity.entityStats.getObjectStats(self)
 
     # Damages the entity
-    def takeDamage(self, damage, bonus, dmg_type, heavy_hit=False, critical=False):
-        (number, dice) = damage
-        base = 0
-        for _ in range(number):
-            base += rd.randint(1, dice)
-
-        if dmg_type in self.vulnerabilities:
-            appliedDamage = 2*(base + bonus)
-        elif dmg_type in self.resistances:
-            appliedDamage = int(0.5*(base + bonus))
-        else:
-            appliedDamage = base + bonus
+    def takeDamage(self, damage, dmg_type, heavy_hit=False, critical=False):
+        appliedDamage = damage
 
         armour = 0
         if not critical:
@@ -82,7 +74,13 @@ class Object(Entity):
             elif dmg_type == 'slash':
                 appliedDamage *= 1.2
 
+        armour = int(armour)
         appliedDamage -= armour
+
+        if dmg_type in self.vulnerabilities:
+            appliedDamage *= 2
+        elif dmg_type in self.resistances:
+            appliedDamage *= 0.5
 
         if appliedDamage > 0:
             self.health -= appliedDamage
@@ -103,13 +101,15 @@ class Weapon(Item):
     def __init__(self, weaponName):
         super().__init__(weaponName)
         self.type = ''
+        self.damage_dice = 0
         self.range = 0
 
-        self.attacks = []
+        self.attacks = {}
 
         self.protection = 0
         self.defense_type = ''
-        
+
+        self.is_brutal = False
         self.is_ranged = False
         self.is_loading = False
         self.is_twoHanded = False
@@ -122,8 +122,13 @@ class Weapon(Item):
         self.getStats()
     
     # Collects entity base stats
-    def getStats(self):  # yet to get from jamie
+    def getStats(self):
         Entity.entityStats.getWeaponStats(self)
+        attacks_list = []
+        for attack_str in self.attacks:
+            attack = at.Attack(attack_str)
+            attack.from_weapon = self
+            attacks_list.append(attack)
 
 
 class Armour(Item):
@@ -137,5 +142,5 @@ class Armour(Item):
         self.getStats()
     
     # Collects entity base stats
-    def getStats(self):  # yet to get from jamie
+    def getStats(self):
         Entity.entityStats.getArmourStats(self)

@@ -1,6 +1,7 @@
 import random as rd
 
 from . import objects as obj
+from .session_functions import rollDamage
 
 
 class Character(obj.Entity):
@@ -20,7 +21,6 @@ class Character(obj.Entity):
             'WIT': 0
             }
         self.stat = {}
-        self.mod = {}
 
         self.initiative = 0
 
@@ -31,9 +31,17 @@ class Character(obj.Entity):
         self.reactions = 1
 
         self.movement = 0
-        
-        self.hitDiceValue = 0
-        self.hitDiceNumber = 0
+
+        self.evasion = {
+            'Melee': {
+                'piercing': 0,
+                'slashing': 0,
+                'bludgeoning': 0
+            },
+            'Ranged': 0
+        }
+
+        self.attack_options = []
 
         self.maxMovement = 0
         self.maxHealth = 0
@@ -53,10 +61,6 @@ class Character(obj.Entity):
 
         self.baseReach = 5
 
-        self.dmgMod = {
-            'Left': 0,
-            'Right': 0
-        }
         self.reach = 0
         
         self.is_conscious = True
@@ -69,9 +73,8 @@ class Character(obj.Entity):
         self.resetStats()
         self.resetHealth()
 
-        self.refreshModifierStat()
-        self.refreshArmourStat()
-        self.refreshWeaponStat()
+        self.refreshStatAfterWeapon()
+        self.refreshStatAfterArmour()
 
         self.calcInitiative()
 
@@ -98,95 +101,92 @@ class Character(obj.Entity):
         self.initiative = init_roll
 
     # Makes an attack roll returning whether it 0:miss, 1:hit, 2:critical hit
-    def hitRoll(self, hitBonus, opponent_evasion):
+    def hitContest(self, attack, hitBonus, opponent):
 
-        roll = rd.randint(1, 20)
-        if roll == 20:
-            result = 2
-        elif roll + hitBonus < opponent_evasion:
-            result = 0
+        # Picks which opponent evasion to use
+        if attack.from_weapon.is_ranged:
+            opponentRoll = rd.randint(1, opponent.evasion['Ranged'])
         else:
+            opponentRoll = rd.randint(1, opponent.evasion['Melee'][attack.damage_maintype])
+
+        ownRoll = rd.randint(1, self.stat['DEX'])
+        ownResult = ownRoll + hitBonus
+
+        if ownResult > 10*opponentRoll:
+            result = 2
+        elif ownResult > opponentRoll:
             result = 1
+        else:
+            result = 0
 
         return result
 
     # Performs a single attack on another entity
-    def singleAttack(self, hand, creature):
-        weapon = self.equippedWeapons[hand]
+    def singleAttack(self, attackID, creature):
+        attack = self.attack_options[attackID]
 
-        if weapon is None:
-            damage = (self.mod['STR'], 4)
-            dmg_type = 'bludgeon'
+        hitBonus = self.hitProf
+
+        hitResult = self.hitContest(attack, hitBonus, creature)
+
+        if attack.from_weapon.is_finesse:
+            dmg_stat = max(self.stat['DEX'], self.stat['STR'])
         else:
-            damage = weapon.damage
-            dmg_type = weapon.dmg_type
-        dmgMod = self.dmgMod[hand]
+            dmg_stat = self.stat['STR']
 
-        hitBonus = self.mod['DEX'] + self.hitProf
+        if hitResult > 0:
+            if hitResult == 1:
+                is_critical = False
+            else:
+                is_critical = True
+            damage = rollDamage(attack, dmg_stat)
+            appliedDamage = 0
+            for damage_type in damage:
+                appliedDamage += creature.takeDamage(damage[damage_type], damage_type, attack.from_weapon.is_brutal, is_critical)
 
-        rollResult = self.hitRoll(hitBonus, creature.evasion)
-
-        if rollResult > 0:
-            if rollResult == 1:
-                appliedDamage = creature.takeDamage(damage, dmgMod, dmg_type)
-            else:   # critical
-                appliedDamage = creature.takeDamage(damage, dmgMod, dmg_type, True)
             indicator = str(appliedDamage)
         else:
             indicator = 'Miss'
 
         return indicator
 
-    # Makes an attack against another entity
-    def attack(self, creature):
-        if self.equippedWeapons['Left'] is not None and self.equippedWeapons['Right'] is not None:
-            if self.equippedWeapons['Left'].is_light and self.equippedWeapons['Right'].is_light:
-                self.singleAttack('Left', creature)
-                self.singleAttack('Right', creature)
-            elif self.equippedWeapons['Left'].is_twoHanded:
-                self.singleAttack('Left', creature)
-            elif self.equippedWeapons['Left'].avdmg > self.equippedWeapons['Right'].avdmg:
-                self.singleAttack('Left', creature)
-            else:
-                self.singleAttack('Right', creature)
-        elif self.equippedWeapons['Left'] is None and self.equippedWeapons['Right'] is None:
-            self.singleAttack('Right', creature)
-        elif self.equippedWeapons['Left'] is None:
-            self.singleAttack('Right', creature)
-        else:
-            self.singleAttack('Left', creature)
+    # Makes an attack against another entity with the given attacks
+    def attack(self, attackIDList, creature):
+        indicatorList = []
+
+        for attackID in attackIDList:
+            indicator = self.singleAttack(attackID, creature)
+            indicatorList.append(indicator)
+
+        return indicatorList
 
     # Damages the character
-    def takeDamage(self, damage, bonus, dmg_type, heavy_hit=False, critical=False):
-        (number, dice) = damage
-        base = 0
-        for _ in range(number):
-            base += rd.randint(1, dice)
-
-        if dmg_type in self.vulnerabilities:
-            appliedDamage = 2 * (base + bonus)
-        elif dmg_type in self.resistances:
-            appliedDamage = int(0.5 * (base + bonus))
-        else:
-            appliedDamage = base + bonus
+    def takeDamage(self, damage, dmg_type, heavy_hit=False, critical=False):
+        appliedDamage = damage
 
         armour = 0
         if not critical:
             if dmg_type in self.armour:
                 armour = self.armour[dmg_type]
         if heavy_hit:
-            if dmg_type == 'pierce':
+            if dmg_type == 'piercing':
                 armour *= 0.5
-            elif dmg_type == 'slash':
+            elif dmg_type == 'slashing':
                 appliedDamage *= 1.2
-            elif dmg_type == 'bludgeon':
-                self.actions -= 1
 
+        armour = int(armour)
         appliedDamage -= armour
+
+        if dmg_type in self.vulnerabilities:
+            appliedDamage *= 2
+        elif dmg_type in self.resistances:
+            appliedDamage *= 0.5
 
         if appliedDamage > 0:
             self.health -= appliedDamage
             self.checkAlive()
+            if heavy_hit and dmg_type == 'bludgeoning':
+                self.actions -= 1
         else:
             appliedDamage = 0
 
@@ -216,61 +216,60 @@ class Character(obj.Entity):
     def resetStats(self):
         for stat in self.baseStat:
             self.stat[stat] = self.baseStat[stat]
-        
-    def resetMovement(self):
-        self.movement = self.maxMovement
-        
-    # Recalculates the entity modifiers after a change of stats
-    def refreshModifierStat(self):
-        for stat in self.stat:
-            self.mod[stat] = int((self.stat[stat]-self.stat[stat] % 2)/2)-5
-
-    # Recalculates the entity AC
-    def refreshArmourStat(self):
         for dmg_type in self.armour:
             self.armour[dmg_type] = self.baseArmour
         self.maxMovement = self.baseMovement
-        self.evasion = self.baseEvasion
-        self.stat['DEX'] = self.baseStat['DEX']
+        self.evasion['Melee']['piercing'] = self.baseEvasion
+        self.evasion['Melee']['slashing'] = self.baseEvasion
+        self.evasion['Melee']['bludgeoning'] = self.baseEvasion
+        self.evasion['Ranged'] = self.baseEvasion
+        self.reach = self.baseReach
+        
+    def refreshMovement(self):
+        self.movement = self.maxMovement
+
+    # Recalculates the entity AC
+    def refreshStatAfterArmour(self):
 
         for i, armour_type in enumerate(self.equippedArmour):
             eq_armour = self.equippedArmour[armour_type]
             if eq_armour is None:
                 continue
+            value = eq_armour.value
             if i == 0:
-                self.stat['DEX'] -= eq_armour.restriction
-                self.armour['slashing'] += eq_armour.value
-                self.armour['piercing'] += eq_armour.value
-                self.armour['bludgeoning'] += eq_armour.value
+                self.stat['DEX'] *= eq_armour.flex
+                self.armour['slashing'] += value
+                self.armour['piercing'] += value
+                self.armour['bludgeoning'] += value
             elif i == 1:
-                self.stat['DEX'] -= eq_armour.restriction
-                self.evasion -= eq_armour.restriction
+                self.stat['DEX'] *= eq_armour.flex
                 self.maxMovement -= eq_armour.weight
-                self.armour['slashing'] += eq_armour.value
-                self.armour['piercing'] += 0.8*eq_armour.value
-                self.armour['bludgeoning'] += 0.2*eq_armour.value
+                self.armour['slashing'] += value
+                self.armour['piercing'] += 0.8*value
+                self.armour['bludgeoning'] += 0.2*value
 
         self.armour['slashing'] = int(self.armour['slashing'])
         self.armour['piercing'] = int(self.armour['piercing'])
         self.armour['bludgeoning'] = int(self.armour['bludgeoning'])
+        self.stat['DEX'] = int(self.stat['DEX'])
         
     # Recalculates the entity damage and reach
-    def refreshWeaponStat(self):
-        self.reach = self.baseReach
+    def refreshStatAfterWeapon(self):
         for hand in self.equippedWeapons:
             eq_weapon = self.equippedWeapons[hand]
             if eq_weapon is None:
-                self.dmgMod[hand] = self.mod['STR']
                 continue
             if not eq_weapon.is_ranged:
                 if eq_weapon.range > self.reach:
                     self.reach = eq_weapon.range
-                if eq_weapon.is_finesse:
-                    self.dmgMod[hand] = max(self.mod['STR'], self.mod['DEX'])
-                else:
-                    self.dmgMod[hand] = self.mod['STR']
-            else:
-                self.dmgMod[hand] = self.mod['DEX']
+            if eq_weapon.defense_type:
+                self.evasion['Melee']['piercing'] += eq_weapon.protection
+                self.evasion['Melee']['slashing'] += eq_weapon.protection
+                self.evasion['Melee']['bludgeoning'] += eq_weapon.protection
+                if eq_weapon.defense_type == 'shield':
+                    self.evasion['Ranged'] += eq_weapon.protection
+                    self.evasion['Melee']['bludgeoning'] -= eq_weapon.protection
+                    self.armour['bludgeoning'] += int(eq_weapon.protection/2)
 
     # Makes a saving throw
     def makeSavingThrow(self):
@@ -307,7 +306,7 @@ class Character(obj.Entity):
         return output
         
     # Collects entity base stats
-    def getStats(self):  # yet to get from jamie
+    def getStats(self):
         obj.Entity.entityStats.getCharacterStats(self)
         self.getEquipment()
 
@@ -320,6 +319,16 @@ class Character(obj.Entity):
             if self.equippedArmour[armour_type] is not None:
                 self.equippedArmour[armour_type] = obj.Armour(self.equippedArmour[armour_type])
 
+    # Adds ids to the character's attacks
+    def idAttacks(self):
+        i = 0
+        for location in self.equippedWeapons:
+            for weapon in self.equippedWeapons[location]:
+                for attack in weapon.attacks:
+                    self.attack_options.append(attack)
+                    attack.id = i
+                    i += 1
+
 
 # A playable character
 class Player(Character):
@@ -329,7 +338,7 @@ class Player(Character):
         'Beserker': ['axes', 'bludgeons', 'slashes'],
         'Gladiator': ['pierces', 'mythical', 'throwables'],
         'Ranger': ['bows', 'double_edged_swords', 'special'],
-        'Knight': ['hybrids', 'double_edged_swords', 'pierces'],
+        'Knight': ['hybrids', 'double_edged_swords', 'shields'],
         'Archer': ['bows', 'crossbows', 'throwables'],
         'Professor': ['staves', 'wands', 'mythical'],
         'Samurai': ['single_edged_swords', 'throwables', 'bows']
@@ -340,6 +349,7 @@ class Player(Character):
             playerName = rd.choice(Player.names)
         self.lvl = playerLevel
         self.type = playerClass = 'Beserker'
+        self.healthDice = 0
         super().__init__(playerName)
 
         self.chosen_weapons = []
@@ -361,44 +371,71 @@ class Player(Character):
         self.calcProfB()
         self.calcHealth()
 
+    # Equips a weapon
+
+    # Equip a set of armour
+
     # Calculates the entity proficiency bonus
     def calcProfB(self):
-        # self.profBonus = int(((self.lvl - 1) - (self.lvl - 1) % 4) / 4) + 2
-        self.hitProf = self.lvl + 2
+        self.hitProf = self.lvl * 5 + 5
 
     # Calculates health based on level and con mod
     def calcHealth(self):
-        self.baseHealth = self.mod['CON']+self.hitDiceValue + (self.lvl-1)*(self.mod['CON']+0.5+self.hitDiceValue/2)
+        self.baseHealth = self.lvl * self.healthDice + self.stat['CON']
         self.maxHealth = self.baseHealth
 
     # Performs a single attack on another entity
-    def singleAttack(self, hand, creature):
-        weapon = self.equippedWeapons[hand]
+    def singleAttack(self, attackID, creature):
+        attack = self.attack_options[attackID]
 
-        if weapon is None:
-            damage = (self.mod['STR'], 4)
-            dmg_type = 'bludgeon'
+        if attack.from_weapon.type in self.chosen_weapons:
+            hitBonus = self.hitProf
         else:
-            damage = weapon.damage
-            dmg_type = weapon.dmg_type
-        dmgMod = self.dmgMod[hand]
+            hitBonus = 0
 
-        hitBonus = self.mod['DEX']
-        if weapon.type in self.chosen_weapons:
-            hitBonus += self.hitProf
+        hitResult = self.hitContest(attack, hitBonus, creature)
 
-        rollResult = self.hitRoll(hitBonus, creature.evasion)
+        if attack.from_weapon.is_finesse:
+            dmg_stat = max(self.stat['DEX'], self.stat['STR'])
+        else:
+            dmg_stat = self.stat['STR']
 
-        if rollResult > 0:
-            if rollResult == 1:
-                appliedDamage = creature.takeDamage(damage, dmgMod, dmg_type)
-            else:  # critical
-                appliedDamage = creature.takeDamage(damage, dmgMod, dmg_type, True)
+        if hitResult > 0:
+            if hitResult == 1:
+                is_critical = False
+            else:
+                is_critical = True
+            damage = rollDamage(attack, dmg_stat)
+            appliedDamage = 0
+            for damage_type in damage:
+                appliedDamage += creature.takeDamage(damage[damage_type], damage_type, attack.from_weapon.is_brutal, is_critical)
+
             indicator = str(appliedDamage)
         else:
             indicator = 'Miss'
 
         return indicator
+
+    # Recalculates the entity damage and reach
+    def refreshStatAfterWeapon(self):
+        for hand in self.equippedWeapons:
+            eq_weapon = self.equippedWeapons[hand]
+            if eq_weapon is None:
+                continue
+            protection = eq_weapon.protection
+            if eq_weapon.type in self.chosen_weapons:
+                protection *= 2
+            if not eq_weapon.is_ranged:
+                if eq_weapon.range > self.reach:
+                    self.reach = eq_weapon.range
+            if eq_weapon.defense_type:
+                self.evasion['Melee']['piercing'] += protection
+                self.evasion['Melee']['slashing'] += protection
+                self.evasion['Melee']['bludgeoning'] += protection
+                if eq_weapon.defense_type == 'shield':
+                    self.evasion['Ranged'] += protection
+                    self.evasion['Melee']['bludgeoning'] -= protection
+                    self.armour['bludgeoning'] += int(protection / 2)
 
     # Gets the trait associated with the player's class
     def getClass(self):
@@ -412,6 +449,7 @@ class NPC(Character):
         self.target = None
         self.behaviour_type = 2
         self.team = 1
+        self.hitProf = 0
 
 
 # A hostile character

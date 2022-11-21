@@ -1,4 +1,4 @@
-from stats import assign_attack as st
+from .stats import assign_attack as st
 
 
 class Attack:
@@ -6,32 +6,24 @@ class Attack:
 
     def __init__(self, atk_name):
         self.name = atk_name
+        self.type = ''  # Raw or Weapon attack
+
         self.damage = (0, 0)
         self.damage_types = {}  # Contains the types of damage with their percentages
+        self.damage_maintype = ''  # The main type of damage for hit contests
+        self.avdmg = 0
+
+        self.id = 0
+        self.from_weapon = None
 
         self.getStats()
 
+    def getStats(self):
+        Attack.stats.getAttackStats(self)
+
+    def updateDamage(self, weapon):
+        if self.type == 'weapon':
+            dice_no = self.damage[0]
+            self.damage = (dice_no, weapon.damage_dice)
+
         self.avdmg = self.damage[0] * (self.damage[1] + 1) / 2
-
-    def getStats(self):
-        pass
-
-
-class WepAttack(Attack):
-    stats = st.AttackStats()
-
-    def __init__(self, atk_name):
-        super().__init__(atk_name)
-
-    def getStats(self):
-        WepAttack.stats.getWeaponAttackStats(self)
-
-
-class RawAttack(Attack):
-    stats = st.AttackStats()
-
-    def __init__(self, atk_name):
-        super().__init__(atk_name)
-
-    def getStats(self):
-        WepAttack.stats.getRawAttackStats(self)

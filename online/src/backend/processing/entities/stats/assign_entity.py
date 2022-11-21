@@ -89,6 +89,9 @@ class EntityStats:
 
         weapon.type = wepDict['Type']
         weapon.range = int(wepDict['Range'])
+        weapon.damage_dice = int(wepDict['Damage Dice'][1:])
+
+        weapon.attacks = convertList(wepDict['Attacks'])
 
         if wepDict['Ranged']:
             weapon.is_ranged = True
@@ -106,6 +109,8 @@ class EntityStats:
             weapon.is_heavy = True
         if wepDict['Finesse']:
             weapon.is_finesse = True
+        if wepDict['Devastating']:
+            weapon.is_brutal = True
 
         if wepDict['Protection']:
             weapon.protection = wepDict['Protection']
@@ -116,15 +121,15 @@ class EntityStats:
 
         armour.type = arDict['Type']
         armour.value = int(arDict['Value'])
-        armour.restriction = int(arDict['Dex Penalty'])
+        armour.flex = int(arDict['Dex Multiplier'])
         armour.weight = int(arDict['Movement Penalty'])
 
     def getObjectStats(self, i_object):
         objDict = self.getArmourDict(i_object.name)
 
-        i_object.armour['pierce'] = int(objDict['AC'])
-        i_object.armour['slash'] = int(objDict['AC'])
-        i_object.armour['bludgeon'] = int(objDict['AC'])
+        i_object.armour['piercing'] = int(objDict['AC'])
+        i_object.armour['slashing'] = int(objDict['AC'])
+        i_object.armour['bludgeoning'] = int(objDict['AC'])
         i_object.baseHealth = int(objDict['Health'])
 
         is_inv = bool(objDict['Inventory'])
@@ -220,7 +225,6 @@ class EntityStats:
 
         class_dict = self.tables.get_class_stats_dict(player.type)
         player.baseMovement = int(class_dict['Base Movement'])
-        player.baseEvasion = int(class_dict['Base Evasion'])
         player.baseArmour = int(class_dict['Base Armour'])
-        player.healthIncrement = int(class_dict['Health Increment'])
+        player.healthIncrement = int(class_dict['Health Dice'])
     

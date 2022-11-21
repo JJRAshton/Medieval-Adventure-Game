@@ -1,12 +1,12 @@
-﻿Name,Tier,Range,Damage,Finesse,Light,Two-handed,Heavy
-sharp_stick,0,5,1d4,,,y,
-sai,1,5,1d6,y,y,,
-fork,1,5,2d4,,,y,
-trident,2,5,3d3,y,,,
-spear,2,5,1d10,,,y,
-partisan,3,10,1d12,,,y,y
-pike,4,15,1d12,,,y,y
-smallsword,2,5,1d7,y,,,
-rapier,3,5,1d11,y,,,
-estoc,4,5,1d15,y,,y,y
-war_pick,3,5,1d10,,,,
+﻿Name,Tier,Range,Damage Dice,Finesse,Light,Two-handed,Heavy,Devastating,Attacks
+sharp_stick,0,5,d4,,,y,,,stab
+sai,1,5,d6,y,y,,,,stab
+fork,1,5,d4,,,y,,,impale
+trident,2,5,d5,y,,,,,impale
+spear,2,5,d10,,,y,,,stab
+partisan,3,10,d12,,,y,y,y,stab
+pike,4,15,d12,,,y,y,y,stab
+smallsword,2,5,d7,y,,,,,stab
+rapier,3,5,d11,y,,,,,stab
+estoc,4,5,d15,y,,y,y,,stab
+war_pick,3,5,d10,,,,,y,stab

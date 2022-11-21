@@ -1,8 +1,8 @@
-﻿Name,Tier,Range,Damage,Two-handed,Heavy,Protection,Defense Type,Devastating
-bec_de_corbin,4,10,2d8,y,y,3,sword,
-voulge,3,10,2d6,y,y,4,sword,
-halberd,4,10,2d8,y,y,5,sword,y
-pollaxe,3,10,2d6,y,y,4,sword,
-cavalry_morningstar,2,5,2d4,,,,,
-infantry_morningstar,3,10,2d6,y,y,2,sword,y
-guisarme,1,10,2d4,y,y,,,
+﻿Name,Tier,Range,Damage Dice,Two-handed,Heavy,Protection,Defense Type,Devastating,Attacks
+bec_de_corbin,4,10,d8,y,y,3,sword,,"pound, impale"
+voulge,3,10,d6,y,y,4,sword,,"cut, impale"
+halberd,4,10,d8,y,y,5,sword,y,"cut, impale"
+pollaxe,2,5,d6,y,y,4,sword,,"cut, impale, strike"
+cavalry_morningstar,2,5,d4,,,,,,smash
+infantry_morningstar,3,10,d6,y,y,2,sword,y,smash
+guisarme,1,10,d4,y,y,,,,"cut, stab"

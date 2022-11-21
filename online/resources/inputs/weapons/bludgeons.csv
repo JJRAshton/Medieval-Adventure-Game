@@ -1,12 +1,12 @@
-﻿Name,Tier,Range,Damage,Light,Ranged,Two-handed,Heavy,Devastating
-club,0,5,1d3,y,,,,
-quarterstaff,1,5,1d6,,,y,,
-greatclub,3,5,4d2,,,y,y,y
-whip,2,10,1d6,y,,,,
-flail,3,5,2d5,,,,,
-mace,1,5,3d2,,,,,
-flanged_mace,3,5,3d4,,,,,
-hammer,0,5,2d2,y,,,,
-warhammer,3,5,2d6,,,y,y,
-maul,4,5,3d5,,,y,y,y
-sling,2,40,1d6,,y,,,
+﻿Name,Tier,Range,Damage Dice,Light,Ranged,Two-handed,Heavy,Devastating,Attacks
+club,0,5,d3,y,,,,,strike
+quarterstaff,1,5,d6,,,y,,,strike
+greatclub,3,5,d2,,,y,y,y,crush
+whip,2,10,d6,y,,,,,strike
+flail,3,5,d5,,,,,,pound
+mace,1,5,d2,,,,,,slam
+flanged_mace,3,5,d4,,,,,,slam
+hammer,0,5,d2,y,,,,,pound
+warhammer,3,5,d6,,,y,y,,pound
+maul,4,5,d5,,,y,y,y,slam
+sling,2,40,d6,,y,,,,strike

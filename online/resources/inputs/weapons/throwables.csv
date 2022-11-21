@@ -1,3 +1,4 @@
-﻿Name,Tier,Range,Damage,Light,Throwable
-javelin,2,30,3d6,,y
-kunai,1,20,1d6,y,y
+﻿Name,Tier,Range,Damage,Light,Throwable,Attacks
+javelin,2,30,d6,,y,impale
+kunai,1,20,d6,y,y,stab
+shuriken,1,20,d6,y,y,slash

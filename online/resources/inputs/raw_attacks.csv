@@ -1,1 +1,2 @@
-﻿Name,Damage,Dmg Typ 1,Percentage,Dmg Typ 2,Percentage
+﻿Name,Damage,Dmg Typ 1,Dmg Typ 2,Fraction 1
+bash,2d4,bludgeoning,,1
