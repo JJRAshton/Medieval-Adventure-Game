@@ -7,8 +7,8 @@ from .make_dataframes import EntityTables
 # Order of stats for classes
 class_stat_order = {
     'Beserker': ['STR', 'CON', 'DEX', 'WIT'],
-    'Gladiator': ['CON', 'DEX', 'STR', 'WIT'],
-    'Ranger': ['STR', 'WIT', 'DEX', 'CON'],
+    'Gladiator': ['STR', 'DEX', 'CON', 'WIT'],
+    'Ranger': ['CON', 'WIT', 'DEX', 'STR'],
     'Knight': ['CON', 'STR', 'WIT', 'DEX'],
     'Archer': ['DEX', 'STR', 'WIT', 'CON'],
     'Professor': ['WIT', 'DEX', 'CON', 'STR'],
@@ -18,14 +18,18 @@ class_stat_order = {
 # Different armour levels for characters
 armour_levels = {
     1: ['hide', 'leather'],
-    2: ['hide', 'leather', 'lamellar', 'gambeson'],
+    2: ['hide', 'leather', 'padded_tunic', 'arming_doublet', 'gambeson'],
     3: {
-        'Light': ['leather', 'lamellar', 'gambeson'],
-        'Heavy':  ['cuirass', 'ring', 'scale', 'laminar', 'maille']
+        'Under': ['hide', 'leather'],
+        'Over': ['hauberk', 'scale', 'splint', 'lamellar']
     },
     4: {
-        'Light': ['lamellar', 'gambeson'],
-        'Heavy':  ['maille', 'splint', 'plate']
+        'Under': ['leather', 'padded_tunic', 'arming_doublet', 'gambeson', 'padded_jack'],
+        'Over':  ['breastplate', 'cuirass', 'hauberk', 'hauberk_riveted', 'scale', 'splint', 'lamellar']
+    },
+    5: {
+        'Under': ['padded_tunic', 'arming_doublet'],
+        'Over':  ['laminar', 'plate', 'full_plate']
     }
 }
 
@@ -52,15 +56,15 @@ def convertList(str):
     while ' ' in str:
         index = str.index(' ')
         str = str[:index] + str[index + 1:]
-    list = []
+    str_list = []
     while ',' in str:
         c_index = str.index(',')
         item = str[:c_index]
         str = str[c_index + 1:]
-        list.append(item)
-    list.append(str)
+        str_list.append(item)
+    str_list.append(str)
 
-    return list
+    return str_list
 
 
 class EntityStats:
@@ -105,12 +109,12 @@ class EntityStats:
             weapon.is_bolts = True
         if wepDict['Light']:
             weapon.is_light = True
-        if wepDict['Heavy']:
-            weapon.is_heavy = True
         if wepDict['Finesse']:
             weapon.is_finesse = True
-        if wepDict['Devastating']:
-            weapon.is_brutal = True
+        if wepDict['Armour Piercing']:
+            weapon.is_AP = True
+        if wepDict['Fine']:
+            weapon.is_fine = True
 
         if wepDict['Protection']:
             weapon.protection = wepDict['Protection']
@@ -120,8 +124,11 @@ class EntityStats:
         arDict = self.getArmourDict(armour.name)
 
         armour.type = arDict['Type']
-        armour.value = int(arDict['Value'])
-        armour.flex = int(arDict['Dex Multiplier'])
+        armour.material = arDict['Material']
+        armour.bulk = arDict['Bulk']
+        armour.coverage = arDict['Coverage']
+        armour.value = int(arDict['Armour Value'])
+        armour.flex = int(arDict['Flex']) / 100
         armour.weight = int(arDict['Movement Penalty'])
 
     def getObjectStats(self, i_object):
@@ -152,6 +159,7 @@ class EntityStats:
 
         if charDict['Base Armour']:
             character.baseArmour = charDict['Base Armour']
+            character.baseCoverage = 1
         if charDict['Inventory']:
             inventory = convertList(charDict['Inventory'])
             character.inventory = inventory
@@ -170,7 +178,10 @@ class EntityStats:
             if level > 2:
                 for armour_type in armour_levels[level]:
                     armour_list = armour_levels[level][armour_type]
-                    character.armour[armour_type] = rd.choice(armour_list)
+                    armour = rd.choice(armour_list)
+                    character.armour[armour_type] = armour
+                    if armour == 'padded_jack':
+                        break
             else:
                 armour_list = armour_levels[level]
                 character.armour['Light'] = rd.choice(armour_list)
@@ -190,6 +201,8 @@ class EntityStats:
         character.baseStat['DEX'] = int(charDict['DEX'])
         character.baseStat['CON'] = int(charDict['CON'])
         character.baseStat['WIT'] = int(charDict['WIT'])
+
+        character.baseEvasion = character.baseStat['DEX']
         
         character.baseHealth = rollStat(int(charDict['Difficulty']), character.baseStat['CON'], character.baseStat['CON'])
         if size == 'large':
@@ -209,7 +222,7 @@ class EntityStats:
 
     # Adds the stats to the given player
     def getPlayerStats(self, player):
-        x, n, top = 5, 8, 40  # roll 8, take best 5 - max of 40
+        x, n, top = 5, 6, 50  # roll 8, take best 5 - max of 40
         stat_rolls = []
 
         for _ in range(4):  # Number of stats to assign
@@ -237,10 +250,11 @@ class EntityStats:
         player.equippedWeapons['Right'] = rd.choice(choices)
 
         if player.type in ['Knight', 'Samurai']:
-            player.equippedArmour['Light'] = 'Leather'
+            player.equippedArmour['Under'] = 'leather'
 
         class_dict = self.tables.get_class_stats_dict(player.type)
         player.baseMovement = int(class_dict['Base Movement'])
         player.baseArmour = int(class_dict['Base Armour'])
-        player.healthIncrement = int(class_dict['Health Dice'])
+        player.baseEvasion = player.baseStat['DEX']
+        player.healthDice = int(class_dict['Health Dice'])
     

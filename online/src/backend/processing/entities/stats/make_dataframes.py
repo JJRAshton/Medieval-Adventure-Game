@@ -9,8 +9,8 @@ player_in_dir = f'{inputs_dir}/players.csv'
 weapon_in_dir = f'{inputs_dir}/weapons.csv'
 armour_in_dir = f'{inputs_dir}/armour.csv'
 
-weapon_type_atk = ['axes', 'bludgeons', 'bows', 'crossbows', 'double_edged_swords', 'mythical',
-                   'pierces', 'single_edged_swords', 'slashes', 'special', 'staves', 'throwables', 'wands']
+weapon_types = ['axes', 'bludgeons', 'bows', 'crossbows', 'double_edged_swords', 'edgeless_swords', 'glaives', 'mythical',
+                   'shields', 'single_edged_swords', 'spears', 'special', 'staves', 'throwables', 'wands']
 
 
 def read_char_inputs():
@@ -55,7 +55,7 @@ def make_character_stat_table(map_number_str):
 def make_weapon_stat_table():
 
     weapon_table = pd.DataFrame()
-    for weapon_type in weapon_type_atk:
+    for weapon_type in weapon_types:
         weapon_type_table = pd.read_csv(f'{inputs_dir}/weapons/{weapon_type}.csv', keep_default_na=False, index_col='Name')
         types = [weapon_type for _ in range(weapon_type_table.shape[0])]
         weapon_type_table['Type'] = types

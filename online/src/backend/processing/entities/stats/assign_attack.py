@@ -46,7 +46,6 @@ class AttackStats:
 
         dmg_type1 = atkDict['Dmg Typ 1']
         attack.damage_types[dmg_type1] = int(atkDict['Fraction 1'])
-        attack.damage_maintype = dmg_type1
         if atkDict['Dmg Typ 2']:
             dmg_type2 = atkDict['Dmg Typ 2']
             attack.damage_types[dmg_type2] = 1 - int(atkDict['Fraction 1'])

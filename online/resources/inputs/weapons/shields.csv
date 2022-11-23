@@ -1,7 +1,7 @@
-﻿Name,Tier,Light,Heavy,Protection,Defense Type,Attacks
-buckler,2,y,,5,parry,bash
-heater,2,,,6,shield,bash
-kite,3,,y,8,shield,bash
-pavise,4,,y,10,shield,bash
-rondache,2,,,5,shield,bash
-targe,1,,,4,shield,bash
+﻿Name,Tier,Light,Protection,Defense Type,Attacks
+buckler,2,y,5,parry,bash
+heater,2,,6,shield,bash
+kite,3,,8,shield,bash
+pavise,4,,10,shield,bash
+rondache,2,,5,shield,bash
+targe,1,,4,shield,bash

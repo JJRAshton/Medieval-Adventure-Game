@@ -8,6 +8,7 @@ class Time:
         self.back = given_back
         self.ai_manager = AIManager(self.back)
         self.initOrder = SortedList()
+        self.turn_notifier = turn_notifier
 
         self.is_combat = True
 
@@ -65,11 +66,11 @@ class Time:
     def playerTurn(self, character):
         if not character.is_conscious and not character.is_stable:
             outcome = character.makeSavingThrow()
-        pass
+        self.turn_notifier.announce(character.id, True)
 
     # Gets an NPC to make their turn
     def npcTurn(self, character):
         if not character.is_conscious and not character.is_stable:
             outcome = character.makeSavingThrow()
-        self.ai_manager.takeTurn(character.id)
+        self.turn_notifier.announce(character.id, False)
 

@@ -51,6 +51,8 @@ class Back:
 		self.monsters = []
 		self.npcs = []
 
+		self.classes = ['Beserker', 'Gladiator', 'Ranger', 'Knight', 'Samurai']  # For choosing the class from backend - before frontend input
+
 		self.maxReach = 5
 
 		self.loadMap()
@@ -96,7 +98,7 @@ class Back:
 	# Creates and registers a character and its inventory
 	def createCharacter(self, character_type, sub_type=None):
 		if character_type == 'Player' and sub_type is None:
-			character = ent.Player()
+			character = ent.Player(1, self.classes.pop(0))
 		elif character_type == 'Monster' and sub_type is not None:
 			character = ent.Monster(sub_type)
 		elif character_type == 'NPC' and sub_type is not None:

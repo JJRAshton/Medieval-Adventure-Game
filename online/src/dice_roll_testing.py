@@ -4,6 +4,8 @@ import random as rd
 stat1 = 20
 stat2 = 50
 
+crit = 30
+
 bonus1 = 25
 
 n = 100000
@@ -13,7 +15,7 @@ count = 0
 for i in range(n):
     roll1 = rd.randint(1, stat1) + bonus1
     roll2 = rd.randint(1, stat2)
-    if roll1 > 10*roll2:
+    if roll1 > crit*roll2:
         crit_count += 1
     elif roll1 > roll2:
         count += 1

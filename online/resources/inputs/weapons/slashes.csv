@@ -1,7 +1,0 @@
-﻿Name,Tier,Range,Damage Dice,Finesse,Light,Two-handed,Heavy,Devastating,Attacks
-sickle,0,5,d4,,y,,,,slash
-war scythe,4,10,d6,,,y,y,y,"cleave, strike"
-bill,1,10,d8,,,y,y,,slash
-naginata,3,10,d8,y,,y,y,y,"stab, cut"
-glaive,3,10,d9,,,y,y,y,cut
-falx,2,5,d6,,,y,y,y,cut

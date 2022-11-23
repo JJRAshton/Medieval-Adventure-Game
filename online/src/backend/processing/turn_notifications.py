@@ -1,14 +1,15 @@
-class TurnNotificationSubscription():
+class TurnNotificationSubscription:
 
     def __init__(self):
         #do nothing
         pass
 
-    def notify(self, character_on_turn):
+    def notify(self, character_on_turn, is_player):
         # Do something
         pass
 
-class TurnNotifier():
+
+class TurnNotifier:
 
     def __init__(self):
         self.subscriptions = []
@@ -18,8 +19,8 @@ class TurnNotifier():
         # notify(id) method, which will get called when a new turn passes.
         self.subscriptions.append(subscription)
 
-    def announce(self, charecter_on_turn):
+    def announce(self, character_on_turn, is_player):
         # Call this to announce to all subscriptions that the turn has
         # changed
-        for subscription in self.subcriptions:
-            subscription.notify(charecter_on_turn)
+        for subscription in self.subscriptions:
+            subscription.notify(character_on_turn, is_player)

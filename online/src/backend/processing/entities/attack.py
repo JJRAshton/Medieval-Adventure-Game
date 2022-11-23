@@ -22,8 +22,17 @@ class Attack:
         Attack.stats.getAttackStats(self)
 
     def updateDamage(self):
+
         if self.type == 'weapon' and self.from_weapon is not None:
             dice_no = self.damage[0]
             self.damage = (dice_no, self.from_weapon.damage_dice)
 
         self.avdmg = self.damage[0] * (self.damage[1] + 1) / 2
+
+        current_percent = 0
+        for dmg_type in self.damage_types:
+            if self.damage_types[dmg_type] > current_percent:
+                self.damage_maintype = dmg_type
+
+    def setWeapon(self, weapon):
+        self.from_weapon = weapon
