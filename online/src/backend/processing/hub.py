@@ -161,5 +161,9 @@ class Hub:
             raise ValueError
 
         character = self.chart.characters[charID]
+        infoDict = {
+            'Team': character.team,
+            'Remaining_movement': character.movement
+        }
 
-        return character.team
+        return infoDict
