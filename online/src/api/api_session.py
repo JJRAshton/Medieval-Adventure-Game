@@ -36,6 +36,7 @@ class APISession:
 
     # Called by the backend, sends a json message
     def broadcast(self, message):
+        print(len(self.playerPool))
         websockets.broadcast({user.socket for user in self.playerPool}, json.dumps(message))
 
     def sendToUserWithID(self, message, uuid):
@@ -73,6 +74,7 @@ class APISession:
                                     
             locations = self.backend.locationsRequest()
             characterLocations = [(characterID, locations[characterID]) for characterID in locations]
+            print(f"Broadcasting locations: {characterLocations}")
             self.broadcast({"responseType": "mapUpdate", "characters": characterLocations})
             
         if jsonEvent["event"] == "attackRequest":

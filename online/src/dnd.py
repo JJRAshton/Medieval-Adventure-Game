@@ -3,6 +3,7 @@
 import asyncio
 import json
 import websockets
+import copy
 
 from api.users import currentUsers
 from api.users import User
@@ -47,7 +48,7 @@ async def addToLobby(websocket):
                 playerPool.add(user)
                 broadcast(users_event())
                 if len(playerPool) > 1:
-                    APISession(playerPool)
+                    APISession(copy.copy(playerPool))
                     # All players should now have been added to the game, so removes them from the pool.
                     playerPool.clear()
             elif event["event"] == "leaveGame":
@@ -55,7 +56,7 @@ async def addToLobby(websocket):
                     playerPool.remove(user)
                     broadcast(users_event())
             else:
-                print(f"unsupported event: {event}")
+                print(f"Unsupported event: {event}")
     finally:
         # Unregister user
         if user in playerPool:

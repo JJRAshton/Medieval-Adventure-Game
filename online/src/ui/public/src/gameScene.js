@@ -160,6 +160,7 @@ export class Game extends Context {
 
     // Processing events from server
     handleEvent(contextHandler, event) {
+        console.log(event);
         switch (event.responseType) {
             case "turnNotification":
                 // These will probably get sent when our turn starts or ends
@@ -171,7 +172,8 @@ export class Game extends Context {
                 break;
             case "mapUpdate":
                 event.characters.forEach(character => {
-                    this.characters.get(character.id).setPosition(character.x, character.y);
+                    console.log(character);
+                    this.characters.get(character[0]).setPosition(character[1][0], character[1][1]);
                 })
                 break;
             default:
