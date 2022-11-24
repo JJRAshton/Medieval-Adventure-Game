@@ -9,13 +9,13 @@ class Player(ch.Character):
     names = ['Robert', 'Arthur', 'Grork', 'Fosdron', 'Thulgraena', 'Diffros', 'Ayda', 'Tezug', 'Dor\'goxun', 'Belba']
 
     class_weapons = {
-        'Beserker': ['axes', 'bludgeons', 'glaives'],
+        'Raider': ['axes', 'bludgeons', 'glaives'],
         'Gladiator': ['spears', 'mythical', 'throwables'],
         'Ranger': ['bows', 'double_edged_swords', 'special'],
         'Knight': ['hybrids', 'double_edged_swords', 'shields'],
-        'Archer': ['bows', 'crossbows', 'throwables'],
+        'Hunter': ['bows', 'crossbows', 'axes'],
         'Professor': ['staves', 'wands', 'mythical'],
-        'Samurai': ['single_edged_swords', 'throwables', 'bows']
+        'Ninja': ['single_edged_swords', 'throwables', 'bows']
     }
 
     def __init__(self, playerLevel=1, playerClass=None, playerName=None):

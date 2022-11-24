@@ -1,5 +1,6 @@
-﻿Name,Tier,Range,Damage Dice,Finesse,Light,Two-handed,Fine,Attacks
-sai,1,5,d6,y,y,,,stab
-smallsword,2,5,d9,y,,,y,stab
-rapier,3,5,d13,y,,,y,stab
-estoc,4,5,d17,y,,y,y,stab
+﻿Name,Tier,Range,Damage Dice,Finesse,Light,Two-handed,Fine,Protection,Defense Type,Attacks
+sai,1,5,d6,y,y,,,,,stab
+smallsword,2,5,d9,y,,,y,,,stab
+rapier,3,5,d13,y,,,y,,,stab
+estoc,4,5,d17,y,,y,y,,,stab
+basket-hilted,3,5,d7,y,,,,3,parry,impale

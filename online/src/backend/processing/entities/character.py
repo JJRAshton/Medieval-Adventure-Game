@@ -1,12 +1,11 @@
 import random as rd
 
-from . import entity as obj
-from .static_functions import rollDamage
+from . import entity as ent
 from . import attack as at
 from . import item as it
 
 
-class Character(obj.HealthEntity):
+class Character(ent.HealthEntity):
     def __init__(self, entityName):
         super().__init__(entityName)
         self.baseEvasion = 0
@@ -77,6 +76,10 @@ class Character(obj.HealthEntity):
     # Allows for sorting by initiative order in sorted list
     def __lt__(self, other):
         return self.initiative > other.initiative
+
+    # Resets health to max health
+    def refreshHealth(self):
+        self.health = self.maxHealth
     
     # Moves entity by given vector and decreases movement
     def move(self, vector):
@@ -135,17 +138,17 @@ class Character(obj.HealthEntity):
 
         hitResult = self.hitContest(attack, hitBonus, creature)
 
-        if attack.from_weapon.is_finesse:
-            dmg_stat = max(self.stat['DEX'], self.stat['STR'])
-        else:
-            dmg_stat = self.stat['STR']
+        dmg_stat = self.stat['STR']
+        if attack.from_weapon is not None:
+            if attack.from_weapon.is_finesse:
+                dmg_stat *= 1 + self.stat['DEX'] / 100
 
         if hitResult > 0:
             if hitResult == 1:
                 is_critical = False
             else:
                 is_critical = True
-            damage = rollDamage(attack, dmg_stat)
+            damage = attack.rollDamage(dmg_stat)
             appliedDamage = 0
             is_AP = attack.from_weapon.is_AP
             if creature.equippedArmour['Over'] is not None:
@@ -245,15 +248,15 @@ class Character(obj.HealthEntity):
             self.coverage += eq_armour.coverage / 100
             if material == 'cloth':
                 self.armour['slashing'] += value
-                self.armour['piercing'] += value
+                self.armour['piercing'] += 0.5 * value
                 self.armour['bludgeoning'] += value
             elif material == 'mail':
                 self.armour['slashing'] += value
-                self.armour['piercing'] += 0.3*value
+                self.armour['piercing'] += 0.5 * value
             elif material == 'plate':
                 self.armour['slashing'] += value
                 self.armour['piercing'] += value
-                self.armour['bludgeoning'] += 0.4 * value
+                self.armour['bludgeoning'] += 0.5 * value
 
         if self.coverage > 1:
             self.coverage = 1

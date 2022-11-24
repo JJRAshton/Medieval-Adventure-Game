@@ -1,8 +1,8 @@
-﻿Name,Base Armour,Health Dice,Base Movement
-Beserker,3,40,30
-Gladiator,2,26,30
-Ranger,0,24,35
-Knight,0,36,25
-Archer,0,20,35
-Professor,0,16,30
-Samurai,1,30,30
+﻿Name,Health Dice,Base Movement,Armour
+Raider,34,35,hide
+Gladiator,38,30,
+Ranger,28,30,hide
+Knight,30,25,padded_tunic
+Hunter,24,40,hide
+Professor,22,30,
+Ninja,26,35,leather

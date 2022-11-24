@@ -1,7 +1,6 @@
 import random as rd
 
 from .stats import EntityStats
-from .static_functions import rollDamage
 from . import attack as at
 
 

@@ -1,5 +1,5 @@
 ﻿Name,Tier,Range,Damage Dice,Light,Two-handed,Armour Piercing,Attacks
-hatchet,0,5,d2,y,,y,cut
+hatchet,0,5,d2,y,,y,slash
 handaxe,1,5,d4,y,,y,cut
 battleaxe,2,5,d10,,y,y,hack
 bardiche,3,10,d10,,y,y,"cut, hack, stab"

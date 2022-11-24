@@ -6,13 +6,13 @@ from .make_dataframes import EntityTables
 
 # Order of stats for classes
 class_stat_order = {
-    'Beserker': ['STR', 'CON', 'DEX', 'WIT'],
+    'Raider': ['STR', 'CON', 'DEX', 'WIT'],
     'Gladiator': ['STR', 'DEX', 'CON', 'WIT'],
     'Ranger': ['CON', 'WIT', 'DEX', 'STR'],
     'Knight': ['CON', 'STR', 'WIT', 'DEX'],
-    'Archer': ['DEX', 'STR', 'WIT', 'CON'],
+    'Hunter': ['DEX', 'STR', 'WIT', 'CON'],
     'Professor': ['WIT', 'DEX', 'CON', 'STR'],
-    'Samurai': ['DEX', 'WIT', 'STR', 'CON']
+    'Ninja': ['DEX', 'WIT', 'STR', 'CON'],
 }
 
 # Different armour levels for characters
@@ -93,7 +93,8 @@ class EntityStats:
 
         weapon.type = wepDict['Type']
         weapon.range = int(wepDict['Range'])
-        weapon.damage_dice = int(wepDict['Damage Dice'][1:])
+        if wepDict['Damage Dice']:
+            weapon.damage_dice = int(wepDict['Damage Dice'][1:])
 
         weapon.attacks = convertList(wepDict['Attacks'])
 
@@ -117,7 +118,7 @@ class EntityStats:
             weapon.is_fine = True
 
         if wepDict['Protection']:
-            weapon.protection = wepDict['Protection']
+            weapon.protection = int(wepDict['Protection'])
             weapon.defense_type = wepDict['Defense Type']
 
     def getArmourStats(self, armour):
@@ -222,7 +223,7 @@ class EntityStats:
 
     # Adds the stats to the given player
     def getPlayerStats(self, player):
-        x, n, top = 5, 6, 50  # roll 8, take best 5 - max of 40
+        x, n, top = 5, 7, 50  # roll 8, take best 5 - max of 40
         stat_rolls = []
 
         for _ in range(4):  # Number of stats to assign
@@ -243,18 +244,16 @@ class EntityStats:
         df = self.tables.weapons
         wep_option_df = pd.DataFrame()
         for wep_type in player.class_weapons[player.type]:
-            wepData = df[(df.Type == wep_type) & (df.Tier == 0)]
+            wepData = df[(df.Type == wep_type) & (df.Tier == 4)]
             wep_option_df = pd.concat([wep_option_df, wepData])
 
         choices = wep_option_df.index.tolist()
         player.equippedWeapons['Right'] = rd.choice(choices)
 
-        if player.type in ['Knight', 'Samurai']:
-            player.equippedArmour['Under'] = 'leather'
-
         class_dict = self.tables.get_class_stats_dict(player.type)
+        if class_dict['Armour']:
+            player.equippedArmour['Under'] = class_dict['Armour']
         player.baseMovement = int(class_dict['Base Movement'])
-        player.baseArmour = int(class_dict['Base Armour'])
         player.baseEvasion = player.baseStat['DEX']
         player.healthDice = int(class_dict['Health Dice'])
     
