@@ -2,25 +2,55 @@ from sortedcontainers import SortedList
 from ai.ai_manager import AIManager
 
 
-class Time:
+class TurnManager:
 
     def __init__(self, given_back, turn_notifier):
         self.back = given_back
         self.ai_manager = AIManager(self.back)
         self.initOrder = SortedList()
         self.turn_notifier = turn_notifier
+        self.turn_notifier.subscribe(self.ai_manager)
 
         self.is_combat = True
+        self.started = False
 
         self.winning_team = 0  # 1: Players, 2: Monsters
 
+    def get_on_turn_id(self):
+        if not self.started:
+            raise RuntimeError("Game has not started")
+        return self.on_turn
+
     # Starts the games turns
     def start(self):
-
         for character in self.back.characters:
             self.initOrder.add(character)
 
-        self.loop()
+        if len(self.initOrder) == 0:
+            raise RuntimeError("Started game with no players?")
+
+        self.started = True
+        self._on_turn_index = 0
+        self.on_turn_id = self.initOrder[self._on_turn_index].id
+
+    def endTurn(self):
+        # This resets the previous player at the end of their turn
+        self.initOrder[self._on_turn_index].initaliseTurn()
+
+        self._on_turn_index += 1
+        self._on_turn_index %= len(self.initOrder) # It is unsafe to add and remove players
+
+        on_turn_character = self.initOrder[self._on_turn_index]
+        on_turn_character.initaliseTurn()
+        self.on_turn_id = on_turn_character.id
+        
+        if on_turn_character.is_alive:
+            if not on_turn_character.is_conscious and not on_turn_character.is_stable:
+                on_turn_character.makeSavingThrow()
+
+            self.turn_notifier.announce(on_turn_character.id, True)
+        else:
+            self.endTurn()
 
     # The combat round/turn loop
     def loop(self):
@@ -28,8 +58,7 @@ class Time:
         while self.is_combat:
 
             for n_round, character in enumerate(self.initOrder, start=1):
-                if not character.is_alive:
-                    continue
+
 
                 if character.behaviour_type == 1:
                     self.playerTurn(character)
@@ -61,16 +90,3 @@ class Time:
         if not is_a_monster:
             self.winning_team = 1
             self.is_combat = False
-
-    # Gets a player to make their turn
-    def playerTurn(self, character):
-        if not character.is_conscious and not character.is_stable:
-            outcome = character.makeSavingThrow()
-        self.turn_notifier.announce(character.id, True)
-
-    # Gets an NPC to make their turn
-    def npcTurn(self, character):
-        if not character.is_conscious and not character.is_stable:
-            outcome = character.makeSavingThrow()
-        self.turn_notifier.announce(character.id, False)
-

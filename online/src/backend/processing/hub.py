@@ -95,7 +95,7 @@ class Hub:
         self.chart = bk.Back(self.map, n_players)
         turn_notifier = TurnNotifier()
         turn_notifier.subscribe(self.front_end_turn_notification_subscription)
-        self.time = tn.Time(self.chart, turn_notifier)
+        self.time = tn.TurnManager(self.chart, turn_notifier)
         self.map_size = self.chart.size
 
     # Starts the turns
