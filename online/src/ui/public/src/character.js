@@ -9,8 +9,7 @@ export default class Character {
         this.y = y;
         this.statsStyle = {
             fontSize: 20,
-            listStyle: "none"
-
+            listStyle: "none",
         }
         this.initialiseStats()
     }
@@ -31,7 +30,7 @@ export default class Character {
     construct(characterInfo) {
         console.log(characterInfo);
 
-        this.attack = characterInfo.Attacks;
+        this.attacks = characterInfo.Attacks;
         this.armour = null; // Not yet implemented
         this.health = characterInfo.Health;
         this.inventory = null // Not yet implemented
@@ -57,14 +56,26 @@ export default class Character {
         return null;
     }
 
+    renderAttacks() {
+        if (this.infoReceived) {
+            let children = [];
+            this.attacks.forEach((attack) => {children.push(this.createAttackLi(attack))});
+            return <ul className="stats" style={this.statsStyle}> {children} </ul>
+        }
+        else {
+            return <ul className="stats" style={this.statsStyle}>Could not load attacks</ul>
+        }
+    }
+
+    createAttackLi(attack) {
+        return <li key={attack.Name+"_"+attack.Weapon}>{attack.Name} ({attack.Weapon})</li>
+    }
+
     renderStats() {
-        
         if (this.infoReceived) {
             let children = [];
             this.stats.forEach((value, stat) => {children.push(this.createStatLi(stat, value))});
-            return <ul className="stats" style={this.statsStyle}>
-                {children}
-            </ul>
+            return <ul className="stats" style={this.statsStyle}> {children} </ul>
         }
         else {
             return <ul className="stats" style={this.statsStyle}>Could not load stats</ul>

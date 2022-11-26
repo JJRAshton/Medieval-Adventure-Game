@@ -55,6 +55,7 @@ export class Game extends Context {
                                 event: "endTurnRequest"
                             }))}>End Turn</li>
                     </ul>
+                    {this.character.renderAttacks()}
                     {this.character.renderStats()}
                 </div>
 
@@ -135,6 +136,13 @@ export class Game extends Context {
                 ctx.fillStyle = 'green';
             }
             ctx.fillRect((character.x * TILE_WIDTH) + 3, (character.y * TILE_WIDTH) + 3, TILE_WIDTH - 6, TILE_WIDTH - 6);
+            ctx.fillStyle = 'black'
+            ctx.fillRect((character.x * TILE_WIDTH) + 13, (character.y * TILE_WIDTH) + 13, 8, 8);
+            ctx.fillRect(((character.x + 1) * TILE_WIDTH) - 13 - 8, (character.y * TILE_WIDTH) + 13, 8, 8);
+
+            ctx.fillRect((character.x * TILE_WIDTH) + 13, ((character.y + 1) * TILE_WIDTH) - 20, TILE_WIDTH - 6 - 10 - 6, 6);
+
+
         })
 
         // Draw outer boundary
