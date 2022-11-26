@@ -108,10 +108,10 @@ class Character(ent.HealthEntity):
             crit_weighting = int(0.5 * crit_weighting)
 
         # Picks which opponent evasion to use
-        if attack.from_weapon.is_ranged:
-            opponentRoll = rd.randint(1, opponent.evasion['Ranged'])
-        else:
+        if not attack.from_weapon.is_ranged and attack.damage_maintype in opponent.evasion['Melee']:
             opponentRoll = rd.randint(1, opponent.evasion['Melee'][attack.damage_maintype])
+        else:
+            opponentRoll = rd.randint(1, opponent.evasion['Ranged'])
 
         ownRoll = rd.randint(1, self.stat['DEX'])
         ownResult = ownRoll + hitBonus

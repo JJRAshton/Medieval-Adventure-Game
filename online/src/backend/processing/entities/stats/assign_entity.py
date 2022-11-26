@@ -4,17 +4,6 @@ import pandas as pd
 from .make_dataframes import EntityTables
 
 
-# Order of stats for classes
-class_stat_order = {
-    'Raider': ['STR', 'CON', 'DEX', 'WIT'],
-    'Gladiator': ['STR', 'DEX', 'CON', 'WIT'],
-    'Ranger': ['CON', 'WIT', 'DEX', 'STR'],
-    'Knight': ['CON', 'STR', 'WIT', 'DEX'],
-    'Hunter': ['DEX', 'STR', 'WIT', 'CON'],
-    'Professor': ['WIT', 'DEX', 'CON', 'STR'],
-    'Ninja': ['DEX', 'WIT', 'STR', 'CON'],
-}
-
 # Different armour levels for characters
 armour_levels = {
     1: ['hide', 'leather'],
@@ -52,17 +41,17 @@ def rollStat(number, dice, bonus):
     return stat
 
 
-def convertList(str):
-    while ' ' in str:
-        index = str.index(' ')
-        str = str[:index] + str[index + 1:]
+def convertList(list_str):
+    while ' ' in list_str:
+        index = list_str.index(' ')
+        list_str = list_str[:index] + list_str[index + 1:]
     str_list = []
-    while ',' in str:
-        c_index = str.index(',')
-        item = str[:c_index]
-        str = str[c_index + 1:]
+    while ',' in list_str:
+        c_index = list_str.index(',')
+        item = list_str[:c_index]
+        list_str = list_str[c_index + 1:]
         str_list.append(item)
-    str_list.append(str)
+    str_list.append(list_str)
 
     return str_list
 
@@ -91,7 +80,7 @@ class EntityStats:
     def getWeaponStats(self, weapon):   # Doesn't collect all data
         wepDict = self.getWeaponDict(weapon.name)
 
-        weapon.type = wepDict['Type']
+        weapon.p_class = wepDict['Type']
         weapon.range = int(wepDict['Range'])
         if wepDict['Damage Dice']:
             weapon.damage_dice = int(wepDict['Damage Dice'][1:])
@@ -124,7 +113,7 @@ class EntityStats:
     def getArmourStats(self, armour):
         arDict = self.getArmourDict(armour.name)
 
-        armour.type = arDict['Type']
+        armour.p_class = arDict['Type']
         armour.material = arDict['Material']
         armour.bulk = arDict['Bulk']
         armour.coverage = arDict['Coverage']
@@ -223,7 +212,7 @@ class EntityStats:
 
     # Adds the stats to the given player
     def getPlayerStats(self, player):
-        x, n, top = 5, 7, 50  # roll 8, take best 5 - max of 40
+        x, n, top = 3, 8, 48  # roll 8, take best 5 - max of 40
         stat_rolls = []
 
         for _ in range(4):  # Number of stats to assign
@@ -238,22 +227,21 @@ class EntityStats:
             stat_rolls.append(sum(one_stat_roll))
         stat_rolls.sort(reverse=True)
 
-        for stat in class_stat_order[player.type]:
+        for stat in player.p_class.stat_order:
             player.baseStat[stat] = stat_rolls.pop(0)
 
         df = self.tables.weapons
         wep_option_df = pd.DataFrame()
-        for wep_type in player.class_weapons[player.type]:
-            wepData = df[(df.Type == wep_type) & (df.Tier == 4)]
+        for wep_type in player.p_class.weapons:
+            wepData = df[(df.Type == wep_type) & (df.Tier == 0)]
             wep_option_df = pd.concat([wep_option_df, wepData])
 
         choices = wep_option_df.index.tolist()
         player.equippedWeapons['Right'] = rd.choice(choices)
 
-        class_dict = self.tables.get_class_stats_dict(player.type)
+        class_dict = self.tables.get_class_stats_dict(player.p_class.name)
         if class_dict['Armour']:
             player.equippedArmour['Under'] = class_dict['Armour']
         player.baseMovement = int(class_dict['Base Movement'])
         player.baseEvasion = player.baseStat['DEX']
-        player.healthDice = int(class_dict['Health Dice'])
     

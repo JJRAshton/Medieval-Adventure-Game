@@ -10,3 +10,5 @@ stab,1,piercing,,1
 impale,2,piercing,,1
 hack,2,slashing,bludgeoning,0.7
 smash,2,piercing,bludgeoning,0.5
+,,,,
+shock,1,energy,,1
