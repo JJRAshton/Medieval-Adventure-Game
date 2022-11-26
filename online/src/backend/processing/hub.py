@@ -110,6 +110,10 @@ class Hub:
         
         return players
 
+    # Ends turn and start the next one
+    def endTurn(self):
+        self.turn_manager.endTurn()
+
     # Gives the locations of all characters
     def giveCharLoc(self):
         char_locs = {}

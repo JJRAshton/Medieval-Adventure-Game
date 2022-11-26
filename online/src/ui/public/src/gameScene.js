@@ -47,10 +47,17 @@ export class Game extends Context {
                 display: "inline-flex", 
                 fontSize: "32"}}>
                 { this.canvas }
-                <ul className="gameOptions" style={{"listStyle": "none"}}>
-                    <li className="button" style={{fontSize: 32}}>Attack</li>
-                    <li className="button" style={{fontSize: 32}}>Move</li>
-                </ul>
+                <div className="info">
+                    <ul className="gameOptions" style={{"listStyle": "none"}}>
+                        <li className="button"
+                            style={{fontSize: 32}}
+                            onClick={()=>this.socket.send(JSON.stringify({
+                                event: "endTurnRequest"
+                            }))}>End Turn</li>
+                    </ul>
+                    {this.character.renderStats()}
+                </div>
+
             </div>
         </div>
         );
