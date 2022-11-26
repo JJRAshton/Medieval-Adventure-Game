@@ -33,6 +33,7 @@ class TurnManager:
         self.started = True
         self._on_turn_index = 0
         self.on_turn_id = self.initOrder[self._on_turn_index].id
+        self.turn_notifier.announce(self.on_turn_id, self.initOrder[self._on_turn_index].behaviour_type == 1)
 
     def endTurn(self):
         # This resets the previous player at the end of their turn
@@ -49,7 +50,7 @@ class TurnManager:
             if not on_turn_character.is_conscious and not on_turn_character.is_stable:
                 on_turn_character.makeSavingThrow()
 
-            self.turn_notifier.announce(on_turn_character.id, True)
+            self.turn_notifier.announce(on_turn_character.id, on_turn_character.behaviour_type == 1)
         else:
             # If the next player is dead, we skip turn immediately
             self.endTurn()

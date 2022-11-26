@@ -9,8 +9,13 @@ const websocket = new WebSocket("ws://localhost:8001/");
 websocket.addEventListener("open", () => {
     const contextHandler = new ContextHandler(root, websocket);
     websocket.onmessage = ({ data }) => {
-        console.log("MESSAGE:");
-        console.log(data);
+        // debugServerMessages(data);
+
         contextHandler.handleEvent(data)
     };
 });
+
+function debugServerMessages(data) {
+    console.log("MESSAGE:");
+    console.log(data);
+}

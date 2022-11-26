@@ -37,7 +37,6 @@ class APISession:
 
     # Called by the backend, sends a json message
     def broadcast(self, message):
-        print(len(self.playerPool))
         websockets.broadcast({user.socket for user in self.playerPool}, json.dumps(message))
 
     def sendToUserWithID(self, message, uuid):
@@ -52,24 +51,20 @@ class APISession:
         # called directly by the user which is maybe a weird code flow?
         print(jsonEvent)
 
+        if not "event" in jsonEvent:
+            raise ValueError(f"Request {jsonEvent} does not declare its type")
         if jsonEvent["event"] == "moveRequest":
-            print(jsonEvent["route"])
             try:
                 playerID = int(jsonEvent["playerID"])
             except:
-                print(f"Could not convert player ID to int {jsonEvent['playerID']}")
-                return
-            # move = self.backend.moveRequest(jsonEvent["playerID"], jsonEvent["coords"])
+                raise ValueError("Could not convert player ID")
             if len(jsonEvent["route"]) < 2:
                 return
             for coord in jsonEvent["route"][1:]:
-                print(f"coord {coord}")
                 if self.backend.moveVerificationRequest(playerID, coord):
-                    print("Move verified")
                     if not self.backend.moveRequest(playerID, coord):
                         # If the move goes through, update the player
                         break
-                    print("Move succeeded") 
                 else:
                     break
                                     
@@ -77,6 +72,16 @@ class APISession:
             characterLocations = [(characterID, locations[characterID]) for characterID in locations]
             print(f"Broadcasting locations: {characterLocations}")
             self.broadcast({"responseType": "mapUpdate", "characters": characterLocations})
+
+        elif jsonEvent["event"] == "playerInfoRequest":
+            characterID = jsonEvent["characterID"]
+            
+            output = json.dumps({
+                "responseType": "playerInfo",
+                "characterID": characterID,
+                "playerInfo": self.backend.infoRequest(characterID)
+            })
+            websockets.broadcast({user.socket}, output)
             
         elif jsonEvent["event"] == "attackRequest":
             attack=self.backend.attackRequest(jsonEvent["playerID"], jsonEvent["enemyID"])
@@ -84,15 +89,18 @@ class APISession:
                 "responseType": "attackResult",
                 "attackResult": str(attack)
             })
-            user.socket.send(output)
+            websockets.broadcast({user.socket}, output)
 
         elif jsonEvent["event"] == "mapRequest":
             map = self.backend.locationsRequest()
             output = self.translator.map_to_json(map)
-            user.socket.send(output)
+            websockets.broadcast({user.socket}, output)
 
         elif jsonEvent["event"] == "endTurnRequest":
             self.backend.endTurnRequest()
+
+        else:
+            raise ValueError(f"Event type: '{jsonEvent['event']}' was not recognised")
 
 
 

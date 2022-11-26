@@ -31,6 +31,7 @@ export class Game extends Context {
         const characterMap = new Map();
         for (var i = 0; i < characters.length; i++) {
             const character = characters[i];
+            this.socket.send(JSON.stringify({event: "playerInfoRequest", characterID: character[0]}))
             characterMap.set(character[0], new Character(character[0], character[1][0], character[1][1]))
         }
         return characterMap
@@ -140,7 +141,6 @@ export class Game extends Context {
         ctx.strokeRect(1, 1, this.mapWidth * TILE_WIDTH - 2, this.mapHeight * TILE_WIDTH - 2);
         ctx.beginPath();
     
-        // ctx.fillRect((this.playerX * TILE_WIDTH) + 3, (this.playerY * TILE_WIDTH) + 3, TILE_WIDTH - 6, TILE_WIDTH - 6)
         ctx.fill()
     }
 
@@ -172,8 +172,7 @@ export class Game extends Context {
         console.log(event);
         switch (event.responseType) {
             case "turnNotification":
-                // These will probably get sent when our turn starts or ends
-                console.log("Turn notificaion received ", event.onTurnID, this.playerID);
+                // These will get sent when the turn changes
                 this.takingTurn = (event.onTurnID == this.playerID);
                 if (!this.takingTurn) {
                     // Reset the planned movement if we're told it's not our turn
@@ -181,12 +180,17 @@ export class Game extends Context {
                 }
                 break;
             case "mapUpdate":
+                // These get sent when someone moves, or when something changes
                 event.characters.forEach(character => {
                     console.log(character);
                     this.characters.get(character[0]).setPosition(character[1][0], character[1][1]);
                 })
                 break;
+            case "playerInfo":
+                this.characters.get(event.characterID).construct(event.playerInfo);
+                break;
             default:
+                console.log("Unrecognised event" + event)
         }
     }
 }
