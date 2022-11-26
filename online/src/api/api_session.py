@@ -18,7 +18,7 @@ class APISession:
         self.translator = PythonToJSONTranslator()
 
         # Starting the DnD encounter:
-        character_info_list, size = self.backend.startRequest(len(playerPool), 1)
+        character_info_list, size = self.backend.init(len(playerPool), 1)
         mapWidth, mapHeight = size
         if len(character_info_list) != len(playerPool):
             raise ValueError("Wrong number of players created on games start")

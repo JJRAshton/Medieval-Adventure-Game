@@ -1,6 +1,6 @@
 import random as rd
 
-from . import turns as tn
+from . import turn_manager as tn
 from . import back as bk
 from .turn_notifications import TurnNotifier
 
