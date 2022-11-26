@@ -43,8 +43,6 @@ class Hub:
         elif category == 1:
             self.chart.moveCharacter(localID, coords)
             completed = True
-            if self.chart.checkOpportunity(localID, coords):
-                pass  # makes opportunity attacks
     
         return completed
 

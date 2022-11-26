@@ -208,28 +208,6 @@ class Back:
 
         armour.is_carried = False
 
-    # Makes a list of characters that can make an opportunity attack upon given characters movement to the new coords
-    def checkOpportunity(self, charID, newCoords):
-        searchRadius = int(self.maxReach / 5)
-        oldx, oldy = self.characters[charID].coords
-
-        characters = []
-
-        for y in range(oldy - searchRadius, oldy + searchRadius + 1):
-            for x in range(oldx - searchRadius, oldx + searchRadius + 1):
-                if self.characterGrid[x][y] is not None:
-                    entity = self.characterGrid[x][y]
-                    if entity.is_conscious:
-                        if entity.reach != self.maxReach:
-                            olddist = calcRadDist((x, y), (oldx, oldy))
-                            if olddist > entity.reach:
-                                continue
-                        newdist = calcRadDist((x, y), newCoords)
-                        if newdist > entity.reach:
-                            characters.append(entity)
-
-        return characters
-
     # Checks if there is an item at the given coords
     def is_item(self, coords):
         if self.itemGrid[coords[0]][coords[1]] is None:
