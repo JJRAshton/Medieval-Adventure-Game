@@ -1,10 +1,14 @@
+from .brain import Brain
 class AIManager:
     # Gets prompted to make a move or decision by a backend endpoint,
     # then makes a call to the backend API.
 
     def __init__(self, backend):
         # This is the access point to the backend
-        self.backend = backend
+        self.brains = []
+
+    def notify(self, turn_character_id, is_player):
+        pass
 
     def takeTurn(self, id):
         # Called by the backend

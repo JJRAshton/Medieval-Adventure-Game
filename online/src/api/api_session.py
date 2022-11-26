@@ -1,7 +1,7 @@
 import json
 import websockets
 from backend import Requests
-from backend import TurnNotificationSubscription
+from .api_turn_notification_subscription import APITurnNotificationSubscription
 
 
 class APISession:
@@ -12,13 +12,13 @@ class APISession:
         for player in playerPool:
             player.session = self
         
-        turnNotifier = TurnNotificationSubscription()
+        turnNotifier = APITurnNotificationSubscription(playerPool)
 
         self.backend = Requests(turnNotifier)
         self.translator = PythonToJSONTranslator()
 
         # Starting the DnD encounter:
-        character_info_list, size = self.backend.startRequest(len(playerPool), 1)
+        character_info_list, size = self.backend.init(len(playerPool), 1)
         mapWidth, mapHeight = size
         if len(character_info_list) != len(playerPool):
             raise ValueError("Wrong number of players created on games start")
@@ -33,9 +33,11 @@ class APISession:
                     "playerID": character_info[0],
                     "characters": characterLocations
                 }))
+        self.backend.startRequest()
 
     # Called by the backend, sends a json message
     def broadcast(self, message):
+        print(len(self.playerPool))
         websockets.broadcast({user.socket for user in self.playerPool}, json.dumps(message))
 
     def sendToUserWithID(self, message, uuid):
@@ -73,6 +75,7 @@ class APISession:
                                     
             locations = self.backend.locationsRequest()
             characterLocations = [(characterID, locations[characterID]) for characterID in locations]
+            print(f"Broadcasting locations: {characterLocations}")
             self.broadcast({"responseType": "mapUpdate", "characters": characterLocations})
             
         if jsonEvent["event"] == "attackRequest":

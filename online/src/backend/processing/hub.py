@@ -1,6 +1,6 @@
 import random as rd
 
-from . import turns as tn
+from . import turn_manager as tn
 from . import back as bk
 from .turn_notifications import TurnNotifier
 
@@ -29,7 +29,7 @@ class Hub:
         self.map_size = (0, 0)
 
         self.chart = None
-        self.time = None
+        self.turn_manager = None
         self.front_end_turn_notification_subscription = turn_notification_subscription
 
     # Moves an entity to given coords
@@ -95,12 +95,12 @@ class Hub:
         self.chart = bk.Back(self.map, n_players)
         turn_notifier = TurnNotifier()
         turn_notifier.subscribe(self.front_end_turn_notification_subscription)
-        self.time = tn.Time(self.chart, turn_notifier)
+        self.turn_manager = tn.TurnManager(self.chart, turn_notifier)
         self.map_size = self.chart.size
 
-    # Starts the turns
-    def requestTimeStart(self):
-        self.time.start(self.chart)
+    # Starts the combat cycle, should only be called after requestMapStart
+    def startCombat(self):
+        self.turn_manager.start()
 
     # Returns the players names with their IDs
     def returnPlayers(self):
