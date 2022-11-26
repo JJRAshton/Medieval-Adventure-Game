@@ -34,12 +34,12 @@ class Requests:
 
         self.functions.requestMapStart(player_quantity, map_number)
 
-    # Requests the generation of the given map
-    def startRequest(self, player_quantity, map_number=1):
-
-        self.functions.requestMapStart(player_quantity, map_number)
-
         return self.functions.returnPlayers(), self.functions.map_size
+
+    # Starts the combat cycle
+    def startRequest(self):
+
+        self.functions.startCombat()
 
     # Requests the coords of characters with their IDs
     def locationsRequest(self):

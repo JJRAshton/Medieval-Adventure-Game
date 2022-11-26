@@ -13,8 +13,8 @@ export class Game extends Context {
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.playerID = playerID;
-        // Probably should do some parsing of the characters at this stage.
         this.characters = this.parseCharacters(characters);
+        this.character = this.characters.get(this.playerID);
         this.currentMessage = "Currently in a game with " + characters.length + " players";
         this.takingTurn = false; // Boolean value to record whether we're currently making a move
         this.movement = null; // Boolean value to record whether we're a path is being traced out
@@ -164,7 +164,7 @@ export class Game extends Context {
         switch (event.responseType) {
             case "turnNotification":
                 // These will probably get sent when our turn starts or ends
-                this.takingTurn = event.onTurn;
+                this.takingTurn = event.onTurnID === this.playerID;
                 if (!this.takingTurn) {
                     // Reset the planned movement if we're told it's not our turn
                     this.movement = null;
