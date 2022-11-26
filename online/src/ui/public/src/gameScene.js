@@ -15,7 +15,6 @@ export class Game extends Context {
         this.playerID = playerID;
         this.characters = this.parseCharacters(characters);
         this.character = this.characters.get(this.playerID);
-        this.currentMessage = "Currently in a game with " + characters.length + " players";
         this.takingTurn = false; // Boolean value to record whether we're currently making a move
         this.movement = null; // Boolean value to record whether we're a path is being traced out
         this.mouseX, this.mouseY = 0, 0;
@@ -41,7 +40,7 @@ export class Game extends Context {
         reactRoot.render(
         <div>
             <h2>
-                {this.currentMessage}
+                {this.getCurrentMessage()}
             </h2>
             <div style={{
                 display: "inline-flex", 
@@ -61,6 +60,13 @@ export class Game extends Context {
             </div>
         </div>
         );
+    }
+
+    getCurrentMessage() {
+        if (this.takingTurn) {
+            return "It's your turn"
+        }
+        return "It's someone else's turn"
     }
 
     handleKeyPress(event) {
@@ -123,17 +129,11 @@ export class Game extends Context {
         this.characters.forEach((character) => {
             if (character.id === this.playerID) {
                 ctx.fillStyle = 'blue';
-                if (!(this.movement == null)) {
-                    ctx.fillRect(this.mouseX - TILE_WIDTH / 2, this.mouseY - TILE_WIDTH / 2, TILE_WIDTH - 6, TILE_WIDTH - 6);
-                }
-                else {
-                    ctx.fillRect((character.x * TILE_WIDTH) + 3, character.y * TILE_WIDTH + 3, TILE_WIDTH - 6, TILE_WIDTH - 6);
-                }
             }
             else {
                 ctx.fillStyle = 'green';
-                ctx.fillRect((character.x * TILE_WIDTH) + 3, (character.y * TILE_WIDTH) + 3, TILE_WIDTH - 6, TILE_WIDTH - 6);
             }
+            ctx.fillRect((character.x * TILE_WIDTH) + 3, (character.y * TILE_WIDTH) + 3, TILE_WIDTH - 6, TILE_WIDTH - 6);
         })
 
         // Draw outer boundary
@@ -151,10 +151,12 @@ export class Game extends Context {
             this.movement = null;
         }
         else {
-            const player = this.characters.get(this.playerID);
-            if (player.x * TILE_WIDTH < clickX && clickX < (player.x + 1) * TILE_WIDTH
-                    && player.y * TILE_WIDTH < clickY && clickY < (player.y + 1) * TILE_WIDTH) {
-                this.movement = new Movement(player.x, player.y);
+            if (this.takingTurn) {
+                const player = this.characters.get(this.playerID);
+                if (player.x * TILE_WIDTH < clickX && clickX < (player.x + 1) * TILE_WIDTH
+                        && player.y * TILE_WIDTH < clickY && clickY < (player.y + 1) * TILE_WIDTH) {
+                    this.movement = new Movement(player.x, player.y);
+                }
             }
         }
     }
@@ -171,7 +173,8 @@ export class Game extends Context {
         switch (event.responseType) {
             case "turnNotification":
                 // These will probably get sent when our turn starts or ends
-                this.takingTurn = event.onTurnID === this.playerID;
+                console.log("Turn notificaion received ", event.onTurnID, this.playerID);
+                this.takingTurn = (event.onTurnID == this.playerID);
                 if (!this.takingTurn) {
                     // Reset the planned movement if we're told it's not our turn
                     this.movement = null;
