@@ -2,28 +2,27 @@ import random as rd
 
 from . import character as ch
 from . import entity as ent
+from . import classes as cl
 
 
 # A playable character
 class Player(ch.Character):
     names = ['Robert', 'Arthur', 'Grork', 'Fosdron', 'Thulgraena', 'Diffros', 'Ayda', 'Tezug', 'Dor\'goxun', 'Belba']
 
-    class_weapons = {
-        'Raider': ['axes', 'bludgeons', 'glaives'],
-        'Gladiator': ['spears', 'mythical', 'throwables'],
-        'Ranger': ['bows', 'double_edged_swords', 'special'],
-        'Knight': ['hybrids', 'double_edged_swords', 'shields'],
-        'Hunter': ['bows', 'crossbows', 'axes'],
-        'Professor': ['staves', 'wands', 'mythical'],
-        'Ninja': ['single_edged_swords', 'throwables', 'bows']
-    }
+    p_classes = {
+        'Raider': cl.Raider,
+        'Gladiator': cl.Gladiator,
+        'Ranger': cl.Ranger,
+        'Knight': cl.Knight,
+        'Hunter': cl.Hunter,
+        'Professor': cl.Professor,
+        'Ninja': cl.Ninja
+        }
 
-    def __init__(self, playerLevel=1, playerClass=None, playerName=None):
+    def __init__(self, playerClass=None, playerName=None):
         if playerName is None:
             playerName = rd.choice(Player.names)
-        self.lvl = playerLevel
-        self.type = playerClass
-        self.healthDice = 0
+        self.p_class = Player.p_classes[playerClass]()
 
         self.chosen_weapons = []
 
@@ -53,13 +52,6 @@ class Player(ch.Character):
         ent.Entity.entityStats.getPlayerStats(self)
         self.getEquipment()
         self.convAttacks()
-        self.getClass()
-
-    # Recalculates the entity stats after a level up
-    def levelUp(self):
-        self.lvl += 1
-        self.calcProfB()
-        self.calcHealth()
 
     # Unequips a weapon if one present in given location
     def unequipWeapon(self, location):
@@ -116,28 +108,24 @@ class Player(ch.Character):
         if not armour.is_Armour:
             return
 
-        self.unequipArmour(armour.type)
+        self.unequipArmour(armour.p_class)
 
-        self.equippedArmour[armour.type] = armour
+        self.equippedArmour[armour.p_class] = armour
 
         self.inventory.pop(invIndex)
 
     # Calculates the entity proficiency bonus
     def calcProfB(self):
-        self.hitProf = self.lvl * 5 + 5
+        self.hitProf = 10
 
     # Calculates health based on level and con mod
     def calcHealth(self):
-        self.baseHealth = self.lvl * self.healthDice + self.stat['CON']
+        self.baseHealth = 2 * self.stat['CON']
         self.maxHealth = self.baseHealth
 
     # Checks if the player is proficient with the weapon
     def is_Proficient(self, weapon):
-        if weapon.type in self.chosen_weapons:
+        if weapon.type in self.p_class.weapons:
             return True
         else:
             return False
-
-    # Gets the trait associated with the player's class
-    def getClass(self):
-        self.chosen_weapons = Player.class_weapons[self.type]

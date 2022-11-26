@@ -4,9 +4,11 @@ import backend.processing as pr
 
 
 class Arena:
-    def __init__(self, nPlayers):
-        self.no = nPlayers
+    def __init__(self):
         self.arena_back = None
+
+        self.classes = ['Raider', 'Gladiator', 'Ranger', 'Knight', 'Hunter', 'Professor', 'Ninja']
+        self.no = len(self.classes)
 
         self.players = []
 
@@ -79,21 +81,21 @@ class Arena:
         zipped_hp = zip(classes, hp)
         print('HP:', list(zipped_hp))
 
+    def calcWR(self):
+        for _ in range(1000):
+            for _ in range(10):
+                self.duel()
+
+            self.newBack()
+
+        wr = [round(self.points[x] / self.entries[x], 2) for x in range(len(self.points))]
+        zipped_wins = zip(self.classes, self.points)
+        zipped_wr = zip(self.classes, wr)
+        self.returnStat(self.classes)
+        print('Wins:', list(zipped_wins))
+        print('WR: ', list(zipped_wr))
+
 
 if __name__ == '__main__':
-    arena = Arena(6)
-    classes = ['Raider', 'Gladiator', 'Ranger', 'Knight', 'Hunter', 'Ninja']
-    # totalpoints = [0 for _ in range(len(arena.points))]
-
-    for _ in range(1000):
-        for _ in range(10):
-            arena.duel()
-
-        arena.newBack()
-
-    wr = [round(arena.points[x] / arena.entries[x], 2) for x in range(len(arena.points))]
-    zipped_wins = zip(classes, arena.points)
-    zipped_wr = zip(classes, wr)
-    arena.returnStat(classes)
-    print('Wins:', list(zipped_wins))
-    print('WR: ', list(zipped_wr))
+    comparison_arena = Arena()
+    comparison_arena.calcWR()

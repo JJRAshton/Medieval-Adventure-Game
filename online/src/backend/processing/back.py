@@ -43,8 +43,6 @@ class Back:
 
         self.spawn = {}
 
-        self.baselvl = 5
-
         self.characters = []
         self.objects = []
         self.items = []
@@ -53,7 +51,7 @@ class Back:
         self.monsters = []
         self.npcs = []
 
-        self.classes = ['Raider', 'Gladiator', 'Ranger', 'Knight', 'Hunter', 'Ninja']  # For choosing the class from backend - before frontend input
+        self.classes = ['Raider', 'Gladiator', 'Ranger', 'Knight', 'Hunter', 'Professor', 'Ninja']  # For choosing the class from backend - before frontend input
 
         self.maxReach = 5
 
@@ -100,7 +98,7 @@ class Back:
     # Creates and registers a character and its inventory
     def createCharacter(self, character_type, sub_type=None):
         if character_type == 'Player' and sub_type is None:
-            character = ent.Player(self.baselvl, self.classes.pop(0))
+            character = ent.Player(self.classes.pop(0))
         elif character_type == 'Monster' and sub_type is not None:
             character = ent.Monster(sub_type)
         elif character_type == 'NPC' and sub_type is not None:

@@ -1,8 +1,8 @@
-﻿Name,Health Dice,Base Movement,Armour
-Raider,34,35,hide
-Gladiator,38,30,
-Ranger,28,30,hide
-Knight,30,25,padded_tunic
-Hunter,24,40,hide
-Professor,22,30,
-Ninja,26,35,leather
+﻿Name,Base Movement,Armour
+Raider,35,hide
+Gladiator,30,
+Ranger,30,hide
+Knight,25,padded_tunic
+Hunter,40,hide
+Professor,30,
+Ninja,40,
