@@ -12,6 +12,7 @@ class Brain:
         self.locations = backend.locationsRequest()
         self.my_id = id
         self.my_location = backend.locationsRequest()[id]
+        self.is_player = False
         #self.movement = backend.infoRequest(id)[Remaining_movement]
 
     def choose_target(self, backend):
@@ -25,12 +26,19 @@ class Brain:
 
         closest_chars = sorted(character_distances.items(), key=lambda item: item[1])
 
+        # Go through the list to find the nearest character of the opposing team
         for char in closest_chars:
             if backend.infoRequest(char)['Team'] == 0:
-                print('character is hostile')
-                squares_away = self.movement_required(char)
-                if self.movement < squares_away:
-                    pass
+                target = char
+                print(f"chosen target is {char}")
+                break
+
+        return target
+
+
+        squares_away = self.movement_required(char)
+        if self.movement < squares_away:
+            pass
 
 
     def movement_required(self, target_location):

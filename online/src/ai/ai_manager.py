@@ -7,6 +7,9 @@ class AIManager:
         # This is the access point to the backend
         self.brains = []
 
+    def notify(self, turn_character_id, is_player):
+        pass
+
     def takeTurn(self, id):
         # Called by the backend
         raise NotImplementedError
