@@ -12,7 +12,7 @@ class APITurnNotificationSubscription(TurnNotificationSubscription):
     def notify(self, character_on_turn, is_player):
         websockets.broadcast(self.socketPool, json.dumps(
             {
-                "responsType": "turnNotification",
+                "responseType": "turnNotification",
                 "onTurnID": character_on_turn
             }
         ))

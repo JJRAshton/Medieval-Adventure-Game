@@ -28,14 +28,19 @@ export default class Character {
     }
 
     renderStats() {
-        let blah = <ul className="stats" style={this.statsStyle}>
-            <li>Strength: {this.strength}</li>
-            <li>Dexterity: {this.dexterity}</li>
-            <li>Health: {this.health} / {this.maxHealth}</li>
-            <li>Weapon: {this.weapon}</li>
+        return <ul className="stats" style={this.statsStyle}>
+            {this.createStatLi("Strength", this.strength)}
+            {this.createStatLi("Dexterity", this.dexterity)}
+            {this.createStatLi("Health", this.health)}
+            {this.createStatLi("Weapon", this.weapon)}
         </ul>
-        console.log(blah);
-        return blah;
+    }
+
+    createStatLi(statName, stat) {
+        return <li>
+            <div>{statName}</div>
+            <div>{stat}</div>
+        </li>
     }
    
 }

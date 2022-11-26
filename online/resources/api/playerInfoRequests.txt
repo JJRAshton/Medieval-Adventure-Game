@@ -1,0 +1,10 @@
+health
+location
+side (friendly or not)
+equipped weapon
+equipped armour
+stats
+theoretical attack options (type of attacks, and probably some info about them)
+
+optional/later
+contents of inventory
