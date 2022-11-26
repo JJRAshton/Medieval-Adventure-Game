@@ -36,13 +36,13 @@ class TurnManager:
 
     def endTurn(self):
         # This resets the previous player at the end of their turn
-        self.initOrder[self._on_turn_index].initaliseTurn()
+        self.initOrder[self._on_turn_index].initialiseTurn()
 
         self._on_turn_index += 1
         self._on_turn_index %= len(self.initOrder) # It is unsafe to add and remove players
 
         on_turn_character = self.initOrder[self._on_turn_index]
-        on_turn_character.initaliseTurn()
+        # on_turn_character.initialiseTurn()
         self.on_turn_id = on_turn_character.id
 
         if on_turn_character.is_alive:

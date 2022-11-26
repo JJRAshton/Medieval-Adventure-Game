@@ -46,6 +46,10 @@ class Requests:
 
         return self.functions.giveCharLoc()
 
+    # Request to end turn, no validation the request came from the right person
+    def endTurnRequest(self):
+        self.functions.endTurn()
+
     # Requests for info about a character
     def infoRequest(self, globalID):
 

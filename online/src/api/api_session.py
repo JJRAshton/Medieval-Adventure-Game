@@ -78,18 +78,21 @@ class APISession:
             print(f"Broadcasting locations: {characterLocations}")
             self.broadcast({"responseType": "mapUpdate", "characters": characterLocations})
             
-        if jsonEvent["event"] == "attackRequest":
+        elif jsonEvent["event"] == "attackRequest":
             attack=self.backend.attackRequest(jsonEvent["playerID"], jsonEvent["enemyID"])
             output = json.dumps({
-            "responseType": "attackResult",
-            "attackResult": str(attack)
+                "responseType": "attackResult",
+                "attackResult": str(attack)
             })
             user.socket.send(output)
 
-        if jsonEvent["event"] == "mapRequest":
+        elif jsonEvent["event"] == "mapRequest":
             map = self.backend.locationsRequest()
             output = self.translator.map_to_json(map)
             user.socket.send(output)
+
+        elif jsonEvent["event"] == "endTurnRequest":
+            self.backend.endTurnRequest()
 
 
 
