@@ -23,6 +23,7 @@ class TurnManager:
 
     # Starts the games turns
     def start(self):
+        # Probably this could all go into the init
         for character in self.back.characters:
             self.initOrder.add(character)
 
@@ -43,32 +44,15 @@ class TurnManager:
         on_turn_character = self.initOrder[self._on_turn_index]
         on_turn_character.initaliseTurn()
         self.on_turn_id = on_turn_character.id
-        
+
         if on_turn_character.is_alive:
             if not on_turn_character.is_conscious and not on_turn_character.is_stable:
                 on_turn_character.makeSavingThrow()
 
             self.turn_notifier.announce(on_turn_character.id, True)
         else:
+            # If the next player is dead, we skip turn immediately
             self.endTurn()
-
-    # The combat round/turn loop
-    def loop(self):
-
-        while self.is_combat:
-
-            for n_round, character in enumerate(self.initOrder, start=1):
-
-
-                if character.behaviour_type == 1:
-                    self.playerTurn(character)
-
-                if character.behaviour_type == 2:
-                    self.npcTurn(character)
-
-                character.initialiseTurn()
-
-            self.checkCombat()
 
     # Checks if combat is still taking place
     def checkCombat(self):

@@ -1,7 +1,7 @@
 import json
 import websockets
 from backend import Requests
-from backend import TurnNotificationSubscription
+from .api_turn_notification_subscription import APITurnNotificationSubscription
 
 
 class APISession:
@@ -12,7 +12,7 @@ class APISession:
         for player in playerPool:
             player.session = self
         
-        turnNotifier = TurnNotificationSubscription()
+        turnNotifier = APITurnNotificationSubscription(playerPool)
 
         self.backend = Requests(turnNotifier)
         self.translator = PythonToJSONTranslator()
@@ -33,6 +33,7 @@ class APISession:
                     "playerID": character_info[0],
                     "characters": characterLocations
                 }))
+        self.backend.startRequest()
 
     # Called by the backend, sends a json message
     def broadcast(self, message):

@@ -1,4 +1,5 @@
 class TurnNotificationSubscription:
+    # This should be inherited, and the notify method overridden
 
     def __init__(self):
         #do nothing
