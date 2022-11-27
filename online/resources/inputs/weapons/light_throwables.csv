@@ -1,0 +1,3 @@
+﻿Name,Tier,Range,Damage Dice,Light,Throwable,Attacks
+kunai,1,20,d6,y,y,stab
+shuriken,1,20,d6,y,y,slash

@@ -12,11 +12,11 @@ hobgoblin chief,medium,3,,40,35,40,35,30,0,3,3,rondache,arming_sword,,,,20,javel
 hydra,huge,3,,50,30,50,5,30,8,5,,,,,,,0,,"bite, tail"
 invisible stalker,medium,3,,40,48,35,25,50,4,2,,,,,,,100,,hit
 mimic,medium,2,,43,30,38,13,15,6,1,,,,,,slash,5,,"bite, pseudopod"
-minotaur,large,2,,45,28,40,15,40,4,1,,,,greataxe,,,5,,hooves
+minotaur,medium,2,,45,28,40,15,40,4,1,,,,greataxe,,,5,,hooves
 mummy,medium,2,,40,20,38,15,20,2,1,,,,,,,0,,hit
 ogre,large,2,,48,20,40,13,40,4,1,1,,,greatclub,,,5,javelin,
 ooze,large,2,,35,8,50,3,15,5,1,,,,,,slash,1000,,"engulf, pseudopod"
-orc,medium,2,,40,30,33,13,50,0,1,2,,,greataxe,,,5,javelin,
+orc,medium,2,,40,30,33,13,50,0,1,2,,,battleaxe,,,5,javelin,
 orc chief,medium,2,,45,30,45,28,50,0,2,3,,,greataxe,,,10,spear,
 owlbear,large,2,,50,30,43,8,40,4,2,,,,,,,0,,"claw, beak"
 purple worm,gargantuan,5,,70,18,55,3,50,10,2,,,,,,,0,,"bite, engulf, sting"

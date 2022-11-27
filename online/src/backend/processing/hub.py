@@ -79,7 +79,7 @@ class Hub:
             else:
                 raise ValueError
             
-            attacker.attack([attack_list], defender)
+            attacker.attack(attack_list, defender)
             defender.checkHealth()
             if not defender.is_alive:
                 if category2 == 1:

@@ -1,2 +1,3 @@
 ﻿Name,Tier,Range,Damage Dice,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Loading,Attacks
-twig,0,30,d3,,,,,,,,shock
+parchment,0,30,d1,,,,,,,,poem
+thick_book,0,5,d2,,,,,,,,strike

@@ -7,5 +7,5 @@ class Knight(Class):
         super().__init__()
         self.name = 'Knight'
         self.stat_order = ['STR', 'CON', 'WIT', 'DEX']
-        self.weapons = ['hybrids', 'double_edged_swords', 'shields']
+        self.weapons = ['polearms', 'double_edged_swords', 'spears']
         self.health_modifier = 1.6

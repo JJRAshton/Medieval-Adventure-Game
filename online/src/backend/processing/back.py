@@ -189,7 +189,7 @@ class Back:
         item.is_carried = False
 
     # Drops the characters weapon
-    def dropWeapon(self, character):
+    def dropWeapon(self, character):  # Needs update to new weapon system
         weapon = character.equippedWeapons
         character.equippedWeapons = None
 
@@ -199,7 +199,7 @@ class Back:
         weapon.is_carried = False
 
     # Drops the characters armour
-    def dropArmour(self, character):
+    def dropArmour(self, character):  # Needs update to new armour system
         armour = character.equippedArmour
         character.equippedArmour = None
 
@@ -251,6 +251,16 @@ class Back:
             return False
         else:
             return True
+
+    # Checks if the character can move along the given path
+    def is_validPath(self, charID, pathCoords):
+        character = self.characters[charID]
+        remaining_movement = character.movement
+        x0, y0 = startCoords = character.coords
+
+        validMovement = []
+        for coord in pathCoords:
+            pass
 
     # Checks if an attack is valid
     def is_validAttack(self, atkID, defID, catDef):

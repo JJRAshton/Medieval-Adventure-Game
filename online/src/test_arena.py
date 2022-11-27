@@ -8,7 +8,8 @@ class Arena:
         self.arena_back = None
 
         self.classes = ['Raider', 'Gladiator', 'Guardian', 'Knight', 'Hunter', 'Professor', 'Ninja']
-        self.no = len(self.classes)
+        self.creatures = ['Orc']
+        self.no = len(self.classes) + len(self.creatures)
 
         self.players = []
 
@@ -61,13 +62,13 @@ class Arena:
 
     def newBack(self):
         self.backs += 1
-        self.arena_back = pr.Back(1, self.no)
+        self.arena_back = pr.Back(1, len(self.classes))
         self.r_points = [0 for _ in range(len(self.players))]
 
         self.players = self.arena_back.characters
 
-        for x, stat in enumerate(self.players[0].stat):
-            self.avStat[x] += self.players[0].stat[stat]
+        for x, stat in enumerate(self.players[self.no-1].stat):
+            self.avStat[x] += self.players[self.no-1].stat[stat]
 
         for x in range(len(self.players)):
             self.avHealth[x] += self.players[x].maxHealth
@@ -89,9 +90,10 @@ class Arena:
             self.newBack()
 
         wr = [round(self.points[x] / self.entries[x], 2) for x in range(len(self.points))]
-        zipped_wins = zip(self.classes, self.points)
-        zipped_wr = zip(self.classes, wr)
-        self.returnStat(self.classes)
+        names = self.creatures + self.classes
+        zipped_wins = zip(names, self.points)
+        zipped_wr = zip(names, wr)
+        self.returnStat(names)
         print('Wins:', list(zipped_wins))
         print('WR: ', list(zipped_wr))
 

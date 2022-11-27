@@ -9,8 +9,12 @@ player_in_dir = f'{inputs_dir}/players.csv'
 weapon_in_dir = f'{inputs_dir}/weapons.csv'
 armour_in_dir = f'{inputs_dir}/armour.csv'
 
-weapon_types = ['axes', 'bludgeons', 'bows', 'crossbows', 'double_edged_swords', 'edgeless_swords', 'glaives', 'mythical',
-                   'shields', 'single_edged_swords', 'spears', 'special', 'staves', 'throwables', 'wands']
+weapon_types = ['axes', 'clubs', 'hammers',
+                'bows', 'crossbows', 'light_throwables', 'heavy_throwables',
+                'shields', 'single_edged_swords', 'double_edged_swords', 'edgeless_swords',
+                'glaives', 'polearms', 'spears',
+                'special',  'mythical',
+                'staves', 'books']
 
 
 def read_char_inputs():

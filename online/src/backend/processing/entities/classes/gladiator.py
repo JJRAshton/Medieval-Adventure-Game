@@ -7,5 +7,5 @@ class Gladiator(Class):
         super().__init__()
         self.name = 'Gladiator'
         self.stat_order = ['STR', 'DEX', 'CON', 'WIT']
-        self.weapons = ['spears', 'mythical', 'throwables']
+        self.weapons = ['spears', 'clubs', 'heavy_throwables']
         self.health_modifier = 2

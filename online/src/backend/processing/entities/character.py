@@ -99,7 +99,7 @@ class Character(ent.HealthEntity):
         init_roll = rd.randint(1, self.stat['DEX'])
         self.initiative = init_roll
 
-    # Makes an attack roll returning whether it 0:miss, 1:hit, 2:critical hit
+    # Makes an attack roll returning whether it -1:miss, 0:blocked, 1:hit, 2:critical hit
     def hitContest(self, attack, hitBonus, opponent):
 
         crit_weighting = opponent.stat['DEX'] * opponent.coverage + (20 - opponent.size)
@@ -109,9 +109,10 @@ class Character(ent.HealthEntity):
 
         # Picks which opponent evasion to use
         if not attack.from_weapon.is_ranged and attack.damage_maintype in opponent.evasion['Melee']:
-            opponentRoll = rd.randint(1, opponent.evasion['Melee'][attack.damage_maintype])
+            opponentEvasion = opponent.evasion['Melee'][attack.damage_maintype]
         else:
-            opponentRoll = rd.randint(1, opponent.evasion['Ranged'])
+            opponentEvasion = opponent.evasion['Ranged']
+        opponentRoll = rd.randint(1, opponentEvasion)
 
         ownRoll = rd.randint(1, self.stat['DEX'])
         ownResult = ownRoll + hitBonus
@@ -120,8 +121,10 @@ class Character(ent.HealthEntity):
             result = 2
         elif ownResult > opponentRoll:
             result = 1
-        else:
+        elif ownResult > opponentRoll - (opponentEvasion - opponent.baseEvasion):
             result = 0
+        else:
+            result = -1
 
         return result
 
@@ -159,7 +162,7 @@ class Character(ent.HealthEntity):
 
             indicator = str(appliedDamage)
         else:
-            indicator = 'Miss'
+            indicator = 'Blocked' if hitResult == 0 else 'Miss'
 
         return indicator
 
@@ -172,10 +175,6 @@ class Character(ent.HealthEntity):
             indicatorList.append(indicator)
 
         return indicatorList
-
-    # Makes an opportunity attack
-    def oppAttack(self, creature):
-        pass
 
     # Checks if entity is still alive
     def checkAlive(self):

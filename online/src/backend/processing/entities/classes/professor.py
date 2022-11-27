@@ -7,5 +7,5 @@ class Professor(Class):
         super().__init__()
         self.name = 'Professor'
         self.stat_order = ['WIT', 'DEX', 'CON', 'STR']
-        self.weapons = ['staves', 'wands', 'mythical']
+        self.weapons = ['staves', 'books', 'mythical']
         self.health_modifier = 1.25

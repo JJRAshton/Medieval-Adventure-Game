@@ -29,6 +29,7 @@ class HealthEntity(Entity):
         super().__init__(entityName)
 
         self.baseHealth = 0
+        self.maxHealth = 0
         self.health = 0
 
         self.vulnerabilities = []
@@ -51,7 +52,8 @@ class HealthEntity(Entity):
 
     # Resets health to base health
     def resetHealth(self):
-        self.health = self.baseHealth
+        self.maxHealth = self.baseHealth
+        self.health = self.maxHealth
 
     # Damages the entity
     def takeDamage(self, damage, dmg_type, is_AP=False, critical=False):

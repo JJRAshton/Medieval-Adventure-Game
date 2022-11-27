@@ -32,7 +32,6 @@ class AttackStats:
         attack.type = 'weapon'
 
         dmg_type1 = atkDict['Dmg Typ 1']
-        print(atkDict)
         attack.damage_types[dmg_type1] = float(atkDict['Fraction 1'])
         attack.damage_maintype = dmg_type1
         if atkDict['Dmg Typ 2']:
