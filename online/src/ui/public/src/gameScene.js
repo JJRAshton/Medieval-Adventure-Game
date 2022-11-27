@@ -113,7 +113,9 @@ export class Game extends Context {
     // Drawing to the canvas, passed in as a callback
     drawCanvas(ctx) {
 
-        ctx.clearRect(0, 0, this.mapWidth * TILE_WIDTH, this.mapHeight * TILE_WIDTH);
+        //ctx.clearRect(0, 0, this.mapWidth * TILE_WIDTH, this.mapHeight * TILE_WIDTH);
+        ctx.fillStyle = 'rgb(109, 153, 87)';
+        ctx.fillRect(0, 0, this.mapWidth * TILE_WIDTH, this.mapHeight * TILE_WIDTH);
 
         // Draw the move path if its not null
         if (!(this.movement == null)) {
@@ -132,8 +134,11 @@ export class Game extends Context {
             if (character.id === this.playerID) {
                 ctx.fillStyle = 'blue';
             }
-            else {
+            else if (character.team == this.character.team) {
                 ctx.fillStyle = 'green';
+            }
+            else {
+                ctx.fillStyle = 'red';
             }
             ctx.fillRect((character.x * TILE_WIDTH) + 3, (character.y * TILE_WIDTH) + 3, TILE_WIDTH - 6, TILE_WIDTH - 6);
             ctx.fillStyle = 'black'

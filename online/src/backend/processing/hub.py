@@ -3,6 +3,8 @@ import random as rd
 from . import turn_manager as tn
 from . import back as bk
 from .turn_notifications import TurnNotifier
+from ai.ai_manager import AIManager
+
 
 
 # Converts an ID number to the index of its category's list
@@ -24,13 +26,14 @@ def id_to_local(globalID):
 # Function comments are in back_requests
 class Hub:
 
-    def __init__(self, turn_notification_subscription):
+    def __init__(self, turn_notification_subscription, ai_manager):
         self.map = 0
         self.map_size = (0, 0)
 
         self.chart = None
         self.turn_manager = None
         self.front_end_turn_notification_subscription = turn_notification_subscription
+        self.ai_manager = ai_manager
 
     # Moves an entity to given coords
     def requestMove(self, globalID, coords):
@@ -95,8 +98,12 @@ class Hub:
     def requestMapStart(self, n_players, mapNumber=1):
         self.map = mapNumber
         self.chart = bk.Back(self.map, n_players)
+
         turn_notifier = TurnNotifier()
+        
         turn_notifier.subscribe(self.front_end_turn_notification_subscription)
+        turn_notifier.subscribe(self.ai_manager)
+
         self.turn_manager = tn.TurnManager(self.chart, turn_notifier)
         self.map_size = self.chart.size
 

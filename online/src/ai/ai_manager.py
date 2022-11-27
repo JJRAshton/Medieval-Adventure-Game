@@ -9,7 +9,8 @@ class AIManager:
         self.backend = backend
 
     def notify(self, turn_character_id, is_player):
-        pass
+        if not is_player:
+            self.takeTurn(self.backend, turn_character_id)
 
 # Sorry for putting backend everywhere, don't know what to do with it
     def takeTurn(self, backend, id):

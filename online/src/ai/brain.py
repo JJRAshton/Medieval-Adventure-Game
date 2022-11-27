@@ -29,12 +29,12 @@ class Brain1:
     """
 
     def __init__(self, backend, id):
-        self.locations = backend.Requests.locationsRequest()
+        self.locations = backend.locationsRequest()
         self.my_id = id
-        self.my_location = backend.Requests.locationsRequest()[id]
+        self.my_location = backend.locationsRequest()[id]
         #self.my_range = backend.back_requests.infoRequest(id)[Range]
-        self.my_movement = backend.Requests.infoRequest(id)['Remaining_movement']
-        self.actions = backend.Requests.infoRequest(id)['Action_number']
+        self.my_movement = backend.infoRequest(id)['Remaining_movement']
+        self.actions = backend.infoRequest(id)['Action_number']
 
     def check_distance(self, char_id):
         target_location = self.locations[char_id]
@@ -45,7 +45,8 @@ class Brain1:
         return distance
 
     def check_team(self, char_id, backend):
-        team = backend.Requests.infoRequest(char_id)['Team'] # 0 is player, 1 is npc
+        print(char_id)
+        team = backend.infoRequest(char_id)['Team'] # 0 is player, 1 is npc
 
         return team
 

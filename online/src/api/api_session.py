@@ -14,6 +14,7 @@ class APISession:
         
         turnNotifier = APITurnNotificationSubscription(playerPool)
 
+
         self.backend = Requests(turnNotifier)
         self.translator = PythonToJSONTranslator()
 
