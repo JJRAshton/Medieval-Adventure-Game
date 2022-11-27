@@ -21,7 +21,7 @@ class AIManager:
         # Run up to target and keep attacking if in range
         ai_brain.approach_and_attack_target(backend, target)
         # Turn has ended
-        backend.Requests.endTurnRequest()
+        backend.endTurnRequest()
 
     def checkReaction(self):
         # I think we've agreed not to do reactions for now, but this is where it would go
