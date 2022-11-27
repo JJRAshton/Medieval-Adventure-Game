@@ -256,11 +256,14 @@ class Back:
     def is_validPath(self, charID, pathCoords):
         character = self.characters[charID]
         remaining_movement = character.movement
-        x0, y0 = startCoords = character.coords
 
         validMovement = []
         for coord in pathCoords:
-            pass
+            if remaining_movement == 0 or not self.is_validCoords(coord):
+                validMovement.append(False)
+                break
+            validMovement.append(True)
+            remaining_movement -= 5
 
     # Checks if an attack is valid
     def is_validAttack(self, atkID, defID, catDef):
