@@ -82,8 +82,9 @@ class Hub:
             else:
                 raise ValueError
             
-            attacker.attack(attack_list, defender)
-            defender.checkHealth()
+            indictor = attacker.attack(attack_list, defender)
+            print(indictor)
+            defender.checkAlive()
             if not defender.is_alive:
                 if category2 == 1:
                     self.calcDrop(defender)
