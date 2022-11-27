@@ -7,4 +7,5 @@ class Ninja(Class):
         super().__init__()
         self.name = 'Ninja'
         self.stat_order = ['DEX', 'WIT', 'STR', 'CON']
-        self.weapons = ['single_edged_swords', 'throwables', 'bows']
+        self.weapons = ['single_edged_swords', 'throwables', 'mythical']
+        self.health_modifier = 1.75

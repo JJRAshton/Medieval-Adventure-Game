@@ -8,3 +8,4 @@ class Gladiator(Class):
         self.name = 'Gladiator'
         self.stat_order = ['STR', 'DEX', 'CON', 'WIT']
         self.weapons = ['spears', 'mythical', 'throwables']
+        self.health_modifier = 2

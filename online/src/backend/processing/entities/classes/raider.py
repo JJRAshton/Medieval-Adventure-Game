@@ -8,3 +8,4 @@ class Raider(Class):
         self.name = 'Raider'
         self.stat_order = ['STR', 'CON', 'DEX', 'WIT']
         self.weapons = ['axes', 'bludgeons', 'glaives']
+        self.health_modifier = 1.5

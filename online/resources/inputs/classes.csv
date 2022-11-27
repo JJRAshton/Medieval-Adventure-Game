@@ -1,8 +1,8 @@
 ﻿Name,Base Movement,Armour
 Raider,35,hide
 Gladiator,30,
-Ranger,30,hide
+Guardian,20,leather
 Knight,25,padded_tunic
-Hunter,40,hide
+Hunter,35,
 Professor,30,
 Ninja,40,

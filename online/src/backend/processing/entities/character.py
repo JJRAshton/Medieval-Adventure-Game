@@ -204,10 +204,7 @@ class Character(ent.HealthEntity):
     # Recalculates the entity damage and reach
     def refreshStatAfterWeapon(self):
 
-        self.evasion['Melee']['piercing'] = self.baseEvasion
-        self.evasion['Melee']['slashing'] = self.baseEvasion
-        self.evasion['Melee']['bludgeoning'] = self.baseEvasion
-        self.evasion['Ranged'] = self.baseEvasion
+        self.resetEvasion()
         self.reach = self.baseReach
         self.getAttackOptions()
 
@@ -228,6 +225,14 @@ class Character(ent.HealthEntity):
                 if eq_weapon.defense_type == 'shield':
                     self.evasion['Ranged'] += protection
                     self.evasion['Melee']['bludgeoning'] -= protection
+
+    # Resets evasion
+    def resetEvasion(self):
+
+        self.evasion['Melee']['piercing'] = self.baseEvasion
+        self.evasion['Melee']['slashing'] = self.baseEvasion
+        self.evasion['Melee']['bludgeoning'] = self.baseEvasion
+        self.evasion['Ranged'] = self.baseEvasion
 
     # Recalculates the entity AC
     def refreshStatAfterArmour(self):

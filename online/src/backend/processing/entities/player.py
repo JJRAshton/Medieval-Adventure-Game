@@ -12,7 +12,7 @@ class Player(ch.Character):
     p_classes = {
         'Raider': cl.Raider,
         'Gladiator': cl.Gladiator,
-        'Ranger': cl.Ranger,
+        'Guardian': cl.Guardian,
         'Knight': cl.Knight,
         'Hunter': cl.Hunter,
         'Professor': cl.Professor,
@@ -114,13 +114,23 @@ class Player(ch.Character):
 
         self.inventory.pop(invIndex)
 
+    # Resets evasion accounting for bonus melee evasion of some classes
+    def resetEvasion(self):
+        if self.p_class.name in ['Gladiator', 'Ninja']:
+            self.evasion['Melee']['piercing'] = int(self.baseEvasion * (1 + self.stat['DEX'] / 100))
+            self.evasion['Melee']['slashing'] = int(self.baseEvasion * (1 + self.stat['DEX'] / 100))
+            self.evasion['Melee']['bludgeoning'] = int(self.baseEvasion * (1 + self.stat['DEX'] / 100))
+            self.evasion['Ranged'] = self.baseEvasion
+        else:
+            super().resetEvasion()
+
     # Calculates the entity proficiency bonus
     def calcProfB(self):
         self.hitProf = 10
 
     # Calculates health based on level and con mod
     def calcHealth(self):
-        self.baseHealth = 2 * self.stat['CON']
+        self.baseHealth = int(self.stat['CON'] * self.p_class.health_modifier)
         self.maxHealth = self.baseHealth
 
     # Checks if the player is proficient with the weapon

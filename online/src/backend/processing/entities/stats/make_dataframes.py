@@ -43,6 +43,7 @@ def make_character_stat_table(map_number_str):
     npc_list = [x for x in df['NPCs'] if x != '']
 
     all_char_df = read_char_inputs()
+    all_char_df.dropna(how='all', inplace=True)
 
     # construct dataframes of characters in this game - reference these tables to initialise things
     character_table = all_char_df.loc[list(set(monster_list + npc_list))]
@@ -127,12 +128,19 @@ def make_raw_attack_stat_table():
 
     attack_table = pd.read_csv(f'{inputs_dir}/raw_attacks.csv', keep_default_na=False, index_col='Name')
 
+    attack_table.dropna(how='all', inplace=True)
+    attack_table = attack_table.fillna('')
+
     return attack_table
 
 
 def make_weapon_attack_stat_table():
 
     weapon_attack_table = pd.read_csv(f'{inputs_dir}/weapon_attacks.csv', keep_default_na=False, index_col='Name')
+
+    weapon_attack_table.drop(index='', inplace=True)
+    weapon_attack_table.dropna(how='all', inplace=True)
+    weapon_attack_table = weapon_attack_table.fillna('')
 
     return weapon_attack_table
 

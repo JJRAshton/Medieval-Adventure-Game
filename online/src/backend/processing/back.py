@@ -51,7 +51,7 @@ class Back:
         self.monsters = []
         self.npcs = []
 
-        self.classes = ['Raider', 'Gladiator', 'Ranger', 'Knight', 'Hunter', 'Professor', 'Ninja']  # For choosing the class from backend - before frontend input
+        self.classes = ['Raider', 'Gladiator', 'Guardian', 'Knight', 'Hunter', 'Professor', 'Ninja']  # For choosing the class from backend - before frontend input
 
         self.maxReach = 5
 
