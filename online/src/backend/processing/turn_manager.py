@@ -1,15 +1,12 @@
 from sortedcontainers import SortedList
-from ai.ai_manager import AIManager
 
 
 class TurnManager:
 
     def __init__(self, given_back, turn_notifier):
         self.back = given_back
-        self.ai_manager = AIManager(self.back)
         self.initOrder = SortedList()
         self.turn_notifier = turn_notifier
-        self.turn_notifier.subscribe(self.ai_manager)
 
         self.is_combat = True
         self.started = False

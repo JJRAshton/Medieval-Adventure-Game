@@ -1,10 +1,12 @@
 from . import processing as pr
+from ai.ai_manager import AIManager
 
 
 class Requests:
 
     def __init__(self, turn_notification_subscription):
-        self.functions = pr.Hub(turn_notification_subscription)
+        ai_manager = AIManager(self)
+        self.functions = pr.Hub(turn_notification_subscription, ai_manager)
 
     # Requests to move an entity with ID 'globalID' to a given coords.
     # Returns true if the request is carried out and false if not.

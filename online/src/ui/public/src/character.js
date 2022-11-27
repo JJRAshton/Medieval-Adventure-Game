@@ -74,16 +74,16 @@ export default class Character {
     renderStats() {
         if (this.infoReceived) {
             let children = [];
-            this.stats.forEach((value, stat) => {children.push(this.createStatLi(stat, value))});
-            return <ul className="stats" style={this.statsStyle}> {children} </ul>
+            this.stats.forEach((value, stat) => {children.push(this.createStatRow(stat, value))});
+            return <ul className="stats" style={this.statsStyle}><table><tbody>{children}</tbody></table></ul>
         }
         else {
-            return <ul className="stats" style={this.statsStyle}>Could not load stats</ul>
+            return <div className="stats" style={this.statsStyle}>Could not load stats</div>
         }
     }
 
-    createStatLi(statName, stat) {
-        return <li key={statName}>{statName}: {stat}</li>
+    createStatRow(statName, stat) {
+        return <tr key={statName}><td>{statName}</td><td>{stat}</td></tr>
     }
    
 }
