@@ -1,8 +1,8 @@
-﻿Name,Base Movement,Armour
-Raider,35,hide
-Gladiator,30,
-Guardian,20,padded_tunic
-Knight,25,leather
-Hunter,35,
-Professor,30,
-Ninja,40,
+﻿Name,Health Mod,Evasion Mod,Base Movement,Armour
+Raider,1.5,0.75,35,hide
+Gladiator,2,1,30,
+Guardian,2,0.25,20,leather
+Knight,1.75,1,25,leather
+Hunter,1.75,1,35,
+Professor,1.25,1,25,
+Ninja,1.5,1.25,40,

@@ -67,6 +67,7 @@ class Character(ent.HealthEntity):
         self.baseReach = 5
 
         self.reach = 0
+        self.range = 0
         
         self.is_conscious = True
         self.is_stable = True
@@ -205,6 +206,7 @@ class Character(ent.HealthEntity):
 
         self.resetEvasion()
         self.reach = self.baseReach
+        self.range = self.baseReach
         self.getAttackOptions()
 
         for hand in self.equippedWeapons:
@@ -214,6 +216,8 @@ class Character(ent.HealthEntity):
             if not eq_weapon.is_ranged:
                 if eq_weapon.range > self.reach:
                     self.reach = eq_weapon.range
+            if eq_weapon.range > self.range:
+                self.range = eq_weapon.range
             if eq_weapon.defense_type:
                 protection = eq_weapon.protection
                 if self.is_Proficient(eq_weapon):

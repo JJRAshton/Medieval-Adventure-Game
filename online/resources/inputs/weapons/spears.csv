@@ -1,5 +1,5 @@
 ﻿Name,Tier,Range,Damage Dice,Finesse,Ranged,Two-handed,Armour Piercing,Attacks
-sharp_stick,0,5,d3,,,y,,stab
+sharp_stick,0,5,d4,,,y,,stab
 fork,1,5,d4,,,y,,impale
 trident,2,5,d5,y,,,,impale
 spear,2,5,d10,,,,,stab

@@ -1,8 +1,8 @@
 ﻿Name,Tier,Range,Damage Dice,Finesse,Light,Two-handed,Attacks
-sickle,0,5,d4,,y,,slash
+sickle,0,5,d6,,y,,slash
 war scythe,4,10,d6,,,y,"cleave, strike"
 naginata,3,10,d8,y,,y,"stab, cut"
 glaive,3,10,d9,,,y,cut
 falx,2,5,d6,,,y,cut
 voulge,2,10,d6,,,y,hack
-agricultural_bill,1,5,d4,,,y,cut
+agricultural_bill,1,5,d5,,,y,cut

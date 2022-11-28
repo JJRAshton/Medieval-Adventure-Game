@@ -1,8 +1,8 @@
 ﻿Name,Tier,Range,Damage Dice,Light,Two-handed,Protection,Defense Type,Attacks
-dagger,0,5,d3,y,,,,"stab, slash"
-shortsword,1,5,d7,y,,,,"stab, slash, strike"
-arming_sword,2,5,d5,,,3,parry,"stab, cut, strike"
-longsword,3,5,d8,,y,5,parry,"stab, cut, strike"
+dagger,0,5,d6,y,,,,"stab, slash"
+shortsword,1,5,d8,y,,,,"stab, slash, strike"
+arming_sword,2,5,d6,,,3,parry,"stab, cut, strike"
+longsword,3,5,d9,,y,5,parry,"stab, cut, strike"
 claymore,2,5,d4,,y,5,parry,"cleave, pound"
 greatsword,3,5,d6,,y,5,parry,"cleave, pound"
 zweihander,4,5,d8,,y,6,parry,"cleave, pound"

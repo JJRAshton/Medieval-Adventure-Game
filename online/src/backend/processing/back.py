@@ -43,13 +43,18 @@ class Back:
 
         self.spawn = {}
 
-        self.characters = []
-        self.objects = []
-        self.items = []
+        self.entities = {}  # All entities in dictionary with ids as keys
 
+        self.objects = []
+
+        self.items = []
+        self.weapons = []
+        self.armour = []
+
+        self.characters = []
         self.players = []
         self.monsters = []
-        self.npcs = []
+        self.npcs = []  # Non-monsters
 
         self.classes = ['Raider', 'Gladiator', 'Guardian', 'Knight', 'Hunter', 'Professor', 'Ninja']  # For choosing the class from backend - before frontend input
 
@@ -73,9 +78,13 @@ class Back:
 
         self.objectGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
         objectList = pkl.load(open(f'{map_dir}/objects.pkl', 'rb'))
-        for object_info in objectList:
+        for objectID, object_info in enumerate(objectList, start=100):
             name, coords = object_info
-            self.objectGrid[coords[0]][coords[1]] = ent.Object('name')
+            i_object = ent.Object(name)
+            i_object.id = objectID
+            self.objectGrid[coords[0]][coords[1]] = i_object
+            self.objects.append(i_object)
+            self.entities[objectID] = i_object
 
         self.spawn = {
             'Player': pkl.load(open(f'{map_dir}/player_spawn.pkl', 'rb')),
@@ -107,10 +116,11 @@ class Back:
             raise ValueError
 
         charIDNum = len(self.characters)
-        itemIDNum = len(self.items)
+        itemIDNum = len(self.items) + 200
 
         character.id = charIDNum
         self.characters.append(character)
+        self.entities[charIDNum] = character
 
         if character.reach > self.maxReach:
             self.maxReach = character.reach
@@ -119,15 +129,21 @@ class Back:
             if character.equippedWeapons[hand] is not None:
                 character.equippedWeapons[hand].id = itemIDNum
                 self.items.append(character.equippedWeapons[hand])
+                self.weapons.append(character.equippedWeapons[hand])
                 itemIDNum += 1
         for armour_type in character.equippedArmour:
             if character.equippedArmour[armour_type] is not None:
                 character.equippedArmour[armour_type].id = itemIDNum
                 self.items.append(character.equippedArmour[armour_type])
+                self.armour.append(character.equippedArmour[armour_type])
                 itemIDNum += 1
         for item in character.inventory:
             item.id = itemIDNum
             self.items.append(item)
+            if item.is_Armour():
+                self.armour.append(item)
+            elif item.is_Weapon():
+                self.weapons.append(item)
             itemIDNum += 1
 
         rand_index = rd.randint(0, len(self.spawn[character_type])-1)
@@ -136,11 +152,12 @@ class Back:
         character.coords = spawn_coords
         self.characterGrid[spawn_coords[0]][spawn_coords[1]] = character
         character.initialiseTurn()
+
         return character
 
     # Moves a character on the grid
     def moveCharacter(self, charID, newCoords):
-        character = self.characters[charID]
+        character = self.entities[charID]
         prevCoords = character.coords
         vector = (newCoords[0]-prevCoords[0], newCoords[1]-prevCoords[1])
 
@@ -158,7 +175,7 @@ class Back:
 
     # Moves an object on the grid
     def moveObject(self, objID, newCoords):
-        entity = self.objects[objID]
+        entity = self.entities[objID]
         prevCoords = entity.coords
         vector = (newCoords[0]-prevCoords[0], newCoords[1]-prevCoords[1])
 
@@ -169,7 +186,7 @@ class Back:
 
     # Moves an item on the grid
     def moveItem(self, itemID, newCoords):
-        item = self.items[itemID]
+        item = self.entities[itemID]
         prevCoords = item.coords
         vector = (newCoords[0]-prevCoords[0], newCoords[1]-prevCoords[1])
 
@@ -207,6 +224,16 @@ class Back:
         self.itemGrid[armour.coords[0]][armour.coords[1]] = armour
 
         armour.is_carried = False
+
+    # Moves the character along the given path to the given index
+    def pathCharacter(self, charID, pathCoords, index):  # For now, just moves to the final allowed coord
+        if index != -1:
+            finalCoord = pathCoords[index]
+
+            self.moveCharacter(charID, finalCoord)
+            return True
+        else:
+            return False
 
     # Checks if there is an item at the given coords
     def is_item(self, coords):
@@ -246,35 +273,31 @@ class Back:
     # Checks if character has the movement to move to coords
     def is_validMovement(self, charID, newCoords):
         x, y = newCoords
-        oldx, oldy = self.characters[charID].coords
-        if self.characters[charID].movement < calcPathDist((oldx, oldy), (x, y)):
+        oldx, oldy = self.entities[charID].coords
+        if self.entities[charID].movement < calcPathDist((oldx, oldy), (x, y)):
             return False
         else:
             return True
 
     # Checks if the character can move along the given path
     def is_validPath(self, charID, pathCoords):
-        character = self.characters[charID]
+        character = self.entities[charID]
         remaining_movement = character.movement
 
-        validMovement = []
+        index = -1
         for coord in pathCoords:
             if remaining_movement == 0 or not self.is_validCoords(coord):
-                validMovement.append(False)
                 break
-            validMovement.append(True)
             remaining_movement -= 5
+            index += 1
+
+        return index
 
     # Checks if an attack is valid
-    def is_validAttack(self, atkID, defID, catDef):
-        atkCoords = self.characters[atkID].coords
-        radius = int(self.characters[atkID].reach/5)
-        if catDef == 2:
-            defx, defy = self.objects[defID].coords
-        elif catDef == 1:
-            defx, defy = self.characters[defID].coords
-        else:
-            raise ValueError
+    def is_validAttack(self, atkID, defID):
+        atkCoords = self.entities[atkID].coords
+        radius = int(self.entities[atkID].reach/5)
+        defx, defy = self.entities[defID].coords
 
         xmin = atkCoords[0] - radius
         xmax = atkCoords[0] + radius

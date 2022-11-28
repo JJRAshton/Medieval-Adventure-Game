@@ -1,5 +1,5 @@
 ﻿Name,Tier,Range,Damage Dice,Finesse,Light,Two-handed,Protection,Defense Type,Attacks
-knife,0,5,d3,y,y,,,,"slash, stab"
+knife,0,5,d5,y,y,,,,"slash, stab"
 falchion,1,5,d6,y,,,2,parry,slash
 scimitar,1,5,d8,y,,,2,parry,slash
 tanto,2,5,d10,y,,y,3,parry,slash

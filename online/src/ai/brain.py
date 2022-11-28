@@ -32,7 +32,7 @@ class Brain1:
         self.locations = backend.locationsRequest()
         self.my_id = id
         self.my_location = backend.locationsRequest()[id]
-        self.my_range = backend.infoRequest(id)['Max_range']
+        self.my_range = backend.infoRequest(id)['Range']
         self.my_movement = backend.infoRequest(id)['Remaining_movement']
         self.actions = backend.infoRequest(id)['Action_number']
 

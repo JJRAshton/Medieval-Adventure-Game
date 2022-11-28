@@ -8,7 +8,7 @@ class Arena:
         self.arena_back = None
 
         self.classes = ['Raider', 'Gladiator', 'Guardian', 'Knight', 'Hunter', 'Professor', 'Ninja']
-        self.creatures = ['Orc']
+        self.creatures = []
         self.no = len(self.classes) + len(self.creatures)
 
         self.players = []

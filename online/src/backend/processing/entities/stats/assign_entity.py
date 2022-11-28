@@ -238,10 +238,4 @@ class EntityStats:
 
         choices = wep_option_df.index.tolist()
         player.equippedWeapons['Right'] = rd.choice(choices)
-
-        class_dict = self.tables.get_class_stats_dict(player.p_class.name)
-        if class_dict['Armour']:
-            player.equippedArmour['Under'] = class_dict['Armour']
-        player.baseMovement = int(class_dict['Base Movement'])
-        player.baseEvasion = player.baseStat['DEX']
     

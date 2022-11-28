@@ -71,13 +71,6 @@ def make_weapon_stat_table():
     return weapon_table
 
 
-def make_class_stat_table():
-    # read combat setup
-    class_table = pd.read_csv(f'{inputs_dir}/classes.csv', keep_default_na=False, index_col='Name')
-
-    return class_table
-
-
 def make_armour_stat_table():
     # read combat setup
     armour_table = pd.read_csv(f'{inputs_dir}/armour.csv', keep_default_na=False, index_col='Name')
@@ -100,16 +93,10 @@ class EntityTables:
         self.armour = make_armour_stat_table()
         self.objects = make_object_stat_table()
         self.weapons = make_weapon_stat_table()
-        self.classes = make_class_stat_table()
 
     def get_weapon_stats_dict(self, weapon_name):
         # Make a dictionary of the stats for the entity
         gotten_stats = self.weapons.loc[weapon_name].to_dict()
-        return gotten_stats
-
-    def get_class_stats_dict(self, class_name):
-        # Make a dictionary of the stats for the entity
-        gotten_stats = self.classes.loc[class_name].to_dict()
         return gotten_stats
 
     def get_object_stats_dict(self, object_name):

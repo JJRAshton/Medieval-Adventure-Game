@@ -66,9 +66,8 @@ class TurnManager:
 
         # Check if any monsters are still alive
         is_a_monster = False
-        for npc in self.back.characters:
-            if npc.team == 2:
-                is_a_monster = is_a_monster or npc.is_alive
+        for monster in self.back.monsters:
+            is_a_monster = is_a_monster or monster.is_alive
         if not is_a_monster:
             self.winning_team = 1
             self.is_combat = False

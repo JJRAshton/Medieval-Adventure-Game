@@ -6,21 +6,17 @@ from .turn_notifications import TurnNotifier
 from ai.ai_manager import AIManager
 
 
+# Checks for what type of entity the id is
+def is_character(entID):
+    return 0 <= entID < 100
 
-# Converts an ID number to the index of its category's list
-# 1: characters, 2: objects, 3: items
-def id_to_local(globalID):
-    if globalID < 100:
-        category = 1
-    elif globalID < 200:
-        category = 2
-    elif globalID < 300:
-        category = 3
-    else:
-        category = None
-    localID = globalID % 100
 
-    return localID, category
+def is_object(entID):
+    return 100 <= entID < 200
+
+
+def is_item(entID):
+    return 200 <= entID < 300
 
 
 # Function comments are in back_requests
@@ -36,57 +32,49 @@ class Hub:
         self.ai_manager = ai_manager
 
     # Moves an entity to given coords
-    def requestMove(self, globalID, coords):
-        localID, category = id_to_local(globalID)
+    def requestMove(self, entID, coords):
     
-        if category == 2:
-            self.chart.moveObject(localID, coords)
+        if is_object:
+            self.chart.moveObject(entID, coords)
             return True
 
-        elif category == 1:
-            self.chart.moveCharacter(localID, coords)
+        elif is_character:
+            self.chart.moveCharacter(entID, coords)
             return True
 
         else:
-            return False
+            raise ValueError
 
     # Checks if a move is valid
-    def requestMoveVerification(self, globalID, coords):
-        localID, category = id_to_local(globalID)
+    def requestMoveVerification(self, entID, coords):
 
-        if category == 2 and self.chart.is_validCoords(coords):
+        if is_character and self.chart.is_validCoords(coords) and self.chart.is_validMovement(entID, coords):
             return True
 
-        elif category == 1 and self.chart.is_validCoords(coords) and self.chart.is_validMovement(localID, coords):
+        elif is_object and self.chart.is_validCoords(coords):
             return True
 
         else:
             return False
 
     # Checks if an attack is valid and then attacks if so
-    def requestAttack(self, globalID1, globalID2, attack_list=[0]):
-        localID1, category1 = id_to_local(globalID1)
-        localID2, category2 = id_to_local(globalID2)
+    def requestAttack(self, entID1, entID2, attack_list=[0]):
 
-        if self.chart.is_validAttack(localID1, localID2, category2):
+        if self.chart.is_validAttack(entID1, entID2):
 
-            if category1 == 1:
-                attacker = self.chart.characters[localID1]
+            if entID1 < 100:
+                attacker = self.chart.entities[entID1]
             else:
                 raise ValueError
 
-            if category2 == 1:
-                defender = self.chart.characters[localID2]
-            elif category2 == 2:
-                defender = self.chart.objects[localID2]
-            else:
-                raise ValueError
+            defender = self.chart.entities[entID2]
             
             attacker.attack(attack_list, defender)
             defender.checkHealth()
             if not defender.is_alive:
-                if category2 == 1:
-                    self.calcDrop(defender)
+                if entID2 < 100:
+                    if defender.behaviour_type >= 2:
+                        self.calcDrop(defender)
                 else:
                     self.chart.dropInv(defender)
 
@@ -134,24 +122,22 @@ class Hub:
 
         return char_locs
 
-        # Gives the locations of all characters
+    # Gives the locations of all objects
     def giveObjLoc(self):
-        obj_locs = []
+        obj_locs = {}
 
         for i_object in self.chart.objects:
-            obj_info = (i_object.id, i_object.coords)
-            obj_locs.append(obj_info)
+            obj_locs[i_object.id] = i_object.coords
 
         return obj_locs
 
-    # Gives the locations of all characters
+    # Gives the locations of all items on map
     def giveMapItemLoc(self):
-        item_locs = []
+        item_locs = {}
 
         for item in self.chart.items:
             if not item.is_carried:
-                item_info = (item.id, item.coords)
-                item_locs.append(item_info)
+                item_locs[item.id] = item.coords
 
         return item_locs
 
@@ -177,8 +163,10 @@ class Hub:
         infoDict = {
             'Team': character.team,
             'Remaining_movement': character.movement,
-            'Max_range': character.reach,
+            'Range': character.range,
+            'Reach': character.reach,
             'Health': character.health,
+            'Max_health': character.maxHealth,
             'Action_number': character.actions,
 
             'Stats': {

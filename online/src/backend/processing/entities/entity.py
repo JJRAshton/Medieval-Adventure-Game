@@ -15,6 +15,9 @@ class Entity:
         self.size = 0
         
         self.coords = (0, 0)
+
+    def __eq__(self, other):
+        return self.id == other
     
     # Moves to new coords
     def move(self, vector):

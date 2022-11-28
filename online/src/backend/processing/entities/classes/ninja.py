@@ -8,4 +8,5 @@ class Ninja(Class):
         self.name = 'Ninja'
         self.stat_order = ['DEX', 'WIT', 'STR', 'CON']
         self.weapons = ['single_edged_swords', 'light_throwables', 'mythical']
-        self.health_modifier = 1.75
+
+        self.getStats()

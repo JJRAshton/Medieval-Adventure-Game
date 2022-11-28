@@ -8,4 +8,5 @@ class Professor(Class):
         self.name = 'Professor'
         self.stat_order = ['WIT', 'DEX', 'CON', 'STR']
         self.weapons = ['staves', 'books', 'mythical']
-        self.health_modifier = 1.25
+
+        self.getStats()

@@ -35,8 +35,13 @@ class Player(ch.Character):
 
         self.getStats()
 
+        self.getClass()
+        self.getEquipment()
+
         self.resetStats()
         self.resetHealth()
+
+        self.calcEvasion()
 
         self.refreshStatAfterWeapon()
         self.refreshStatAfterArmour()
@@ -50,8 +55,12 @@ class Player(ch.Character):
     # Gets the player stats
     def getStats(self):
         ent.Entity.entityStats.getPlayerStats(self)
-        self.getEquipment()
         self.convAttacks()
+
+    # Gets the player class associated stats
+    def getClass(self):
+        self.equippedArmour = self.p_class.startingArmour
+        self.baseMovement = self.p_class.baseMovement
 
     # Unequips a weapon if one present in given location
     def unequipWeapon(self, location):
@@ -116,7 +125,7 @@ class Player(ch.Character):
 
     # Resets evasion accounting for bonus melee evasion of some classes
     def resetEvasion(self):
-        if self.p_class.name in ['Gladiator', 'Ninja']:
+        if self.p_class.name in []:
             self.evasion['Melee']['piercing'] = int(self.baseEvasion * (1 + self.stat['DEX'] / 100))
             self.evasion['Melee']['slashing'] = int(self.baseEvasion * (1 + self.stat['DEX'] / 100))
             self.evasion['Melee']['bludgeoning'] = int(self.baseEvasion * (1 + self.stat['DEX'] / 100))
@@ -128,10 +137,14 @@ class Player(ch.Character):
     def calcProfB(self):
         self.hitProf = 10
 
-    # Calculates health based on level and con mod
+    # Calculates health based on CON and class
     def calcHealth(self):
         self.baseHealth = int(self.stat['CON'] * self.p_class.health_modifier)
         self.maxHealth = self.baseHealth
+
+    # Calculates evasion based on DEX class
+    def calcEvasion(self):
+        self.baseEvasion = int(self.stat['DEX'] * self.p_class.evasion_modifier)
 
     # Checks if the player is proficient with the weapon
     def is_Proficient(self, weapon):

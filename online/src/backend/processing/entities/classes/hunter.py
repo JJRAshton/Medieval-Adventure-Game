@@ -8,4 +8,5 @@ class Hunter(Class):
         self.name = 'Hunter'
         self.stat_order = ['STR', 'DEX', 'WIT', 'CON']
         self.weapons = ['bows', 'special', 'axes']
-        self.health_modifier = 2
+
+        self.getStats()

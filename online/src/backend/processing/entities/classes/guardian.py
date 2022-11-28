@@ -8,4 +8,5 @@ class Guardian(Class):
         self.name = 'Guardian'
         self.stat_order = ['CON', 'WIT', 'STR', 'DEX']
         self.weapons = ['books', 'shields', 'hammers']
-        self.health_modifier = 2
+
+        self.getStats()
