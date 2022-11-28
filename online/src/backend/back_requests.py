@@ -6,6 +6,7 @@ class Requests:
 
     def __init__(self, turn_notification_subscription):
         ai_manager = AIManager(self)
+        turn_notification_subscription.requests = self
         self.functions = pr.Hub(turn_notification_subscription, ai_manager)
 
     # Requests to move an entity with ID 'globalID' to a given coords.

@@ -27,11 +27,19 @@ export default class Character {
         this.y = y;
     }
 
+    update(updateInfo) {
+        console.log(updateInfo);
+        this.health = updateInfo.Health;
+        this.x = updateInfo.coords[0];
+        this.y = updateInfo.coords[1];
+    }
+
     construct(characterInfo) {
         console.log(characterInfo);
 
         this.attacks = characterInfo.Attacks;
         this.armour = null; // Not yet implemented
+        this.maxHealth = characterInfo.Health;
         this.health = characterInfo.Health;
         this.inventory = null // Not yet implemented
         this.range = characterInfo.Max_range;

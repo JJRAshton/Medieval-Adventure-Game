@@ -69,8 +69,9 @@ class Hub:
 
             defender = self.chart.entities[entID2]
             
-            attacker.attack(attack_list, defender)
-            defender.checkHealth()
+            indictor = attacker.attack(attack_list, defender)
+            print(indictor)
+            defender.checkAlive()
             if not defender.is_alive:
                 if entID2 < 100:
                     if defender.behaviour_type >= 2:

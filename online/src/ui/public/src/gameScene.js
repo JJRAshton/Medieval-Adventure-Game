@@ -48,6 +48,7 @@ export class Game extends Context {
                 fontSize: "32"}}>
                 { this.canvas }
                 <div className="info">
+                    <div style={{backgroundColor: '#ffffff'}}>{this.character.health} / {this.character.maxHealth}</div>
                     <ul className="gameOptions" style={{"listStyle": "none"}}>
                         <li className="button"
                             style={{fontSize: 32}}
@@ -191,6 +192,7 @@ export class Game extends Context {
                     // Reset the planned movement if we're told it's not our turn
                     this.movement = null;
                 }
+                this.updatePlayers(event.charactersUpdate);
                 break;
             case "mapUpdate":
                 // These get sent when someone moves, or when something changes
@@ -204,6 +206,12 @@ export class Game extends Context {
                 break;
             default:
                 console.log("Unrecognised event" + event)
+        }
+    }
+
+    updatePlayers(charactersInfo) {
+        for (let id in charactersInfo) {
+            this.characters.get(parseInt(id)).update(charactersInfo[id]);
         }
     }
 }

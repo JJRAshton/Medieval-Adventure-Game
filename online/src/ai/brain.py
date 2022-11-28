@@ -1,11 +1,8 @@
 import math
 
 # Hardcoded stuff for testing
-row = [0 for i in range(0,10)]
-map_grid = [row for j in range(0,10)]
-
-# locations is the result of a locationsRequest
-locations = {'1': (1, 1), '2': (2, 5), '3': (9, 10), '4': (1,2)}
+#row = [0 for i in range(0,10)]
+#map_grid = [row for j in range(0,10)]
 
 class Brain1:
 
@@ -69,7 +66,7 @@ class Brain1:
         return target
 
     def check_can_attack(self, target):
-        if self.my_range / 5 > self.check_distance(target):
+        if self.my_range / 5 >= self.check_distance(target):
             print("target is in range!")
             return True
         return False
@@ -79,11 +76,16 @@ class Brain1:
         target_location = self.locations[target[0]]
         while self.actions > 0:
             while not self.check_can_attack(target[0]):
-                x_movement = int(target_location[0]-self.my_location[0])/abs(target_location[0]-self.my_location[0])
-                y_movement = int(target_location[1]-self.my_location[1])/abs(target_location[1]-self.my_location[1])
-                movement_coords = (self.my_location[0] + x_movement, self.my_location[1] + y_movement)
+                sign = lambda i: 0 if not i else int(i/abs(i))
+                x_diff = (target_location[0] - self.my_location[0])
+                x_movement = sign(x_diff)
+                y_diff = (target_location[1] - self.my_location[1])
+                y_movement = sign(y_diff)
+                movement_coords = (int(self.my_location[0] + x_movement), int(self.my_location[1] + y_movement))
                 # I think this line will also make a move request, not just check if true?
-                if not backend.moveRequest(self.my_id, movement_coords):
+                if backend.moveRequest(self.my_id, movement_coords):
+                    self.my_location = backend.locationsRequest()[self.my_id]
+                else:
                     self.actions = 0    # Not really needed now
                     print('ran out of movement')
                     return
