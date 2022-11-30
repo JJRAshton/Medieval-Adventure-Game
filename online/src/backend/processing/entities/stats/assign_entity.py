@@ -216,7 +216,7 @@ class EntityStats:
 
     # Adds the stats to the given player
     def getPlayerStats(self, player):
-        x, n, top = 3, 6, 48  # roll 8, take best 5 - max of 40
+        x, n, top = 3, 8, 48  # roll 8, take best 5 - max of 40
         stat_rolls = []
 
         for _ in range(4):  # Number of stats to assign

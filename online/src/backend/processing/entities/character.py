@@ -180,7 +180,9 @@ class Character(ent.HealthEntity):
                 dmg_stat = self.stat['WIT']
 
         if self.is_Class('Raider'):
-            dmg_mult = 1.2
+            dmg_mult = (1 + self.maxMovement / 100) * (1 + (self.stat['STR'] - 25) / 100)
+        elif self.is_Class('Guardian'):
+            dmg_mult = 0.75
         else:
             dmg_mult = 1
 

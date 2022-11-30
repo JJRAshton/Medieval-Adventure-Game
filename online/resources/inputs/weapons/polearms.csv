@@ -1,10 +1,10 @@
 ﻿Name,Tier,Range,Damage Dice,Two-handed,Protection,Defense Type,Armour Piercing,Attacks
-bec_de_corbin,3,5,d11,y,3,parry,y,"pound, impale"
-halberd,4,10,d14,y,3,parry,y,"hack, impale, strike"
-pollaxe,3,5,d12,y,4,parry,y,"hack, impale, pound"
+bec_de_corbin,3,5,d9,y,3,parry,y,"pound, impale"
+halberd,4,10,d12,y,3,parry,y,"hack, impale, strike"
+pollaxe,3,5,d10,y,4,parry,y,"hack, impale, pound"
 infantry_morningstar,3,10,d8,y,2,parry,,"smash, impale"
 guisarme,1,10,d4,y,2,parry,,"cut, stab"
 ketten_flail,2,10,d6,y,1,parry,y,smash
-bill,4,10,d14,y,4,parry,y,"cut, impale, strike"
+bill,4,10,d12,y,4,parry,y,"cut, impale, strike"
 pole_warhammer,1,10,d8,y,2,parry,y,"stab, strike"
 geodendag,3,10,d6,y,2,parry,,"slam, impale"

@@ -1,9 +1,9 @@
 raider
-high damage numbers
+high damage numbers - damage multiplier = max speed * str increase
 better against lightly armoured targets
 
 gladiator
-bonus evasion in melee
+bonus evasion in melee - dex increase
 higher chance of crit
 crit do bonus damage?
 
@@ -23,5 +23,5 @@ professor
 magic
 
 ninja
-bonus melee evasion
-dex build with finesse weapons
+large bonus melee evasion if not wearing heavy armour
+square of dex increase

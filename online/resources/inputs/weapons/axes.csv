@@ -2,6 +2,6 @@
 hatchet,0,5,d5,y,,slash
 handaxe,1,5,d4,y,,cut
 splitting_axe,1,5,d6,,y,cut
-battleaxe,2,5,d10,,y,hack
-bardiche,3,10,d12,,y,"cut, hack, stab"
-greataxe,4,5,d14,,y,"hack, strike"
+battleaxe,2,5,d8,,y,hack
+bardiche,3,10,d10,,y,"cut, hack, stab"
+greataxe,4,5,d12,,y,"hack, strike"
