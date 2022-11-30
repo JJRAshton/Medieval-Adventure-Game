@@ -124,13 +124,13 @@ class Player(ch.Character):
 
     # Resets evasion accounting for bonus melee evasion of some classes
     def resetEvasion(self):
-        if self.p_class.name in ['Gladiator']:
+        if self.p_class.name in ['Gladiator'] and self.bulk <= 15:
             self.evasion['Melee'] = int(self.baseEvasion * (1 + (self.stat['DEX'] - 25) / 100))
             self.evasion['Ranged'] = self.baseEvasion
-        elif self.p_class.name in ['Ninja']:
+        elif self.p_class.name in ['Ninja'] and self.bulk <= 10:
             self.evasion['Melee'] = int(self.baseEvasion * ((1 + (self.stat['DEX'] - 25) / 100) ** 2))
             self.evasion['Ranged'] = self.baseEvasion
-        elif self.p_class.name in ['Hunter']:
+        elif self.p_class.name in ['Hunter'] and self.bulk <= 10:
             self.evasion['Melee'] = self.baseEvasion
             self.evasion['Ranged'] = int(self.baseEvasion * (1 + (self.stat['DEX'] - 25) / 100))
         else:

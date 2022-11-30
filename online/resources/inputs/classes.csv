@@ -1,8 +1,8 @@
 ﻿Name,Health Mod,Evasion Mod,Base Movement,Armour,
-Raider,2,1,35,"gambeson, hauberk_riveted",hide
+Raider,1.75,1,35,"gambeson, hauberk_riveted",hide
 Gladiator,2.5,1,30,"gambeson, laminar",
 Guardian,2.5,0.75,20,"arming_doublet, full_plate",leather
 Knight,1.5,1,25,"arming_doublet, full_plate",leather
-Hunter,1.75,1.25,35,"arming_doublet, plate",
+Hunter,1.75,1.25,35,"padded_tunic, cuirass",
 Professor,1.25,1,25,,
 Ninja,1.5,1.25,40,"gambeson, laminar",

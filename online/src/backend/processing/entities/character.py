@@ -68,6 +68,7 @@ class Character(ent.HealthEntity):
             'Over': None
         }
         self.coverage = 0
+        self.bulk = 0
 
         self.inventory = []
 
@@ -180,7 +181,7 @@ class Character(ent.HealthEntity):
                 dmg_stat = self.stat['WIT']
 
         if self.is_Class('Raider'):
-            dmg_mult = (1 + self.maxMovement / 100) * (1 + (self.stat['STR'] - 25) / 100)
+            dmg_mult = (1 + self.movement / 100) * (1 + (self.stat['STR'] - 25) / 100)
         elif self.is_Class('Guardian'):
             dmg_mult = 0.75
         else:
@@ -285,6 +286,7 @@ class Character(ent.HealthEntity):
     # Recalculates the entity AC
     def refreshStatAfterArmour(self):
 
+        self.bulk = 0
         self.stat['DEX'] = self.baseStat['DEX']
         for dmg_type in self.armour:
             self.armour[dmg_type] = self.baseArmour
@@ -296,11 +298,15 @@ class Character(ent.HealthEntity):
             eq_armour = self.equippedArmour[armour_type]
             if eq_armour is None:
                 continue
+
             material = eq_armour.material
             value = eq_armour.value
+
             total_flex *= eq_armour.flex
             self.maxMovement -= eq_armour.weight
             self.coverage += eq_armour.coverage / 100
+            self.bulk += eq_armour.bulk
+
             if material == 'cloth':
                 self.armour['slashing'] += value
                 self.armour['piercing'] += 0.5 * value
