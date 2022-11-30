@@ -19,8 +19,7 @@ class NPC(ch.Character):
         self.resetStats()
         self.resetHealth()
 
-        self.refreshStatAfterWeapon()
-        self.refreshStatAfterArmour()
+        self.refreshStatAfterEquipment()
 
         self.calcInitiative()
 

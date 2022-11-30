@@ -1,6 +1,6 @@
 ﻿Name,Tier,Range,Damage Dice,Light,Ranged,Two-handed,Attacks
 hammer,0,5,d4,y,,,pound
 warhammer,2,5,d6,,,y,pound
-maul,4,5,d5,,,y,slam
+maul,4,5,d6,,,y,slam
 flail,3,5,d5,,,,pound
 cavalry_morningstar,2,5,d6,,,,smash

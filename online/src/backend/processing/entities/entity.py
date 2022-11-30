@@ -77,8 +77,9 @@ class HealthEntity(Entity):
         elif dmg_type in self.resistances:
             appliedDamage *= 0.5
 
+        appliedDamage = round(appliedDamage)
         if appliedDamage > 0:
-            self.health -= int(appliedDamage)
+            self.health -= appliedDamage
             self.checkAlive()
         else:
             appliedDamage = 0

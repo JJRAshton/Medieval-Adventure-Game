@@ -1,0 +1,27 @@
+raider
+high damage numbers
+better against lightly armoured targets
+
+gladiator
+bonus evasion in melee
+higher chance of crit
+crit do bonus damage?
+
+guardian
+shields and tanking
+can use books
+
+knight
+heavy, armour piercing weapons
+or high damage protective weapons
+can work with shield (but not chosen weapon)
+
+hunter
+hide, avoid, use bow
+
+professor
+magic
+
+ninja
+bonus melee evasion
+dex build with finesse weapons

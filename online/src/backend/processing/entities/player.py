@@ -43,8 +43,7 @@ class Player(ch.Character):
 
         self.calcEvasion()
 
-        self.refreshStatAfterWeapon()
-        self.refreshStatAfterArmour()
+        self.refreshStatAfterEquipment()
 
         self.calcInitiative()
 
@@ -125,13 +124,15 @@ class Player(ch.Character):
 
     # Resets evasion accounting for bonus melee evasion of some classes
     def resetEvasion(self):
-        if self.p_class.name in []:
-            self.evasion['Melee']['piercing'] = int(self.baseEvasion * (1 + self.stat['DEX'] / 100))
-            self.evasion['Melee']['slashing'] = int(self.baseEvasion * (1 + self.stat['DEX'] / 100))
-            self.evasion['Melee']['bludgeoning'] = int(self.baseEvasion * (1 + self.stat['DEX'] / 100))
+        if self.p_class.name in ['Gladiator', 'Ninja']:
+            self.evasion['Melee'] = int(self.baseEvasion * (1 + (self.stat['DEX'] - 25) / 100))
             self.evasion['Ranged'] = self.baseEvasion
         else:
             super().resetEvasion()
+
+    # Allows gladiator to have higher crit chance
+    def is_Class(self, class_str):
+        return self.p_class.name == class_str
 
     # Calculates the entity proficiency bonus
     def calcProfB(self):
@@ -148,7 +149,4 @@ class Player(ch.Character):
 
     # Checks if the player is proficient with the weapon
     def is_Proficient(self, weapon):
-        if weapon.type in self.p_class.weapons:
-            return True
-        else:
-            return False
+        return weapon.type in self.p_class.weapons

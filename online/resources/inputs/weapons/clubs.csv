@@ -1,7 +1,7 @@
 ﻿Name,Tier,Range,Damage Dice,Light,Ranged,Two-handed,Attacks
 club,0,5,d5,,,,strike
 quarterstaff,1,5,d7,,,y,strike
-greatclub,3,5,d2,,,y,crush
+greatclub,3,5,d3,,,y,crush
 whip,2,10,d6,y,,,strike
 mace,1,5,d2,,,,slam
 flanged_mace,3,5,d4,,,,slam

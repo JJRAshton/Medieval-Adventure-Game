@@ -46,6 +46,9 @@ class Weapon(Item):
         self.is_light = False
         self.is_finesse = False
         self.is_fine = False
+        self.is_magic = False
+
+        self.is_melee = True
 
         self.getStats()
 

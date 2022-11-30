@@ -40,7 +40,7 @@ class Attack:
         self.from_weapon = weapon
 
     # Rolls for the damage to an entity
-    def rollDamage(self, dmg_stat):
+    def rollDamage(self, dmg_stat, dmg_mult=1):
         number, dice = self.damage
 
         # Roll for base damage
@@ -49,7 +49,7 @@ class Attack:
             base += rd.randint(1, dice)
 
         # Increases it according to the damage stat
-        totalDamage = base * (1 + dmg_stat / 100)
+        totalDamage = dmg_mult * base * (1 + (dmg_stat - 25) / 100)
 
         damage = {}
         for damage_type in self.damage_types:

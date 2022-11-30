@@ -1,2 +1,2 @@
-﻿Name,Tier,Range,Damage Dice,Finesse,Light,Ranged,Two-handed,Arrows,Bolts,Loading,Attacks
-parchment,0,30,d4,,,,,,,,poem
+﻿Name,Tier,Range,Damage Dice,Ranged,Two-handed,Magic,Attacks
+parchment,0,30,d4,,,,poem

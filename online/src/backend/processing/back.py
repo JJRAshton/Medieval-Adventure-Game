@@ -4,17 +4,7 @@ import pandas as pd
 import os
 
 from . import entities as ent
-
-
-# Gets the in game distance between two coords for attacks
-def calcRadDist(coords1, coords2):
-    xdiff = abs(coords2[0] - coords1[0])
-    ydiff = abs(coords2[1] - coords1[1])
-
-    maxdiff = max(xdiff, ydiff)
-    dist = 5 * maxdiff
-
-    return dist
+from .entities.character import calcRadDist
 
 
 # Gets the in game distance between two coords for travel
@@ -30,7 +20,7 @@ def calcPathDist(coords1, coords2):
 class Back:
     maps_dir = os.path.dirname(__file__) + '/../../../resources/inputs/maps'
 
-    def __init__(self, mapLevel=1, nPlayers=1):
+    def __init__(self, mapLevel=1, nPlayers=1, classes=None):
         self.map = mapLevel
         self.player_n = nPlayers
         self.size = (0, 0)
@@ -56,7 +46,9 @@ class Back:
         self.monsters = []
         self.npcs = []  # Non-monsters
 
-        self.classes = ['Raider', 'Gladiator', 'Guardian', 'Knight', 'Hunter', 'Professor', 'Ninja']  # For choosing the class from backend - before frontend input
+        if classes is None:
+            classes = ['Raider', 'Gladiator', 'Guardian', 'Knight', 'Hunter', 'Professor', 'Ninja']
+        self.classes = classes  # For choosing the class from backend - before frontend input
 
         self.maxReach = 5
 

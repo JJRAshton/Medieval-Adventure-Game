@@ -5,6 +5,17 @@ from . import attack as at
 from . import item as it
 
 
+# Gets the in game distance between two coords for attacks
+def calcRadDist(coords1, coords2):
+    xdiff = abs(coords2[0] - coords1[0])
+    ydiff = abs(coords2[1] - coords1[1])
+
+    maxdiff = max(xdiff, ydiff)
+    dist = 5 * maxdiff
+
+    return dist
+
+
 class Character(ent.HealthEntity):
     def __init__(self, entityName):
         super().__init__(entityName)
@@ -37,11 +48,7 @@ class Character(ent.HealthEntity):
         self.movement = 0
 
         self.evasion = {
-            'Melee': {
-                'piercing': 0,
-                'slashing': 0,
-                'bludgeoning': 0
-            },
+            'Melee': 0,
             'Ranged': 0
         }
 
@@ -100,25 +107,48 @@ class Character(ent.HealthEntity):
         init_roll = rd.randint(1, self.stat['DEX'])
         self.initiative = init_roll
 
+    # To be used in player for gladiator
+    def is_Class(self, class_str):
+        return False
+
     # Makes an attack roll returning whether it -1:miss, 0:blocked, 1:hit, 2:critical hit
     def hitContest(self, attack, hitBonus, opponent):
 
-        crit_weighting = opponent.stat['DEX'] * opponent.coverage + (20 - opponent.size)
+        distance = calcRadDist(self.coords, opponent.coords)
+        size_diff = self.size - opponent.size
 
-        if attack.type == 'bludgeoning':
-            crit_weighting = int(0.5 * crit_weighting)
+        opponentCritResistance = opponent.stat['DEX'] * ((1 + opponent.coverage) ** 2)
+
+        if 'bludgeoning' == attack.damage_maintype:
+            crit_weighting = opponentCritResistance
+        else:
+            crit_weighting = opponentCritResistance + size_diff
+
+        if self.is_Class('Gladiator'):  # Gladiator increased crit chance
+            crit_weighting = int(crit_weighting * (1 - self.stat['DEX'] / 100))
+
+        if crit_weighting < 0:
+            crit_weighting = 0
 
         # Picks which opponent evasion to use
-        if not attack.from_weapon.is_ranged and attack.damage_maintype in opponent.evasion['Melee']:
-            opponentEvasion = opponent.evasion['Melee'][attack.damage_maintype]
+        if attack.from_weapon.is_melee:
+            opponentEvasion = opponent.evasion['Melee']
         else:
             opponentEvasion = opponent.evasion['Ranged']
-        opponentRoll = rd.randint(1, opponentEvasion)
 
-        ownRoll = rd.randint(1, self.stat['DEX'])
+        if opponentEvasion < 2:
+            opponentRoll = 1
+        else:
+            opponentRoll = rd.randint(1, opponentEvasion)
+
+        if attack.from_weapon.is_ranged and distance == 5:
+            ownRoll = min(rd.randint(1, self.stat['DEX']), rd.randint(1, self.stat['DEX']))  # Disadvantage at close range for ranged weapons
+        else:
+            ownRoll = rd.randint(1, self.stat['DEX'])
+
         ownResult = ownRoll + hitBonus
 
-        if ownResult > crit_weighting*opponentRoll:
+        if ownResult >= crit_weighting*opponentRoll:
             result = 2
         elif ownResult > opponentRoll:
             result = 1
@@ -145,23 +175,37 @@ class Character(ent.HealthEntity):
         dmg_stat = self.stat['STR']
         if attack.from_weapon is not None:
             if attack.from_weapon.is_finesse:
-                dmg_stat *= 1 + self.stat['DEX'] / 100
+                dmg_stat *= 1 + (self.stat['DEX'] - 25) / 100
+            if attack.from_weapon.is_magic:
+                dmg_stat = self.stat['WIT']
 
+        if self.is_Class('Raider'):
+            dmg_mult = 1.2
+        else:
+            dmg_mult = 1
+
+        hitStatus = ''
         if hitResult > 0:
             if hitResult == 1:
                 is_critical = False
             else:
                 is_critical = True
-            damage = attack.rollDamage(dmg_stat)
+                hitStatus = 'Critical: '
+            damage = attack.rollDamage(dmg_stat, dmg_mult)
             appliedDamage = 0
             is_AP = attack.from_weapon.is_AP
             if creature.equippedArmour['Over'] is not None:
                 if creature.equippedArmour['Over'].material == 'mail' and attack.from_weapon.is_fine:
                     is_AP = True
+            appliedDamage += creature.takeDamage(damage[attack.damage_maintype], attack.damage_maintype, is_AP, is_critical)
             for damage_type in damage:
+                if damage_type == attack.damage_maintype:
+                    continue
+                if appliedDamage > 0:
+                    is_critical = True
                 appliedDamage += creature.takeDamage(damage[damage_type], damage_type, is_AP, is_critical)
 
-            indicator = str(appliedDamage)
+            indicator = hitStatus + str(appliedDamage)
         else:
             indicator = 'Blocked' if hitResult == 0 else 'Miss'
 
@@ -222,36 +266,37 @@ class Character(ent.HealthEntity):
                 protection = eq_weapon.protection
                 if self.is_Proficient(eq_weapon):
                     protection *= 2
-                self.evasion['Melee']['piercing'] += protection
-                self.evasion['Melee']['slashing'] += protection
-                self.evasion['Melee']['bludgeoning'] += protection
+                self.evasion['Melee'] += protection
                 if eq_weapon.defense_type == 'shield':
                     self.evasion['Ranged'] += protection
-                    self.evasion['Melee']['bludgeoning'] -= protection
 
     # Resets evasion
     def resetEvasion(self):
-
-        self.evasion['Melee']['piercing'] = self.baseEvasion
-        self.evasion['Melee']['slashing'] = self.baseEvasion
-        self.evasion['Melee']['bludgeoning'] = self.baseEvasion
+        self.evasion['Melee'] = self.baseEvasion
         self.evasion['Ranged'] = self.baseEvasion
+
+    def refreshStatAfterEquipment(self):
+        self.refreshStatAfterArmour()
+        self.calcEvasion()
+        self.refreshStatAfterWeapon()
 
     # Recalculates the entity AC
     def refreshStatAfterArmour(self):
 
+        self.stat['DEX'] = self.baseStat['DEX']
         for dmg_type in self.armour:
             self.armour[dmg_type] = self.baseArmour
         self.maxMovement = self.baseMovement
         self.coverage = self.baseCoverage
 
+        total_flex = 1
         for armour_type in self.equippedArmour:
             eq_armour = self.equippedArmour[armour_type]
             if eq_armour is None:
                 continue
             material = eq_armour.material
             value = eq_armour.value
-            self.stat['DEX'] *= eq_armour.flex
+            total_flex *= eq_armour.flex
             self.maxMovement -= eq_armour.weight
             self.coverage += eq_armour.coverage / 100
             if material == 'cloth':
@@ -263,7 +308,7 @@ class Character(ent.HealthEntity):
                 self.armour['piercing'] += 0.5 * value
             elif material == 'plate':
                 self.armour['slashing'] += value
-                self.armour['piercing'] += value
+                self.armour['piercing'] += 0.75 * value
                 self.armour['bludgeoning'] += 0.5 * value
 
         if self.coverage > 1:
@@ -272,7 +317,12 @@ class Character(ent.HealthEntity):
         self.armour['slashing'] = int(self.armour['slashing'])
         self.armour['piercing'] = int(self.armour['piercing'])
         self.armour['bludgeoning'] = int(self.armour['bludgeoning'])
-        self.stat['DEX'] = int(self.stat['DEX'])
+        self.stat['DEX'] = self.stat['DEX'] ** total_flex
+        self.stat['DEX'] = round(self.stat['DEX'])
+
+    # Calculates the new evasion after a stat change
+    def calcEvasion(self):
+        self.baseEvasion = self.stat['DEX']
 
     # Makes a saving throw
     def makeSavingThrow(self):

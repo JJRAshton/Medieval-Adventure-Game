@@ -1,4 +1,4 @@
-﻿Name,Tier,Range,Damage Dice,Ranged,Two-handed,Arrows,Armour Piercing,Attacks
-shortbow,1,40,d4,y,y,y,,impale
-recurve_bow,2,50,d6,y,y,y,,impale
-longbow,4,80,d8,y,y,y,y,impale
+﻿Name,Tier,Range,Damage Dice,Ranged,Two-handed,Arrows,Armour Piercing,Melee,Attacks
+shortbow,1,40,d4,y,y,y,,n,impale
+recurve_bow,2,50,d6,y,y,y,,n,impale
+longbow,4,80,d8,y,y,y,y,n,impale

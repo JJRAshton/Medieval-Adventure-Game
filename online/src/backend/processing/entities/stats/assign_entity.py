@@ -58,8 +58,8 @@ def convertList(list_str):
 
 class EntityStats:
     
-    def __init__(self):
-        self.tables = EntityTables(1)
+    def __init__(self, mapNumber=1):
+        self.tables = EntityTables(mapNumber)
 
     # Returns a dictionary of stats for the given weapon
     def getWeaponDict(self, weaponName):
@@ -80,7 +80,7 @@ class EntityStats:
     def getWeaponStats(self, weapon):   # Doesn't collect all data
         wepDict = self.getWeaponDict(weapon.name)
 
-        weapon.p_class = wepDict['Type']
+        weapon.type = wepDict['Type']
         weapon.range = int(wepDict['Range'])
         if wepDict['Damage Dice']:
             weapon.damage_dice = int(wepDict['Damage Dice'][1:])
@@ -105,6 +105,10 @@ class EntityStats:
             weapon.is_AP = True
         if wepDict['Fine']:
             weapon.is_fine = True
+        if wepDict['Magic']:
+            weapon.is_magic = True
+        if wepDict['Melee']:
+            weapon.is_melee = False
 
         if wepDict['Protection']:
             weapon.protection = int(wepDict['Protection'])
@@ -113,7 +117,7 @@ class EntityStats:
     def getArmourStats(self, armour):
         arDict = self.getArmourDict(armour.name)
 
-        armour.p_class = arDict['Type']
+        armour.type = arDict['Type']
         armour.material = arDict['Material']
         armour.bulk = arDict['Bulk']
         armour.coverage = arDict['Coverage']
@@ -233,9 +237,13 @@ class EntityStats:
         df = self.tables.weapons
         wep_option_df = pd.DataFrame()
         for wep_type in player.p_class.weapons:
-            wepData = df[(df.Type == wep_type) & (df.Tier == 0)]
+            wepData = df[(df.Type == wep_type) & (df.Tier == 4)]
             wep_option_df = pd.concat([wep_option_df, wepData])
 
         choices = wep_option_df.index.tolist()
-        player.equippedWeapons['Right'] = rd.choice(choices)
+        weapon_str = rd.choice(choices)
+        if df.loc[weapon_str].to_dict()['Two-handed']:
+            player.equippedWeapons['Both'] = rd.choice(choices)
+        else:
+            player.equippedWeapons['Right'] = rd.choice(choices)
     

@@ -1,8 +1,8 @@
-﻿Name,Health Mod,Evasion Mod,Base Movement,Armour
-Raider,1.5,0.75,35,hide
-Gladiator,2,1,30,
-Guardian,2,0.25,20,leather
-Knight,1.75,1,25,leather
-Hunter,1.75,1,35,
-Professor,1.25,1,25,
-Ninja,1.5,1.25,40,
+﻿Name,Health Mod,Evasion Mod,Base Movement,Armour,
+Raider,1.5,1,35,"arming_doublet, full_plate",hide
+Gladiator,2.5,1,30,"arming_doublet, full_plate",
+Guardian,2,0.75,20,"arming_doublet, full_plate",leather
+Knight,1.75,1,25,"arming_doublet, full_plate",leather
+Hunter,1.75,1.25,35,"arming_doublet, full_plate",
+Professor,1.25,1,25,,
+Ninja,1.5,1.25,40,"arming_doublet, full_plate",
