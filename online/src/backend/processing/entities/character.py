@@ -147,6 +147,9 @@ class Character(ent.HealthEntity):
         else:
             ownRoll = rd.randint(1, self.stat['DEX'])
 
+        if self.is_Class('Knight'):
+            ownRoll -= self.reach
+
         ownResult = ownRoll + hitBonus
 
         if ownResult >= crit_weighting*opponentRoll:
@@ -181,9 +184,11 @@ class Character(ent.HealthEntity):
                 dmg_stat = self.stat['WIT']
 
         if self.is_Class('Raider'):
-            dmg_mult = (1 + self.movement / 100) * (1 + (self.stat['STR'] - 25) / 100)
+            dmg_mult = 1 + self.movement / 100
         elif self.is_Class('Guardian'):
             dmg_mult = 0.75
+        elif self.is_Class('Gladiator') and hitResult == 2:
+            dmg_mult = 1.5
         else:
             dmg_mult = 1
 
@@ -282,9 +287,18 @@ class Character(ent.HealthEntity):
         self.refreshStatAfterArmour()
         self.calcEvasion()
         self.refreshStatAfterWeapon()
+        if self.is_Class('Guardian'):
+            self.maxHealth += max([self.armour[a_type] for a_type in self.armour])
 
     # Recalculates the entity AC
     def refreshStatAfterArmour(self):
+
+        if self.is_Class('Guardian'):
+            max_movement_reduction = 0
+        elif self.is_Class('Knight'):
+            max_movement_reduction = 5
+        else:
+            max_movement_reduction = 30  # A number larger than the armour reductions
 
         self.bulk = 0
         self.stat['DEX'] = self.baseStat['DEX']
@@ -294,6 +308,7 @@ class Character(ent.HealthEntity):
         self.coverage = self.baseCoverage
 
         total_flex = 1
+        total_weight = 0
         for armour_type in self.equippedArmour:
             eq_armour = self.equippedArmour[armour_type]
             if eq_armour is None:
@@ -303,7 +318,7 @@ class Character(ent.HealthEntity):
             value = eq_armour.value
 
             total_flex *= eq_armour.flex
-            self.maxMovement -= eq_armour.weight
+            total_weight += eq_armour.weight
             self.coverage += eq_armour.coverage / 100
             self.bulk += eq_armour.bulk
 
@@ -327,6 +342,7 @@ class Character(ent.HealthEntity):
         self.armour['bludgeoning'] = int(self.armour['bludgeoning'])
         self.stat['DEX'] = self.stat['DEX'] ** total_flex
         self.stat['DEX'] = round(self.stat['DEX'])
+        self.maxMovement -= min(total_weight, max_movement_reduction)
 
     # Calculates the new evasion after a stat change
     def calcEvasion(self):

@@ -82,6 +82,7 @@ class Arena:
               , 'WIT:', character.stat['WIT'])
         print('     Evasion:', character.evasion['Melee'], character.evasion['Ranged'])
         print('     Armour:', character.armour)
+        print('     Bulk:', character.bulk)
         print('     Health:', character.maxHealth)
         if character.equippedWeapons['Left'] or character.equippedWeapons['Right']:
             left_weapon = None

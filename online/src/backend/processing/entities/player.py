@@ -43,12 +43,13 @@ class Player(ch.Character):
 
         self.calcEvasion()
 
+        self.calcProfB()
+        self.calcHealth()
+
         self.refreshStatAfterEquipment()
 
         self.calcInitiative()
 
-        self.calcProfB()
-        self.calcHealth()
         self.resetHealth()
 
     # Gets the player stats
@@ -124,14 +125,18 @@ class Player(ch.Character):
 
     # Resets evasion accounting for bonus melee evasion of some classes
     def resetEvasion(self):
-        if self.p_class.name in ['Gladiator'] and self.bulk <= 15:
+        if self.p_class.name in ['Gladiator']:
+            if self.bulk > 15:
+                self.baseEvasion /= 4
+        elif self.p_class.name in ['Ninja']:
+            if self.bulk > 5:
+                self.baseEvasion /= 16
             self.evasion['Melee'] = int(self.baseEvasion * (1 + (self.stat['DEX'] - 25) / 100))
             self.evasion['Ranged'] = self.baseEvasion
-        elif self.p_class.name in ['Ninja'] and self.bulk <= 10:
-            self.evasion['Melee'] = int(self.baseEvasion * ((1 + (self.stat['DEX'] - 25) / 100) ** 2))
-            self.evasion['Ranged'] = self.baseEvasion
-        elif self.p_class.name in ['Hunter'] and self.bulk <= 10:
-            self.evasion['Melee'] = self.baseEvasion
+        elif self.p_class.name in ['Hunter']:
+            if self.bulk > 10:
+                self.baseEvasion /= 8
+            self.evasion['Melee'] = int(self.baseEvasion * (1 + (self.stat['DEX'] - 25) / 100))
             self.evasion['Ranged'] = int(self.baseEvasion * (1 + (self.stat['DEX'] - 25) / 100))
         else:
             super().resetEvasion()
