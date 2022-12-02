@@ -143,7 +143,7 @@ class Character(ent.HealthEntity):
             opponentRoll = rd.randint(1, opponentEvasion)
 
         if attack.from_weapon.is_ranged and distance == 5:
-            ownRoll = min(rd.randint(1, self.stat['DEX']), rd.randint(1, self.stat['DEX']))  # Disadvantage at close range for ranged weapons
+            ownRoll = rd.randint(1, int(self.stat['DEX']/2))  # Disadvantage at close range for ranged weapons
         else:
             ownRoll = rd.randint(1, self.stat['DEX'])
 
@@ -318,7 +318,7 @@ class Character(ent.HealthEntity):
             value = eq_armour.value
 
             total_flex *= eq_armour.flex
-            total_weight += eq_armour.weight
+            total_weight += eq_armour.weight if not self.is_Class('Raider') else eq_armour.weight * 2
             self.coverage += eq_armour.coverage / 100
             self.bulk += eq_armour.bulk
 

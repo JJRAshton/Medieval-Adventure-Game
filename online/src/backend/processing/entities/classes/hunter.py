@@ -7,6 +7,6 @@ class Hunter(Class):
         super().__init__()
         self.name = 'Hunter'
         self.stat_order = ['STR', 'DEX', 'WIT', 'CON']
-        self.weapons = ['special', 'axes']  # bows
+        self.weapons = ['special', 'axes', 'bows']  # bows
 
         self.getStats()
