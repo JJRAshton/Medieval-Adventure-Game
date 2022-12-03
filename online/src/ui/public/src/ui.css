@@ -5,6 +5,7 @@ body {
 
 * {
     border-radius: 4px;
+    cursor: default;
 }
 
 .info {
@@ -32,7 +33,7 @@ body {
     justify-content: center;
 }
 
-th, td {
+.stats th, .stats td {
     border: 2px solid;
 }
 
@@ -48,6 +49,7 @@ th, td {
     border: medium solid;
     min-height: 1em;
     min-width: 1em;
+    animation: 0.2s;
 }
 
 .button:hover {

@@ -47,10 +47,10 @@ export class Game extends Context {
                 { this.canvas }
                 <div className="info">
                     <div className="infoComponent" style={{width: "100%"}}>{this.getHealthBar()}</div>
-                    <div className="infoComponent">{this.getEndTurnButton()}</div>
-                    {this.character.renderAttacks()}
                     {this.character.renderStats()}
+                    {this.character.renderAttacks()}
                     <div className="infoComponent">{this.getConfirmButton()}</div>
+                    <div className="infoComponent">{this.getEndTurnButton()}</div>
                 </div>
 
             </div>
