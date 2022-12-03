@@ -31,8 +31,8 @@ export default class Character {
 
         this.attacks = characterInfo.Attacks;
         this.armour = null; // Not yet implemented
-        this.maxHealth = characterInfo.Health;
         this.health = characterInfo.Health;
+        this.maxHealth = characterInfo.Max_health;
         this.inventory = null // Not yet implemented
         this.range = characterInfo.Max_range;
         this.movesLeft = Math.floor(characterInfo.Remaining_movement / 5);
@@ -75,7 +75,7 @@ export default class Character {
         if (this.infoReceived) {
             let children = [];
             this.stats.forEach((value, stat) => {children.push(this.createStatRow(stat, value))});
-            return <div className="stats"><table><tbody>{children}</tbody></table></div>
+            return <div className="stats"><table className="statTable"><tbody>{children}</tbody></table></div>
         }
         else {
             return <div className="stats">Could not load stats</div>

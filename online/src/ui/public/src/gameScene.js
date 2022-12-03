@@ -59,16 +59,25 @@ export class Game extends Context {
     }
 
     getHealthBar() {
-        return <div className="healthBar" style={{position:"relative", width: "100%", backgroundColor: "red", height: "1.5em"}}>
+        return <div className="healthBar" style={{
+                    position:"relative",
+                    width: "100%",
+                    backgroundColor: "red",
+                    height: "1.2em",
+                    border: "medium solid"}}>
             <div style={{
                 width: Math.floor(100 * this.character.health/this.character.maxHealth)+"%",
                 height: "100%",
-                background: "green"}}/>
+                background: "green",
+                borderRadius: "0px",
+                }}/>
             <div style={{
                 position: "absolute",
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
+                fontSize: "1em",
+                borderRadius: "0px",
                 }}>{this.character.health}/{this.character.maxHealth}</div>
         </div>
     }

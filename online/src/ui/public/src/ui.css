@@ -3,8 +3,16 @@ body {
     background-color: #E8C274;
 }
 
+* {
+    border-radius: 4px;
+}
+
 .info {
-    margin: 5%;
+    margin: 2%;
+    padding: 1%;
+    background-color: #d1941c;
+    border: medium solid;
+    font-size: 0.8em;
 }
 
 .message {
@@ -22,6 +30,10 @@ body {
     margin-bottom: 10px;
     display: flex;
     justify-content: center;
+}
+
+th, td {
+    border: 2px solid;
 }
 
 .buttons {
