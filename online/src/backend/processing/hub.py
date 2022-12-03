@@ -48,10 +48,10 @@ class Hub:
     # Checks if a move is valid
     def requestMoveVerification(self, entID, coords):
 
-        if is_character and self.chart.is_validCoords(coords) and self.chart.is_validMovement(entID, coords):
+        if is_character(entID) and self.chart.is_validCoords(coords) and self.chart.is_validMovement(entID, coords):
             return True
 
-        elif is_object and self.chart.is_validCoords(coords):
+        elif is_object(entID) and self.chart.is_validCoords(coords):
             return True
 
         else:

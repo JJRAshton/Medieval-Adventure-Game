@@ -10,16 +10,9 @@ export default class Character {
         this.statsStyle = {
             fontSize: 20,
             listStyle: "none",
+            justifyContent: "center",
+            textAlign: "center"
         }
-        this.initialiseStats()
-    }
-
-    initialiseStats() {
-        this.strength = 20;
-        this.dexterity = 23;
-        this.health = 100;
-        this.maxHealth = 200;
-        this.weapon = "Twig";
     }
 
     setPosition(x, y) {
@@ -28,7 +21,6 @@ export default class Character {
     }
 
     update(updateInfo) {
-        console.log(updateInfo);
         this.health = updateInfo.Health;
         this.x = updateInfo.coords[0];
         this.y = updateInfo.coords[1];
@@ -68,25 +60,25 @@ export default class Character {
         if (this.infoReceived) {
             let children = [];
             this.attacks.forEach((attack) => {children.push(this.createAttackLi(attack))});
-            return <ul className="stats" style={this.statsStyle}> {children} </ul>
+            return <div className="stats"> {children} </div>
         }
         else {
-            return <ul className="stats" style={this.statsStyle}>Could not load attacks</ul>
+            return <div className="stats">Could not load attacks</div>
         }
     }
 
     createAttackLi(attack) {
-        return <li key={attack.Name+"_"+attack.Weapon}>{attack.Name} ({attack.Weapon})</li>
+        return <div key={attack.Name+"_"+attack.Weapon}>{attack.Name} ({attack.Weapon})</div>
     }
 
     renderStats() {
         if (this.infoReceived) {
             let children = [];
             this.stats.forEach((value, stat) => {children.push(this.createStatRow(stat, value))});
-            return <ul className="stats" style={this.statsStyle}><table><tbody>{children}</tbody></table></ul>
+            return <div className="stats"><table><tbody>{children}</tbody></table></div>
         }
         else {
-            return <div className="stats" style={this.statsStyle}>Could not load stats</div>
+            return <div className="stats">Could not load stats</div>
         }
     }
 

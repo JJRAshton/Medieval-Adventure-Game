@@ -41,28 +41,45 @@ export class Game extends Context {
         reactRoot.render(
         <div>
             <h2>
-                {this.getCurrentMessage()}
+                <div className="message">{this.getCurrentMessage()}</div>
             </h2>
-            <div style={{
-                display: "inline-flex", 
-                fontSize: "32"}}>
+            <div className="game">
                 { this.canvas }
                 <div className="info">
-                    <div style={{backgroundColor: '#ffffff'}}>{this.character.health} / {this.character.maxHealth}</div>
-                    <ul className="gameOptions" style={{"listStyle": "none"}}>
-                        <li className="button"
-                            style={{fontSize: 32}}
-                            onClick={()=>this.socket.send(JSON.stringify({
-                                event: "endTurnRequest"
-                            }))}>End Turn</li>
-                    </ul>
+                    <div className="infoComponent" style={{width: "100%"}}>{this.getHealthBar()}</div>
+                    <div className="infoComponent">{this.getEndTurnButton()}</div>
                     {this.character.renderAttacks()}
                     {this.character.renderStats()}
+                    <div className="infoComponent">{this.getConfirmButton()}</div>
                 </div>
 
             </div>
         </div>
         );
+    }
+
+    getHealthBar() {
+        return <div className="healthBar" style={{position:"relative", width: "100%", backgroundColor: "red", height: "1.5em"}}>
+            <div style={{
+                width: Math.floor(100 * this.character.health/this.character.maxHealth)+"%",
+                height: "100%",
+                background: "green"}}/>
+            <div style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                }}>{this.character.health}/{this.character.maxHealth}</div>
+        </div>
+    }
+
+    getEndTurnButton() {
+        return <div className="button"
+            onClick={()=>this.socket.send(JSON.stringify({event: "endTurnRequest"}))}>End Turn</div>
+    }
+
+    getConfirmButton() {
+        return <div className="button">Confirm</div>
     }
 
     getCurrentMessage() {

@@ -30,7 +30,6 @@ export default class Movement {
                 }
             }
         }
-
     }
 
     contains(x, y) {
