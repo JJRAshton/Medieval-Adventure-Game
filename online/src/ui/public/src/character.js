@@ -1,5 +1,9 @@
 import React from "react";
 
+import orc from "./images/orc.png";
+import me from "./images/me.png";
+import notMe from "./images/notMe.png";
+
 export default class Character {
     
     constructor(id, x, y) {
@@ -26,7 +30,7 @@ export default class Character {
         this.y = updateInfo.coords[1];
     }
 
-    construct(characterInfo) {
+    construct(characterInfo, isPlayer) {
         console.log(characterInfo);
 
         this.attacks = characterInfo.Attacks;
@@ -40,7 +44,28 @@ export default class Character {
         this.team = characterInfo.Team;
         this.weapons = this.constructWeapons(characterInfo.Weapons); // Not yet implemented
         
+        this.image = new Image()
+        this.imageLoaded = false;
+        if (isPlayer) {
+            this.image.src = me;
+        }
+        else if (this.team === 1) {
+            this.image.src = notMe;
+        }
+        else {
+            this.image.src = orc;
+        }
+        this.image.onerror = (error) => {
+            console.log("An error occured loading image" + error);
+        }
+        this.image.onload = this.loadImage.bind(this);
         this.infoReceived = true;
+
+    }
+
+    loadImage() {
+        this.imageLoaded = true;
+        console.log("Image loaded.")
     }
 
     constructStats(statInfo) {
