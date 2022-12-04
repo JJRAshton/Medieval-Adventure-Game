@@ -8,5 +8,6 @@ class Professor(Class):
         self.name = 'Professor'
         self.stat_order = ['WIT', 'DEX', 'CON', 'STR']
         self.weapons = ['staves', 'books', 'mythical']
+        self.traits = []
 
         self.getStats()

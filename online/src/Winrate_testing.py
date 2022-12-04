@@ -6,4 +6,4 @@ if __name__ == '__main__':
     comparison_arena = Arena(classes)
     comparison_arena.calcWR()
     comparison_arena.displayStats(3)
-    comparison_arena.displayStats(5)
+    # comparison_arena.displayStats(5)

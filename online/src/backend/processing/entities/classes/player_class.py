@@ -11,7 +11,9 @@ class Class:
         self.name = ''
         self.stat_order = []
         self.weapons = []
+        self.traits = []
 
+        self.max_bulk = 0
         self.health_modifier = 0
         self.evasion_modifier = 0
 
@@ -28,6 +30,7 @@ class Class:
 
         self.health_modifier = float(class_dict['Health Mod'])
         self.evasion_modifier = float(class_dict['Evasion Mod'])
+        self.max_bulk = int(class_dict['Max Bulk'])
 
         self.baseMovement = int(class_dict['Base Movement'])
 

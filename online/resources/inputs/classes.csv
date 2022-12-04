@@ -1,8 +1,8 @@
-﻿Name,Health Mod,Evasion Mod,Base Movement,Armour,
-Raider,1.5,1,35,"gambeson, hauberk_riveted",hide
-Gladiator,1.85,1,30,"arming_doublet, laminar",
-Guardian,2,0.5,20,"arming_doublet, full_plate",leather
-Knight,1.35,0.75,25,"arming_doublet, full_plate",leather
-Hunter,1.75,1.25,35,"padded_tunic, breastplate",
-Professor,1.25,1,25,,
-Ninja,1.5,1.5,40,splint,
+﻿Name,Health Mod,Evasion Mod,Max Bulk,Base Movement,Armour
+Raider,1.5,1,20,35,"gambeson, hauberk_riveted"
+Gladiator,1.85,1,15,30,"arming_doublet, laminar"
+Guardian,1.75,0.5,20,20,"arming_doublet, full_plate"
+Knight,1.35,0.75,20,25,"arming_doublet, full_plate"
+Hunter,1.75,1.25,10,35,"padded_tunic, breastplate"
+Professor,1.25,1,20,25,
+Ninja,1.5,1.5,5,40,splint

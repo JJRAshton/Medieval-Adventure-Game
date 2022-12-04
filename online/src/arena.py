@@ -32,13 +32,13 @@ class Arena:
         self.entries[player1.id] += 1
         self.entries[player2.id] += 1
 
-        maxCount = 1000
+        max_count = 1000
         count = 0
         player1_str = player1.p_class.name
         player2_str = player2.p_class.name
         if log:
             print('People:', player1_str, player2_str)
-        while player1.health > 0 and player2.health > 0 and count < maxCount:
+        while player1.health > 0 and player2.health > 0 and count < max_count:
             if log:
                 print(f'{player1_str} swings')
             indicators = player1.attack([0], player2)

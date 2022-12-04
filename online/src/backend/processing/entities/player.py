@@ -39,14 +39,13 @@ class Player(ch.Character):
         self.getEquipment()
 
         self.resetStats()
-        self.resetHealth()
 
-        self.calcEvasion()
+        self.refreshStatAfterEquipment()
 
         self.calcProfB()
         self.calcHealth()
 
-        self.refreshStatAfterEquipment()
+        self.resetHealth()
 
         self.calcInitiative()
 
@@ -125,25 +124,24 @@ class Player(ch.Character):
 
     # Resets evasion accounting for bonus melee evasion of some classes
     def resetEvasion(self):
-        if self.p_class.name in ['Gladiator']:
-            if self.bulk > 15:
-                self.baseEvasion /= 4
-        elif self.p_class.name in ['Ninja']:
-            if self.bulk > 5:
-                self.baseEvasion /= 16
-            self.evasion['Melee'] = int(self.baseEvasion * (1 + (self.stat['DEX'] - 25) / 100))
-            self.evasion['Ranged'] = self.baseEvasion
-        elif self.p_class.name in ['Hunter']:
-            if self.bulk > 10:
-                self.baseEvasion /= 8
-            self.evasion['Melee'] = int(self.baseEvasion * (1 + (self.stat['DEX'] - 25) / 100))
-            self.evasion['Ranged'] = int(self.baseEvasion * (1 + (self.stat['DEX'] - 25) / 100))
+        base_evasion = self.baseEvasion
+
+        if self.bulk > self.p_class.max_bulk:
+            base_evasion /= 8
+
+        if self.has_Trait('Melee_evader'):
+            self.evasion['Melee'] = int(base_evasion * (1 + (self.stat['DEX'] - 25) / 100))
         else:
-            super().resetEvasion()
+            self.evasion['Melee'] = int(base_evasion)
+
+        if self.has_Trait('Ranged_evader'):
+            self.evasion['Ranged'] = int(base_evasion * (1 + (self.stat['DEX'] - 25) / 100))
+        else:
+            self.evasion['Ranged'] = int(base_evasion)
 
     # Allows gladiator to have higher crit chance
-    def is_Class(self, class_str):
-        return self.p_class.name == class_str
+    def has_Trait(self, trait_str):
+        return trait_str in self.p_class.traits
 
     # Calculates the entity proficiency bonus
     def calcProfB(self):
@@ -151,8 +149,7 @@ class Player(ch.Character):
 
     # Calculates health based on CON and class
     def calcHealth(self):
-        self.baseHealth = int(self.stat['CON'] * self.p_class.health_modifier)
-        self.maxHealth = self.baseHealth
+        self.baseHealth = round(self.stat['CON'] * self.p_class.health_modifier)
 
     # Calculates evasion based on DEX class
     def calcEvasion(self):

@@ -108,9 +108,24 @@ class Character(ent.HealthEntity):
         init_roll = rd.randint(1, self.stat['DEX'])
         self.initiative = init_roll
 
-    # To be used in player for gladiator
-    def is_Class(self, class_str):
+    # To be used in player for finding class traits
+    def has_Trait(self, trait_str):
         return False
+
+    # Makes a stat roll with given stat depending on condition -1: disadv, 0: normal, 1: adv
+    def statRoll(self, stat, condition=0):
+        if stat not in self.stat:
+            raise ValueError
+
+        if condition == -1:
+            return rd.randint(1, int(self.stat[stat]/2))
+        elif condition == 1:
+            return rd.randint(1, 2*self.stat[stat])
+        elif condition == 0:
+            return rd.randint(1, self.stat[stat])
+
+        else:
+            raise ValueError
 
     # Makes an attack roll returning whether it -1:miss, 0:blocked, 1:hit, 2:critical hit
     def hitContest(self, attack, hitBonus, opponent):
@@ -125,7 +140,7 @@ class Character(ent.HealthEntity):
         else:
             crit_weighting = opponentCritResistance + size_diff
 
-        if self.is_Class('Gladiator'):  # Gladiator increased crit chance
+        if self.has_Trait('Keen_eye'):  # Increased crit chance
             crit_weighting = int(crit_weighting * (1 - self.stat['DEX'] / 100))
 
         if crit_weighting < 0:
@@ -137,18 +152,15 @@ class Character(ent.HealthEntity):
         else:
             opponentEvasion = opponent.evasion['Ranged']
 
-        if opponentEvasion < 2:
+        if opponentEvasion <= 1:
             opponentRoll = 1
         else:
             opponentRoll = rd.randint(1, opponentEvasion)
 
         if attack.from_weapon.is_ranged and distance == 5:
-            ownRoll = rd.randint(1, int(self.stat['DEX']/2))  # Disadvantage at close range for ranged weapons
+            ownRoll = self.statRoll('DEX', -1)  # Disadvantage at close range for ranged weapons
         else:
-            ownRoll = rd.randint(1, self.stat['DEX'])
-
-        if self.is_Class('Knight'):
-            ownRoll -= self.reach
+            ownRoll = self.statRoll('DEX')
 
         ownResult = ownRoll + hitBonus
 
@@ -183,12 +195,10 @@ class Character(ent.HealthEntity):
             if attack.from_weapon.is_magic:
                 dmg_stat = self.stat['WIT']
 
-        if self.is_Class('Raider'):
+        if self.has_Trait('Charger'):
             dmg_mult = 1 + self.movement / 100
-        elif self.is_Class('Guardian'):
-            dmg_mult = 0.75
-        elif self.is_Class('Gladiator') and hitResult == 2:
-            dmg_mult = 1.5
+        elif self.has_Trait('Savage_critical') and hitResult == 2:
+            dmg_mult = 1.25
         else:
             dmg_mult = 1
 
@@ -265,7 +275,7 @@ class Character(ent.HealthEntity):
             eq_weapon = self.equippedWeapons[hand]
             if eq_weapon is None:
                 continue
-            if not eq_weapon.is_ranged:
+            if eq_weapon.is_melee:
                 if eq_weapon.range > self.reach:
                     self.reach = eq_weapon.range
             if eq_weapon.range > self.range:
@@ -287,15 +297,16 @@ class Character(ent.HealthEntity):
         self.refreshStatAfterArmour()
         self.calcEvasion()
         self.refreshStatAfterWeapon()
-        if self.is_Class('Guardian'):
-            self.maxHealth += max([self.armour[a_type] for a_type in self.armour])
+        if self.has_Trait('Tank'):
+            armour_values = [self.armour[a_type] for a_type in self.armour]
+            self.stat['CON'] += max(armour_values)
 
     # Recalculates the entity AC
     def refreshStatAfterArmour(self):
 
-        if self.is_Class('Guardian'):
+        if self.has_Trait('Armour_master'):
             max_movement_reduction = 0
-        elif self.is_Class('Knight'):
+        elif self.has_Trait('Armour_expert'):
             max_movement_reduction = 5
         else:
             max_movement_reduction = 30  # A number larger than the armour reductions
@@ -318,7 +329,7 @@ class Character(ent.HealthEntity):
             value = eq_armour.value
 
             total_flex *= eq_armour.flex
-            total_weight += eq_armour.weight if not self.is_Class('Raider') else eq_armour.weight * 2
+            total_weight += eq_armour.weight if not self.has_Trait('Light') else eq_armour.weight * 2
             self.coverage += eq_armour.coverage / 100
             self.bulk += eq_armour.bulk
 
