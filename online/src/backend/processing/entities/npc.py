@@ -9,6 +9,7 @@ class NPC(ch.Character):
         self.behaviour_type = 2
         self.team = 1
         self.hitProf = 0
+        self.max_bulk = 20
 
         self.starting_items = []
 
@@ -35,6 +36,10 @@ class NPC(ch.Character):
             return True
         else:
             return False
+
+    # Sees if the npc max bulk has been exceeded
+    def is_exceededBulk(self):
+        return self.bulk > self.max_bulk
 
 
 # A hostile character

@@ -7,11 +7,11 @@ gambeson,Under,cloth,8,70,97,0,7
 padded_jack,Under,cloth,15,75,95,0,10
 breastplate,Over,plate,6,25,99,0,8
 cuirass,Over,plate,7,40,99,0,8
-hauberk,Over,mail,12,60,92,0,7
-hauberk_riveted,Over,mail,12,60,92,0,10
+hauberk,Over,mail,9,60,92,0,7
+hauberk_riveted,Over,mail,10,60,92,0,10
 splint,Over,plate,5,40,97,5,6
 scale,Over,plate,8,35,88,5,7
 lamellar,Over,plate,9,40,92,5,8
 laminar,Over,plate,9,50,95,5,10
-plate,Over,plate,14,90,65,10,16
+plate,Over,plate,12,90,65,10,14
 full_plate,Over,plate,14,95,60,10,18

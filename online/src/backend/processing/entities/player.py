@@ -126,9 +126,6 @@ class Player(ch.Character):
     def resetEvasion(self):
         base_evasion = self.baseEvasion
 
-        if self.bulk > self.p_class.max_bulk:
-            base_evasion /= 8
-
         if self.has_Trait('Melee_evader'):
             self.evasion['Melee'] = int(base_evasion * (1 + (self.stat['DEX'] - 25) / 100))
         else:
@@ -139,9 +136,13 @@ class Player(ch.Character):
         else:
             self.evasion['Ranged'] = int(base_evasion)
 
-    # Allows gladiator to have higher crit chance
+    # Allows for finding the class traits of a player
     def has_Trait(self, trait_str):
         return trait_str in self.p_class.traits
+
+    # Returns if the max bulk has been exceeded
+    def is_exceededBulk(self):
+        return self.bulk > self.p_class.max_bulk
 
     # Calculates the entity proficiency bonus
     def calcProfB(self):

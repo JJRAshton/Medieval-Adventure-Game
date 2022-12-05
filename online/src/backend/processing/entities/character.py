@@ -348,16 +348,25 @@ class Character(ent.HealthEntity):
         if self.coverage > 1:
             self.coverage = 1
 
+        if self.is_exceededBulk:
+            self.stat['DEX'] /= 8
+
         self.armour['slashing'] = int(self.armour['slashing'])
         self.armour['piercing'] = int(self.armour['piercing'])
         self.armour['bludgeoning'] = int(self.armour['bludgeoning'])
+
         self.stat['DEX'] = self.stat['DEX'] ** total_flex
         self.stat['DEX'] = round(self.stat['DEX'])
+
         self.maxMovement -= min(total_weight, max_movement_reduction)
 
     # Calculates the new evasion after a stat change
     def calcEvasion(self):
         self.baseEvasion = self.stat['DEX']
+
+    # Returns if the character exceeds their max bulk
+    def is_exceededBulk(self):
+        return False
 
     # Makes a saving throw
     def makeSavingThrow(self):
