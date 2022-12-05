@@ -105,7 +105,10 @@ class Character(ent.HealthEntity):
 
     # Calculates the initiative roll
     def calcInitiative(self):
-        init_roll = rd.randint(1, self.stat['DEX'])
+        if self.stat['DEX'] > 1:
+            init_roll = rd.randint(1, self.stat['DEX'])
+        else:
+            init_roll = 1
         self.initiative = init_roll
 
     # To be used in player for finding class traits
@@ -348,14 +351,13 @@ class Character(ent.HealthEntity):
         if self.coverage > 1:
             self.coverage = 1
 
-        if self.is_exceededBulk:
-            self.stat['DEX'] /= 8
-
         self.armour['slashing'] = int(self.armour['slashing'])
         self.armour['piercing'] = int(self.armour['piercing'])
         self.armour['bludgeoning'] = int(self.armour['bludgeoning'])
 
         self.stat['DEX'] = self.stat['DEX'] ** total_flex
+        if self.is_exceededBulk():
+            self.stat['DEX'] /= 2
         self.stat['DEX'] = round(self.stat['DEX'])
 
         self.maxMovement -= min(total_weight, max_movement_reduction)

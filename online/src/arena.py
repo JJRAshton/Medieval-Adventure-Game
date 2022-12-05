@@ -83,6 +83,7 @@ class Arena:
         print('     Evasion:', character.evasion['Melee'], character.evasion['Ranged'])
         print('     Armour:', character.armour)
         print('     Bulk:', character.bulk)
+        print('     Max Bulk:', character.p_class.max_bulk)
         print('     Health:', character.maxHealth)
         if character.equippedWeapons['Left'] or character.equippedWeapons['Right']:
             left_weapon = None
