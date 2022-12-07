@@ -16,6 +16,7 @@ class Class:
         self.max_bulk = 0
         self.health_modifier = 0
         self.evasion_modifier = 0
+        self.skill = 0
 
         self.baseMovement = 0
         self.startingArmour = {
@@ -31,6 +32,7 @@ class Class:
         self.health_modifier = float(class_dict['Health Mod'])
         self.evasion_modifier = float(class_dict['Evasion Mod'])
         self.max_bulk = int(class_dict['Max Bulk'])
+        self.skill = int(class_dict['Skill'])
 
         self.baseMovement = int(class_dict['Base Movement'])
 

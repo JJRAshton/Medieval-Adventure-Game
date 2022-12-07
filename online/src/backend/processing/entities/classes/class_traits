@@ -2,13 +2,10 @@ Keen_eye
 Dex improved crit chance
 
 Savage_critical
-Str improved crit damage
+2x improved crit damage
 
 Tank
 Con increase from wearing armour
-
-Armour_master
-No movement penalty from wearing armour
 
 Ranged_evader
 Dex improved ranged evasion
@@ -16,14 +13,20 @@ Dex improved ranged evasion
 Melee_evader
 Dex improved melee evasion
 
-Armour_expert
+Armour_experience
 Movement decreased from armour by a maximum of 5ft
+
+Anti-armour_expert
+Wit decrease to opponent armour
 
 Inflexible
 Range decrease to hit roll
 
-Charger
+Charged_hits
 Bonus damage based on movement speed
 
-Light
-Double movement loss from armour
+Strong
+20% more strength stat
+
+Slow
+Only takes one action per turn

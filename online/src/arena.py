@@ -39,15 +39,21 @@ class Arena:
         if log:
             print('People:', player1_str, player2_str)
         while player1.health > 0 and player2.health > 0 and count < max_count:
+            for action in range(player1.actionsTotal):
+                if log:
+                    print(f'{player1_str} swings')
+                indicators = player1.attack([0], player2)
+                if log:
+                    print(f'Result: {indicators[0]}')
+            if player2.health == 0:
+                break
+            for action in range(player2.actionsTotal):
+                if log:
+                    print(f'{player2_str} swings')
+                indicators = player2.attack([0], player1)
+                if log:
+                    print(f'Result: {indicators[0]}')
             if log:
-                print(f'{player1_str} swings')
-            indicators = player1.attack([0], player2)
-            if log:
-                print(f'Result: {indicators[0]}')
-                print(f'{player2_str} swings')
-            indicators = player2.attack([0], player1)
-            if log:
-                print(f'Result: {indicators[0]}')
                 print('Remaining healths -', f'{player1_str}: {player1.health}', f'{player2_str}: {player2.health}')
             count += 1
 

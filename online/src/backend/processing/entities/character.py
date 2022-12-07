@@ -27,7 +27,7 @@ class Character(ent.HealthEntity):
 
         self.dmg_mult = 1  # For larger creatures to do more damage
 
-        self.hitProf = 0
+        self.skill = 0
         
         self.baseStat = {
             'STR': 0,
@@ -120,11 +120,11 @@ class Character(ent.HealthEntity):
         if stat not in self.stat:
             raise ValueError
 
-        if condition == -1:
-            return rd.randint(1, int(self.stat[stat]/2))
-        elif condition == 1:
-            return rd.randint(1, 2*self.stat[stat])
-        elif condition == 0:
+        if condition == -1:  # Disadvantage
+            return rd.randint(1, int(self.stat[stat]**0.5))
+        elif condition == 1:  # Advantage
+            return rd.randint(1, self.stat[stat]**2)
+        elif condition == 0:  # Normal
             return rd.randint(1, self.stat[stat])
 
         else:
@@ -144,7 +144,7 @@ class Character(ent.HealthEntity):
             crit_weighting = opponentCritResistance + size_diff
 
         if self.has_Trait('Keen_eye'):  # Increased crit chance
-            crit_weighting = int(crit_weighting * (1 - self.stat['DEX'] / 100))
+            crit_weighting = int(crit_weighting * (1 - self.stat['WIT'] / 100))
 
         if crit_weighting < 0:
             crit_weighting = 0
@@ -182,10 +182,12 @@ class Character(ent.HealthEntity):
     def singleAttack(self, attackID, creature):
         attack = self.attack_options[attackID]
 
+        AA_stat = self.stat['WIT'] if self.has_Trait('Anti-armour_expert') else None
+
         if attack.from_weapon is None:
-            hitBonus = self.hitProf
+            hitBonus = self.skill
         elif self.is_Proficient(attack.from_weapon):
-            hitBonus = self.hitProf
+            hitBonus = self.skill
         else:
             hitBonus = 0
 
@@ -198,10 +200,10 @@ class Character(ent.HealthEntity):
             if attack.from_weapon.is_magic:
                 dmg_stat = self.stat['WIT']
 
-        if self.has_Trait('Charger'):
+        if self.has_Trait('Charged_hits'):
             dmg_mult = 1 + self.movement / 100
         elif self.has_Trait('Savage_critical') and hitResult == 2:
-            dmg_mult = 1.25
+            dmg_mult = 2
         else:
             dmg_mult = 1
 
@@ -218,13 +220,15 @@ class Character(ent.HealthEntity):
             if creature.equippedArmour['Over'] is not None:
                 if creature.equippedArmour['Over'].material == 'mail' and attack.from_weapon.is_fine:
                     is_AP = True
-            appliedDamage += creature.takeDamage(damage[attack.damage_maintype], attack.damage_maintype, is_AP, is_critical)
-            for damage_type in damage:
+            appliedDamage += creature.takeDamage(damage[attack.damage_maintype], attack.damage_maintype,
+                                                 is_AP, is_critical, AA_stat)
+            for damage_type in damage:  # Apply other (non-main) damage types associated with the attack
                 if damage_type == attack.damage_maintype:
                     continue
                 if appliedDamage > 0:
                     is_critical = True
-                appliedDamage += creature.takeDamage(damage[damage_type], damage_type, is_AP, is_critical)
+                appliedDamage += creature.takeDamage(damage[damage_type], damage_type,
+                                                     is_AP, is_critical, AA_stat)
 
             indicator = hitStatus + str(appliedDamage)
         else:
@@ -307,12 +311,10 @@ class Character(ent.HealthEntity):
     # Recalculates the entity AC
     def refreshStatAfterArmour(self):
 
-        if self.has_Trait('Armour_master'):
-            max_movement_reduction = 0
-        elif self.has_Trait('Armour_expert'):
+        if self.has_Trait('Armour_experience'):
             max_movement_reduction = 5
         else:
-            max_movement_reduction = 30  # A number larger than the armour reductions
+            max_movement_reduction = 30  # A number larger than the armour movement reductions
 
         self.bulk = 0
         self.stat['DEX'] = self.baseStat['DEX']

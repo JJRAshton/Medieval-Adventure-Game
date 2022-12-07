@@ -7,7 +7,7 @@ class Knight(Class):
         super().__init__()
         self.name = 'Knight'
         self.stat_order = ['STR', 'CON', 'WIT', 'DEX']
-        self.weapons = ['polearms', 'double_edged_swords']  # polearms, double_edged_swords, crossbows
-        self.traits = ['Armour_expert']
+        self.weapons = ['polearms', 'double_edged_swords', 'spears']  # polearms, double_edged_swords
+        self.traits = ['Armour_experience', 'Anti-armour_expert']
 
         self.getStats()

@@ -1,8 +1,10 @@
-﻿Name,Health Mod,Evasion Mod,Max Bulk,Base Movement,Armour
-Raider,1.5,1,16,35,"arming_doublet, hauberk_riveted"
-Gladiator,1.85,1,15,30,"arming_doublet, laminar"
-Guardian,1.75,0.5,20,20,"arming_doublet, full_plate"
-Knight,1.35,0.75,18,25,"arming_doublet, plate"
-Hunter,1.75,1.25,10,35,"padded_tunic, breastplate"
-Professor,1.25,1,20,25,
-Ninja,1.5,1.5,5,40,splint
+﻿Name,Health Mod,Evasion Mod,Max Bulk,Skill,Base Movement,Armour
+Raider,1.5,1,16,5,35,"arming_doublet, hauberk_riveted"
+Gladiator,1.85,1.1,10,20,30,"padded_tunic, breastplate"
+Guardian,1.75,0.75,20,10,25,"arming_doublet, full_plate"
+Knight,1.35,0.75,18,10,25,"arming_doublet, plate"
+Samurai,1.75,1,15,15,30,"arming_doublet, laminar"
+Hunter,1.5,1.25,12,15,35,padded_jack
+,,,,,,
+Professor,1.25,1,20,20,25,
+Ninja,1.5,1.5,5,15,40,splint

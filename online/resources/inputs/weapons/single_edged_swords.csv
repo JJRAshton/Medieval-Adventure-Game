@@ -2,6 +2,8 @@
 knife,0,5,d5,y,y,,,,"slash, stab"
 falchion,1,5,d6,y,,,2,parry,slash
 scimitar,1,5,d8,y,,,2,parry,slash
-tanto,2,5,d10,y,,y,3,parry,slash
-katana,3,5,d18,y,,y,4,parry,slash
-odachi,4,5,d26,y,,y,4,parry,slash
+tanto,1,5,d8,y,,y,3,parry,slash
+wakizashi,2,5,d12,y,,y,4,parry,slash
+katana,3,5,d16,y,,y,4,parry,slash
+odachi,4,5,d20,y,,y,4,parry,slash
+naginata,3,10,d8,y,,y,,,"stab, cut"

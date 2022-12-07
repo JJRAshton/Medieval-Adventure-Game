@@ -59,15 +59,17 @@ class HealthEntity(Entity):
         self.health = self.maxHealth
 
     # Damages the entity
-    def takeDamage(self, damage, dmg_type, is_AP=False, critical=False):
+    def takeDamage(self, damage, dmg_type, is_AP=False, is_critical=False, AA_stat=None):
         appliedDamage = damage
 
         armour = 0
-        if not critical:
+        if not is_critical:
             if dmg_type in self.armour:
                 armour = self.armour[dmg_type]
             if is_AP:
-                armour *= 0.75
+                armour *= 0.8
+            if AA_stat:
+                armour *= 1 - AA_stat / 100
 
         armour = int(armour)
         appliedDamage -= armour

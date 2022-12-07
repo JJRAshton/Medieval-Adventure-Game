@@ -9,7 +9,8 @@ player_in_dir = f'{inputs_dir}/players.csv'
 weapon_in_dir = f'{inputs_dir}/weapons.csv'
 armour_in_dir = f'{inputs_dir}/armour.csv'
 
-weapon_types = ['axes', 'clubs', 'hammers',
+weapon_types = ['arena_weapons',
+                'axes', 'clubs', 'hammers',
                 'bows', 'crossbows', 'light_throwables', 'heavy_throwables',
                 'shields', 'single_edged_swords', 'double_edged_swords', 'edgeless_swords',
                 'glaives', 'polearms', 'spears',

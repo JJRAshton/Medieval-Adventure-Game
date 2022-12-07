@@ -1,4 +1,4 @@
 ﻿Name,Tier,Range,Damage Dice,Ranged,Two-handed,Bolts,Loading,Armour Piercing,Melee,Attacks
-light_crossbow,2,50,d12,y,y,y,y,,n,stab
-repeating_crossbow,3,50,d10,y,y,y,,,n,stab
-heavy_crossbow,4,60,d20,y,y,y,y,y,n,stab
+light_crossbow,2,50,d4,y,y,y,y,,n,impale
+repeating_crossbow,3,50,d6,y,y,y,,,n,impale
+heavy_crossbow,4,60,d8,y,y,y,y,y,n,impale

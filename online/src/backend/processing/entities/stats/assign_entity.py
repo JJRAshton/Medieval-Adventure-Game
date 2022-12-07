@@ -159,7 +159,7 @@ class EntityStats:
             character.inventory = inventory
             startingItems += inventory
         if charDict['Hit Proficiency']:
-            character.hitProf = int(charDict['Hit Proficiency'])
+            character.skill = int(charDict['Hit Proficiency'])
 
         character.base_attacks = convertList(charDict['Attacks'])
 
@@ -190,7 +190,8 @@ class EntityStats:
         character.actionsTotal = int(charDict['Actions'])
         character.baseMovement = int(charDict['Speed'])
         character.drop_rate = int(charDict['Drop Rate'])
-        
+        character.skill = int(charDict['Skill'])
+
         character.baseStat['STR'] = int(charDict['STR'])
         character.baseStat['DEX'] = int(charDict['DEX'])
         character.baseStat['CON'] = int(charDict['CON'])

@@ -5,3 +5,4 @@ from .ninja import Ninja
 from .professor import Professor
 from .raider import Raider
 from .guardian import Guardian
+from .samurai import Samurai

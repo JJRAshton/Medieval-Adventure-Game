@@ -14,6 +14,7 @@ class Player(ch.Character):
         'Gladiator': cl.Gladiator,
         'Guardian': cl.Guardian,
         'Knight': cl.Knight,
+        'Samurai': cl.Samurai,
         'Hunter': cl.Hunter,
         'Professor': cl.Professor,
         'Ninja': cl.Ninja
@@ -56,10 +57,18 @@ class Player(ch.Character):
         ent.Entity.entityStats.getPlayerStats(self)
         self.convAttacks()
 
+    def resetStats(self):
+        super().resetStats()
+        if self.has_Trait('Strong'):
+            self.stat['STR'] = int(1.2 * self.stat['STR'])
+
     # Gets the player class associated stats
     def getClass(self):
         self.equippedArmour = self.p_class.startingArmour
         self.baseMovement = self.p_class.baseMovement
+        self.skill = self.p_class.skill
+        if self.has_Trait('Slow'):
+            self.actionsTotal = 1
 
     # Unequips a weapon if one present in given location
     def unequipWeapon(self, location):
@@ -127,12 +136,12 @@ class Player(ch.Character):
         base_evasion = self.baseEvasion
 
         if self.has_Trait('Melee_evader'):
-            self.evasion['Melee'] = int(base_evasion * (1 + (self.stat['DEX'] - 25) / 100))
+            self.evasion['Melee'] = int(base_evasion * (1 + self.stat['WIT'] / 100))
         else:
             self.evasion['Melee'] = int(base_evasion)
 
         if self.has_Trait('Ranged_evader'):
-            self.evasion['Ranged'] = int(base_evasion * (1 + (self.stat['DEX'] - 25) / 100))
+            self.evasion['Ranged'] = int(base_evasion * (1 + self.stat['WIT'] / 100))
         else:
             self.evasion['Ranged'] = int(base_evasion)
 

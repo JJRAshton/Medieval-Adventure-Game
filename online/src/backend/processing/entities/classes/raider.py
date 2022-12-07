@@ -7,7 +7,7 @@ class Raider(Class):
         super().__init__()
         self.name = 'Raider'
         self.stat_order = ['STR', 'CON', 'DEX', 'WIT']
-        self.weapons = ['glaives', 'axes', 'heavy_throwables']  # glaives
-        self.traits = ['Charger', 'Light']
+        self.weapons = ['glaives', 'axes', 'heavy_throwables']
+        self.traits = ['Charged_hits', 'Strong']
 
         self.getStats()

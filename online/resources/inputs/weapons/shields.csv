@@ -1,5 +1,4 @@
 ﻿Name,Tier,Range,Light,Protection,Defense Type,Attacks
-buckler,2,5,y,5,parry,bash
 heater,2,5,,6,shield,bash
 kite,3,5,,8,shield,bash
 pavise,4,5,,10,shield,bash
