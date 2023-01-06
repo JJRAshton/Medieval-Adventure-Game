@@ -9,10 +9,11 @@ from .entities.character import calcRadDist
 
 # Gets the in game distance between two coords for travel
 def calcPathDist(coords1, coords2):
+
     xdiff = abs(coords2[0] - coords1[0])
     ydiff = abs(coords2[1] - coords1[1])
 
-    dist = 5 * (xdiff + ydiff)
+    dist = 5 * (min(xdiff, ydiff))
 
     return dist
 
@@ -287,9 +288,12 @@ class Back:
 
     # Checks if an attack is valid
     def is_validAttack(self, atkID, defID):
+
         atkCoords = self.entities[atkID].coords
         radius = int(self.entities[atkID].reach/5)
         defx, defy = self.entities[defID].coords
+
+        remaining_atks = self.entities[atkID].actions
 
         xmin = atkCoords[0] - radius
         xmax = atkCoords[0] + radius
@@ -297,6 +301,8 @@ class Back:
         ymax = atkCoords[1] + radius
 
         if defx < xmin or defx > xmax or defy < ymin or defy > ymax:
+            return False
+        elif remaining_atks == 0:
             return False
         else:
             return True

@@ -244,6 +244,8 @@ class Character(ent.HealthEntity):
             indicator = self.singleAttack(attackID, creature)
             indicatorList.append(indicator)
 
+        self.actions -= 1
+
         return indicatorList
 
     # Checks if entity is still alive
