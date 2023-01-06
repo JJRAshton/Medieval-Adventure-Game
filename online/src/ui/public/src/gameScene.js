@@ -41,28 +41,54 @@ export class Game extends Context {
         reactRoot.render(
         <div>
             <h2>
-                {this.getCurrentMessage()}
+                <div className="message">{this.getCurrentMessage()}</div>
             </h2>
-            <div style={{
-                display: "inline-flex", 
-                fontSize: "32"}}>
+            <div className="game">
                 { this.canvas }
                 <div className="info">
-                    <div style={{backgroundColor: '#ffffff'}}>{this.character.health} / {this.character.maxHealth}</div>
-                    <ul className="gameOptions" style={{"listStyle": "none"}}>
-                        <li className="button"
-                            style={{fontSize: 32}}
-                            onClick={()=>this.socket.send(JSON.stringify({
-                                event: "endTurnRequest"
-                            }))}>End Turn</li>
-                    </ul>
-                    {this.character.renderAttacks()}
+                    <div className="infoComponent" style={{width: "100%"}}>{this.getHealthBar()}</div>
                     {this.character.renderStats()}
+                    {this.character.renderAttacks()}
+                    <div className="infoComponent">{this.getConfirmButton()}</div>
+                    <div className="infoComponent">{this.getEndTurnButton()}</div>
                 </div>
 
             </div>
         </div>
         );
+    }
+
+    getHealthBar() {
+        return <div className="healthBar" style={{
+                    position:"relative",
+                    width: "100%",
+                    backgroundColor: "red",
+                    height: "1.2em",
+                    border: "medium solid"}}>
+            <div style={{
+                width: Math.floor(100 * this.character.health/this.character.maxHealth)+"%",
+                height: "100%",
+                background: "green",
+                borderRadius: "0px",
+                }}/>
+            <div style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                fontSize: "1em",
+                borderRadius: "0px",
+                }}>{this.character.health}/{this.character.maxHealth}</div>
+        </div>
+    }
+
+    getEndTurnButton() {
+        return <div className="button"
+            onClick={()=>this.socket.send(JSON.stringify({event: "endTurnRequest"}))}>End Turn</div>
+    }
+
+    getConfirmButton() {
+        return <div className="button">Confirm</div>
     }
 
     getCurrentMessage() {
@@ -141,12 +167,17 @@ export class Game extends Context {
             else {
                 ctx.fillStyle = 'red';
             }
-            ctx.fillRect((character.x * TILE_WIDTH) + 3, (character.y * TILE_WIDTH) + 3, TILE_WIDTH - 6, TILE_WIDTH - 6);
-            ctx.fillStyle = 'black'
-            ctx.fillRect((character.x * TILE_WIDTH) + 13, (character.y * TILE_WIDTH) + 13, 8, 8);
-            ctx.fillRect(((character.x + 1) * TILE_WIDTH) - 13 - 8, (character.y * TILE_WIDTH) + 13, 8, 8);
-
-            ctx.fillRect((character.x * TILE_WIDTH) + 13, ((character.y + 1) * TILE_WIDTH) - 20, TILE_WIDTH - 6 - 10 - 6, 6);
+            if (character.imageLoaded) {
+                ctx.drawImage(character.image, (character.x * TILE_WIDTH), (character.y * TILE_WIDTH), TILE_WIDTH, TILE_WIDTH)
+            }
+            else {
+                ctx.fillRect((character.x * TILE_WIDTH) + 3, (character.y * TILE_WIDTH) + 3, TILE_WIDTH - 6, TILE_WIDTH - 6);
+                ctx.fillStyle = 'black'
+                ctx.fillRect((character.x * TILE_WIDTH) + 13, (character.y * TILE_WIDTH) + 13, 8, 8);
+                ctx.fillRect(((character.x + 1) * TILE_WIDTH) - 13 - 8, (character.y * TILE_WIDTH) + 13, 8, 8);
+    
+                ctx.fillRect((character.x * TILE_WIDTH) + 13, ((character.y + 1) * TILE_WIDTH) - 20, TILE_WIDTH - 6 - 10 - 6, 6);    
+            }
 
 
         })
@@ -202,7 +233,7 @@ export class Game extends Context {
                 })
                 break;
             case "playerInfo":
-                this.characters.get(event.characterID).construct(event.playerInfo);
+                this.characters.get(event.characterID).construct(event.playerInfo, event.characterID === this.character.id);
                 break;
             default:
                 console.log("Unrecognised event" + event)

@@ -1,5 +1,11 @@
 import React from "react";
 
+import orc from "./images/orc.png";
+import me from "./images/me.png";
+import notMe from "./images/notMe.png";
+
+import PlayerInfoParser from "./playerInfoParser";
+
 export default class Character {
     
     constructor(id, x, y) {
@@ -10,16 +16,9 @@ export default class Character {
         this.statsStyle = {
             fontSize: 20,
             listStyle: "none",
+            justifyContent: "center",
+            textAlign: "center"
         }
-        this.initialiseStats()
-    }
-
-    initialiseStats() {
-        this.strength = 20;
-        this.dexterity = 23;
-        this.health = 100;
-        this.maxHealth = 200;
-        this.weapon = "Twig";
     }
 
     setPosition(x, y) {
@@ -28,65 +27,76 @@ export default class Character {
     }
 
     update(updateInfo) {
-        console.log(updateInfo);
         this.health = updateInfo.Health;
         this.x = updateInfo.coords[0];
         this.y = updateInfo.coords[1];
     }
 
-    construct(characterInfo) {
+    construct(characterInfo, isPlayer) {
         console.log(characterInfo);
 
-        this.attacks = characterInfo.Attacks;
-        this.armour = null; // Not yet implemented
-        this.maxHealth = characterInfo.Health;
+        this.infoParser = new PlayerInfoParser(); // This class is pretty static
+
+        this.weapons = this.infoParser.parseWeapons(characterInfo.Weapons); // Not yet implemented
+        this.attacks = this.infoParser.parseAttacks(characterInfo.Attacks);
+        this.stats = this.infoParser.parseStats(characterInfo.Stats);
+        this.armour = this.infoParser.parseArmour(); // Not yet implemented
+        this.inventory = this.infoParser.parseInventory(); // Not yet implemented
+
         this.health = characterInfo.Health;
-        this.inventory = null // Not yet implemented
-        this.range = characterInfo.Max_range;
+        this.maxHealth = characterInfo.Max_health;
+        this.range = characterInfo.Max_range; // This seems like a random thing to expose given that it should be attainable from the attacks/weapons as well?
         this.movesLeft = Math.floor(characterInfo.Remaining_movement / 5);
-        this.stats = this.constructStats(characterInfo.Stats);
         this.team = characterInfo.Team;
-        this.weapons = this.constructWeapons(characterInfo.Weapons); // Not yet implemented
+
+        this.loadImage(isPlayer);
         
         this.infoReceived = true;
+
     }
 
-    constructStats(statInfo) {
-        let statMap = new Map();
-        statMap.set("Constitution", statInfo.CON);
-        statMap.set("Dexterity", statInfo.DEX);
-        statMap.set("Strength", statInfo.STR);
-        statMap.set("Wit", statInfo.WIT);
-        return statMap;
-    }
-
-    constructWeapons (weaponInfo) {
-        return null;
+    loadImage(isPlayer) {
+        this.image = new Image()
+        this.imageLoaded = false;
+        this.image.onload = this.loadImage.bind(this);
+        this.image.onload = () => {
+            this.imageLoaded = true;
+        }
+        if (isPlayer) {
+            this.image.src = me;
+        }
+        else if (this.team === 1) {
+            this.image.src = notMe;
+        }
+        else {
+            this.image.src = orc;
+        }
+        this.image.onerror = (error) => {
+            console.log("An error occured loading image" + error);
+        }
     }
 
     renderAttacks() {
         if (this.infoReceived) {
             let children = [];
-            this.attacks.forEach((attack) => {children.push(this.createAttackLi(attack))});
-            return <ul className="stats" style={this.statsStyle}> {children} </ul>
+            console.log(this.attacks);
+            this.attacks.forEach((attack) => {children.push(attack.renderAttackOptionElement(attack))});
+            console.log(children);
+            return <div className="attack stats"><table><tbody>{children}</tbody></table></div>
         }
         else {
-            return <ul className="stats" style={this.statsStyle}>Could not load attacks</ul>
+            return <div className="attack stats">Could not load attacks</div>
         }
-    }
-
-    createAttackLi(attack) {
-        return <li key={attack.Name+"_"+attack.Weapon}>{attack.Name} ({attack.Weapon})</li>
     }
 
     renderStats() {
         if (this.infoReceived) {
             let children = [];
             this.stats.forEach((value, stat) => {children.push(this.createStatRow(stat, value))});
-            return <ul className="stats" style={this.statsStyle}><table><tbody>{children}</tbody></table></ul>
+            return <div className="stats"><table className="statTable"><tbody>{children}</tbody></table></div>
         }
         else {
-            return <div className="stats" style={this.statsStyle}>Could not load stats</div>
+            return <div className="stats">Could not load stats</div>
         }
     }
 

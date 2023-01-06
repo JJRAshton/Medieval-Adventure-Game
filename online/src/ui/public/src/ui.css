@@ -1,23 +1,62 @@
-
-
 body {
     font-family: "Courier New", sans-serif;
-    text-align: center;
     background-color: #E8C274;
 }
-.buttons {
-    font-size: 2em;
+
+* {
+    border-radius: 4px;
+    cursor: default;
+}
+
+.info {
+    margin: 2%;
+    padding: 1%;
+    background-color: #d1941c;
+    border: medium solid;
+    font-size: 0.8em;
+}
+
+.message {
+    text-align: center;
+}
+
+.game {
+    display: flex;
+    justify-content: center;
+    font-size: 1.5em;
+}
+
+.infoComponent, .stats {
+    text-align: left;
+    margin-bottom: 10px;
     display: flex;
     justify-content: center;
 }
+
+.stats th, .stats td {
+    border: 2px solid;
+}
+
+.buttons {
+    font-size: 2em;
+    display: flex;
+}
+
 .button, .value {
+    padding: 5px;
+    display: inline;
     line-height: 1;
-    padding: 2rem;
-    margin: 2rem;
     border: medium solid;
     min-height: 1em;
     min-width: 1em;
+    animation: 0.2s;
 }
+
+.button:hover {
+    background-color: #e0a530;
+    animation: 0.2s;
+}
+
 .button {
     cursor: pointer;
     user-select: none;
@@ -27,10 +66,4 @@ body {
 }
 .joinGame {
     color: green;
-}
-.value {
-    min-width: 2em;
-}
-.state {
-    font-size: 2em;
 }

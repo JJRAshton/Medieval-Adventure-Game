@@ -1,8 +1,5 @@
 import math
 
-# Hardcoded stuff for testing
-#row = [0 for i in range(0,10)]
-#map_grid = [row for j in range(0,10)]
 
 class Brain1:
 
@@ -25,13 +22,14 @@ class Brain1:
      - Do anything other than move and attack
     """
 
-    def __init__(self, backend, id):
+    def __init__(self, backend, bot_id):
         self.locations = backend.locationsRequest()
-        self.my_id = id
-        self.my_location = backend.locationsRequest()[id]
-        self.my_range = backend.infoRequest(id)['Range']
-        self.my_movement = backend.infoRequest(id)['Remaining_movement']
-        self.actions = backend.infoRequest(id)['Action_number']
+        self.player_ids = [x for x in backend.locationsRequest() if backend.infoRequest(x)['Team'] == 1]
+        self.my_id = bot_id
+        self.my_location = backend.locationsRequest()[bot_id]
+        self.my_range = backend.infoRequest(bot_id)['Range']
+        self.my_movement = backend.infoRequest(bot_id)['Remaining_movement']
+        self.actions = backend.infoRequest(bot_id)['Action_number']
 
     def check_distance(self, char_id):
         target_location = self.locations[char_id]
@@ -41,41 +39,35 @@ class Brain1:
 
         return distance
 
+# Not currently used but might in future
     def check_team(self, char_id, backend):
         print(char_id)
-        team = backend.infoRequest(char_id)['Team'] # 1 is player, 2 is npc
+        team = backend.infoRequest(char_id)['Team']  # 1 is player, 2 is npc
 
         return team
 
-    def choose_target(self, backend):
+    def choose_target(self):
         character_distances = {}
-        for option in self.locations:
+        for option in self.player_ids:
             option_distance = self.check_distance(option)
             character_distances.update({option: option_distance})
-        character_distances.pop(self.my_id)
 
-        closest_chars = sorted(character_distances.items(), key=lambda item: item[1])
-        print(closest_chars)
-        # Go through the list to find the nearest character of the opposing team
-        for char in closest_chars:
-            if self.check_team(char[0], backend) == 1:
-                target = char
-                print(f"chosen target is {char}")
-                break
+        target_id = sorted(character_distances.items(), key=lambda item: item[1])[0]
+        print(f"chosen target is {target_id}")
 
-        return target
+        return target_id
 
-    def check_can_attack(self, target):
-        if self.my_range / 5 >= self.check_distance(target):
+    def check_can_attack(self, target_id):
+        if self.my_range / 5 >= self.check_distance(target_id):
             print("target is in range!")
             return True
         return False
 
 # Temporary backend references below
-    def approach_and_attack_target(self, backend, target):
-        target_location = self.locations[target[0]]
+    def approach_and_attack_target(self, backend, target_id):
+        target_location = self.locations[target_id]
         while self.actions > 0:
-            while not self.check_can_attack(target[0]):
+            while not self.check_can_attack(target_id):
                 sign = lambda i: 0 if not i else int(i/abs(i))
                 x_diff = (target_location[0] - self.my_location[0])
                 x_movement = sign(x_diff)
@@ -89,8 +81,9 @@ class Brain1:
                     self.actions = 0    # Not really needed now
                     print('ran out of movement')
                     return
-            backend.attackRequest(self.my_id, target[0])
+            backend.attackRequest(self.my_id, target_id)
             self.actions -= 1
         # Ends turn after a move request is denied (i.e. out of movement) or using up all actions
+
 
 print('game')
