@@ -27,10 +27,14 @@ body {
 }
 
 .infoComponent, .stats {
-    text-align: left;
     margin-bottom: 10px;
     display: flex;
     justify-content: center;
+}
+
+.attackList {
+    margin-bottom: 10px;
+    justify-content: space-between;
 }
 
 .stats th, .stats td {

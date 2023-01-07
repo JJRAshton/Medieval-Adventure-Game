@@ -32,20 +32,20 @@ export default class Character {
         this.y = updateInfo.coords[1];
     }
 
-    construct(characterInfo, isPlayer) {
+    construct(characterInfo, isPlayer, selectionHandler) {
         console.log(characterInfo);
 
         this.infoParser = new PlayerInfoParser(); // This class is pretty static
 
         this.weapons = this.infoParser.parseWeapons(characterInfo.Weapons); // Not yet implemented
-        this.attacks = this.infoParser.parseAttacks(characterInfo.Attacks);
+        this.attacks = this.infoParser.parseAttacks(characterInfo.Attacks, selectionHandler);
         this.stats = this.infoParser.parseStats(characterInfo.Stats);
         this.armour = this.infoParser.parseArmour(); // Not yet implemented
         this.inventory = this.infoParser.parseInventory(); // Not yet implemented
 
         this.health = characterInfo.Health;
         this.maxHealth = characterInfo.Max_health;
-        this.range = characterInfo.Max_range; // This seems like a random thing to expose given that it should be attainable from the attacks/weapons as well?
+        this.range = characterInfo.Range; // This seems like a random thing to expose given that it should be attainable from the attacks/weapons as well?
         this.movesLeft = Math.floor(characterInfo.Remaining_movement / 5);
         this.team = characterInfo.Team;
 
@@ -76,13 +76,18 @@ export default class Character {
         }
     }
 
-    renderAttacks() {
+    renderAttacks(minDistToTarget, currentSelectionOrNull) {
         if (this.infoReceived) {
             let children = [];
-            console.log(this.attacks);
-            this.attacks.forEach((attack) => {children.push(attack.renderAttackOptionElement(attack))});
-            console.log(children);
-            return <div className="attack stats"><table><tbody>{children}</tbody></table></div>
+            this.attacks.forEach((attack) => {
+                children.push(attack.renderAttackOptionElement(attack.range >= minDistToTarget, attack === currentSelectionOrNull))
+            });
+            return <ul className="attack"
+                style={{
+                    listStyleType: "none",
+                    padding: 0,
+                    margin: 0,
+                }}>{children}</ul>
         }
         else {
             return <div className="attack stats">Could not load attacks</div>

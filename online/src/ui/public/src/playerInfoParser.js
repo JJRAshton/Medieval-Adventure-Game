@@ -7,10 +7,10 @@ export default class PlayerInfoParser {
         return null;
     }
 
-    parseAttacks(attackInfo) {
+    parseAttacks(attackInfo, selectionHandler) {
         let attacks = new Array();
         for (let attack of attackInfo) {
-            attacks.push(new AttackOption(new Weapon(attack.Weapon, attack.Range), attack.Name));
+            attacks.push(new AttackOption(new Weapon(attack.Weapon, attack.Range), attack.Name, selectionHandler));
         }
         return attacks;
     }

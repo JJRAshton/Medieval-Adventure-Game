@@ -2,8 +2,9 @@ import React from "react";
 
 export class Context {
 
-    constructor(socket, contextString) {
+    constructor(socket, reactRoot, contextString) {
         this.socket = socket;
+        this.reactRoot = reactRoot;
         this.contextString = contextString;
     }
 
@@ -11,7 +12,7 @@ export class Context {
         return this.contextString;
     }
 
-    render(reactRoot) {
-        reactRoot.render(<div>Abstract context should not be rendered.</div>);
+    render() {
+        this.reactRoot.render(<div>Abstract context should not be rendered.</div>);
     }
 }

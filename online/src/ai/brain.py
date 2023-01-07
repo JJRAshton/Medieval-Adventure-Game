@@ -50,9 +50,9 @@ class Brain1:
         character_distances = {}
         for option in self.player_ids:
             option_distance = self.check_distance(option)
-            character_distances.update({option: option_distance})
+            character_distances[option] = option_distance
 
-        target_id = sorted(character_distances.items(), key=lambda item: item[1])[0]
+        target_id = sorted(character_distances.items(), key=lambda item: item[1])[0][0]
         print(f"chosen target is {target_id}")
 
         return target_id
@@ -86,4 +86,4 @@ class Brain1:
         # Ends turn after a move request is denied (i.e. out of movement) or using up all actions
 
 
-print('game')
+print('Started')

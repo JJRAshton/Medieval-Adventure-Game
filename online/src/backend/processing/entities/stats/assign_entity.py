@@ -190,7 +190,7 @@ class EntityStats:
         character.actionsTotal = int(charDict['Actions'])
         character.baseMovement = int(charDict['Speed'])
         character.drop_rate = int(charDict['Drop Rate'])
-        character.skill = int(charDict['Skill'])
+        # character.skill = int(charDict['Skill'])
 
         character.baseStat['STR'] = int(charDict['STR'])
         character.baseStat['DEX'] = int(charDict['DEX'])

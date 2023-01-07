@@ -6,16 +6,15 @@ var React = require("react");
 
 export class Lobby extends Context {
 
-    constructor(socket) {
-        super(socket, "lobby");
-        this.socket = socket;
+    constructor(socket, reactRoot) {
+        super(socket, reactRoot, "lobby");
         this.joinGameButton = <div className="leaveGame button" onClick={() => this.transmit("leaveGame")}>Leave</div>
         this.leaveGameButon = <div className="joinGame button" onClick={() => this.transmit("joinGame")}>Join</div>
 
     }
 
-    render(reactRoot) {
-        reactRoot.render(
+    render() {
+        this.reactRoot.render(
             <div>
                 <div className="buttons">
                     { this.joinGameButton }
@@ -37,6 +36,7 @@ export class Lobby extends Context {
                 const characters = event.characters;
                 contextHandler.context = new Game(
                     this.socket,
+                    this.reactRoot,
                     mapStatus.mapWidth,
                     mapStatus.mapHeight,
                     playerID,

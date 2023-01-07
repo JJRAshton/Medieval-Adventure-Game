@@ -7,7 +7,7 @@ import { Context } from "./context.js";
 export class ContextHandler {
 
     constructor(root, socket) {
-        this.context = new Lobby(socket);
+        this.context = new Lobby(socket, root);
         this.reactRoot = root;
         this.socket = socket;
     }
@@ -16,6 +16,6 @@ export class ContextHandler {
         const event = JSON.parse(data);
 
         this.context.handleEvent(this, event);
-        this.context.render(this.reactRoot);
+        this.context.render();
     }
 }

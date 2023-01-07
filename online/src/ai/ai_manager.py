@@ -17,7 +17,8 @@ class AIManager:
         # Make a brain
         ai_brain = Brain1(backend, id)
         # Choose target for approaching/attacking
-        target = ai_brain.choose_target(backend)
+        target = ai_brain.choose_target()
+        print(target)
         # Run up to target and keep attacking if in range
         ai_brain.approach_and_attack_target(backend, target)
         # Turn has ended

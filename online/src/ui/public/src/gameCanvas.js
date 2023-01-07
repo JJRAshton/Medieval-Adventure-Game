@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react'
 
 const Canvas = props => {
   
-  const { draw, resize, handleClick, handleKeyPress, handleMouseMove, ...rest } = props;
+  const { draw, resize, handleClick, handleKeyPress, handleMouseMove, setStyle, ...rest } = props;
   const canvasRef = useRef(null);
   window.addEventListener("keyup", handleKeyPress);
 
@@ -38,7 +38,7 @@ const Canvas = props => {
     }
   }, [draw]);
   
-  return <canvas ref={canvasRef} width="100" height="400" {...rest}/>
+  return <canvas ref={canvasRef} width="100" height="400" style={setStyle()} {...rest}/>
 }
 
 export default Canvas
