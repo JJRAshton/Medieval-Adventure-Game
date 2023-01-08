@@ -11,6 +11,8 @@ import GameUISelectionHandler from "./gameUISelection";
 import { onCharacter } from "./gameSceneUtil";
 
 import { TILE_WIDTH } from "./constants";
+import Attack from "./attack";
+import AttackOption from "./attackOption";
 
 const ATTACK_IMAGE = new Image();
 ATTACK_IMAGE.src = attackImageSrc;
@@ -37,11 +39,7 @@ export class Game extends Context {
         this.selectionHandler = new GameUISelectionHandler(socket, playerID, this);
         console.log("Character type: ", typeof(characters));
         this.characters = this.parseCharacters(characters);
-        let thisChar = this.characters.get(this.playerID);
-        if (!thisChar) {
-            throw new Error("Critical error: Could not identify player")
-        }
-        this.character = thisChar;
+        this.character = this.getPlayerWithId(this.playerID);
         this.takingTurn = false; // Boolean value to record whether we're currently taking a turn
         this.mouseX, this.mouseY = 0, 0;
         this.canvas = <Canvas
@@ -87,7 +85,7 @@ export class Game extends Context {
     // Used to display attack options. Has two modes, either returns min dist to any enemy (if
     // no target is selected), or min dist against the current attack target.
     getMinDistToTarget() {
-        if (this.selectionHandler.current === "Attack") {
+        if (this.selectionHandler.selection instanceof Attack) {
             if (this.selectionHandler.selection.target !== null) {
                 const target = this.selectionHandler.selection.target;
                 return Math.max(Math.abs(this.character.x - target.x), Math.abs(this.character.y - target.y));
@@ -103,15 +101,17 @@ export class Game extends Context {
 
     }
 
-    // Used to display attack options
-    getCurrentSelectionOrNull() {
-        let attackType = null;
-        if (this.selectionHandler.current === "Attack") {
+    /**
+     * Used to display attack options. Returns either the currently selected attack option, or null
+     * if there isn't one.
+     */
+    getCurrentSelectionOrNull(): AttackOption | null {
+        if (this.selectionHandler.selection instanceof Attack) {
             if (this.selectionHandler.selection.attackType) {
-                attackType = this.selectionHandler.selection.attackType;
+                return this.selectionHandler.selection.attackType;
             }
         }
-        return attackType;
+        return null;
     }
 
     getHealthBar() {
@@ -202,7 +202,7 @@ export class Game extends Context {
         ctx.fillRect(0, 0, this.mapWidth * TILE_WIDTH, this.mapHeight * TILE_WIDTH);
 
         // Draw the move path if its not null
-        if (this.selectionHandler.current === "Movement") {
+        if (this.selectionHandler.selection instanceof Movement) {
             this.selectionHandler.selection.draw(ctx, TILE_WIDTH);
         }
 
@@ -218,7 +218,7 @@ export class Game extends Context {
             if (character.imageLoaded) {
                 ctx.drawImage(character.image, character.x * TILE_WIDTH, character.y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
                 if (this.checkAttackable(character)) {
-                    if (this.selectionHandler.current === "Attack" 
+                    if (this.selectionHandler.selection instanceof Attack 
                             && this.selectionHandler.selection.target
                             && this.selectionHandler.selection.target.id === character.id) {
                         ctx.drawImage(ATTACK_IMAGE, character.x * TILE_WIDTH + 2, character.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH - 4);
@@ -240,15 +240,14 @@ export class Game extends Context {
     // Handling click events in the canvas, passed in as a callback
     handleClick(clickX, clickY) {
         // Handling movement
-        if (this.selectionHandler.current == "Movement") {
+        if (this.selectionHandler.selection instanceof Movement) {
             this.socket.send(JSON.stringify(this.selectionHandler.selection.getMoveRequest(this.playerID)));
             this.selectionHandler.reset();
         }
         else {
             if (this.takingTurn) {
-                const player = this.characters.get(this.playerID);
-                if (onCharacter(clickX, clickY, player)) {
-                    this.selectionHandler.setMovement(new Movement(player.x, player.y));
+                if (onCharacter(clickX, clickY, this.character)) {
+                    this.selectionHandler.setMovement(new Movement(this.character.x, this.character.y));
                 }
                 else {
                     this.characters.forEach(player => {
@@ -282,11 +281,11 @@ export class Game extends Context {
             case "mapUpdate":
                 // These get sent when someone moves, or when something changes
                 event.characters.forEach(character => {
-                    this.characters.get(character[0]).setPosition(character[1][0], character[1][1]);
+                    this.getPlayerWithId(character[0]).setPosition(character[1][0], character[1][1]);
                 })
                 break;
             case "playerInfo":
-                this.characters.get(event.characterID).construct(event.playerInfo, event.characterID === this.character.id, this.selectionHandler);
+                this.getPlayerWithId(event.characterID).construct(event.playerInfo, event.characterID === this.character.id, this.selectionHandler);
                 break;
             default:
                 console.log("Unrecognised event" + event)
@@ -301,7 +300,20 @@ export class Game extends Context {
 
     updatePlayers(charactersInfo) {
         for (let id in charactersInfo) {
-            this.characters.get(parseInt(id)).update(charactersInfo[id]);
+            this.getPlayerWithId(parseInt(id)).update(charactersInfo[id]);
         }
+    }
+
+    /**
+     * Throws an error if the id is not recognised
+     * @param id of the player
+     * @returns the player
+     */
+    private getPlayerWithId(id: number): Character {
+        const character = this.characters.get(id);
+        if (!character) {
+            throw new Error("Critical error: Did not recognise character with ID: " + id + ".");
+        }
+        return character;
     }
 }

@@ -45,8 +45,8 @@ export default class Character {
     public movesLeft: number;
     public team: any;
 
-    private image: HTMLImageElement;
-    private imageLoaded: boolean;
+    public image: HTMLImageElement;
+    public imageLoaded: boolean;
     
     constructor(id: number, x: number, y: number) {
         this.infoReceived = false; // Keeps track of whether the full player info for this character has been received
