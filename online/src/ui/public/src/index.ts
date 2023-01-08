@@ -15,6 +15,9 @@ websocket.addEventListener("open", () => {
     };
 });
 
+/**
+ * @param { JSON } data
+ */
 function debugServerMessages(data) {
     console.log("MESSAGE:");
     console.log(data);
