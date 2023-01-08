@@ -187,7 +187,7 @@ export class Game extends Context {
     handleMouseMove(x, y) {
         this.mouseX = x;
         this.mouseY = y;
-        this.selectionHandler.handleMouseMove(x, y, TILE_WIDTH, this.mapWidth, this.mapHeight);
+        this.selectionHandler.handleMouseMove(x, y, this.mapWidth, this.mapHeight);
     }
 
     setStyle() {

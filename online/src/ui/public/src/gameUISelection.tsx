@@ -12,7 +12,6 @@ export default class GameUISelectionHandler {
     private _socket: any;
     private context: any;
     private playerID: any;
-    private current: string;
 
     public onTurn: boolean;
     public selection: GameUISelection | null;
@@ -25,19 +24,16 @@ export default class GameUISelectionHandler {
         this.onTurn = false;
         this.context = context;
         this.playerID = playerID;
-        this.current = "None"; // This string thing is kind of ugly, but I can't think of a better way
         this.selection = null; // Null when no selection has been made
     }
 
     reset(): void {
-        this.current = "None";
         this.selection = null;
         this.context.render();
     }
 
     setMovement(movement: Movement): void {
         if (this.onTurn) {
-            this.current = "Movement";
             this.selection = movement;
         }
     }
@@ -47,18 +43,17 @@ export default class GameUISelectionHandler {
             return;
         }
         if (this.onTurn) {
-            if (this.current == "Attack") {
+            if (this.selection instanceof Attack) {
                 this.selection.setOptions(options)
             }
             else {
-                this.current = "Attack";
                 this.selection = new Attack(options);
             }
             this.context.render();
         }
     }
 
-    handleMouseMove(mouseX: number, mouseY: number, tileWidth: number, mapWidth: number, mapHeight: number): void {
+    handleMouseMove(mouseX: number, mouseY: number, mapWidth: number, mapHeight: number): void {
         if (this.selection instanceof Movement) {
             if (0 < mouseX && mouseX < mapWidth * TILE_WIDTH && 0 < mouseY && mouseY < mapHeight * TILE_WIDTH) {
                 this.selection.check(mouseX, mouseY);
@@ -74,7 +69,7 @@ export default class GameUISelectionHandler {
         if (!(this.selection instanceof Attack)) {
             return;
         }
-        if (this.current === "Attack" && this.selection.confirmAttack()) {
+        if (this.selection instanceof Attack && this.selection.confirmAttack()) {
             if (this.selection.target === null) {
                 // This should not be null as confirmAttack returned true
                 throw new Error("Attack.confirmAttack() is broken")
@@ -83,7 +78,6 @@ export default class GameUISelectionHandler {
                 event: "attackRequest",
                 playerID: this.playerID,
                 enemyID: this.selection.target.id}));
-            this.current = "None";
             this.selection = null;
         }
     }
