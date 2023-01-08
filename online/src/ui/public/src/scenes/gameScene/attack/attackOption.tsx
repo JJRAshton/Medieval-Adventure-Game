@@ -1,5 +1,5 @@
 import React from "react";
-import GameUISelectionHandler from "./gameUISelection";
+import GameUISelectionHandler from "../gameUISelection";
 import Weapon from "./weapon";
 
 const NOT_AVAILABLE_COLOUR = "#dbbb7c";

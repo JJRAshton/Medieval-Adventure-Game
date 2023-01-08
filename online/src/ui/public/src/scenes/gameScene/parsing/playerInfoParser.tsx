@@ -1,5 +1,5 @@
-import AttackOption from "./attackOption";
-import Weapon from "./weapon";
+import AttackOption from "../attack/attackOption";
+import Weapon from "../attack/weapon";
 
 export default class PlayerInfoParser {
 

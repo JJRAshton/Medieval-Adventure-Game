@@ -1,5 +1,5 @@
-import { TILE_WIDTH } from "./constants";
-import { GameUISelection } from "./gameUISelection";
+import { TILE_WIDTH } from "../constants";
+import { GameUISelection } from "../gameUISelection";
 
 export default class Movement implements GameUISelection {
     private moveStack: Array<Array<any>>;

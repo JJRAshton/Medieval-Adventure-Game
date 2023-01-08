@@ -1,6 +1,6 @@
-import Attack, { AttackOptions } from "./attack";
-import Context from "./context";
-import Movement from "./movement";
+import Attack, { AttackOptions } from "./attack/attack";
+import Context from "../context";
+import Movement from "./rendering/movement";
 
 import { TILE_WIDTH } from "./constants";
 

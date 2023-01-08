@@ -1,18 +1,18 @@
-import Context from "./context";
+import Context from "../context";
 import React from "react";
-import Canvas from "./gameCanvas";
-import Character from "./character";
-import Movement from "./movement";
+import Canvas from "./rendering/gameCanvas";
+import Character from "./parsing/character";
+import Movement from "./rendering/movement";
 
-import attackImageSrc from "./images/attackImage.png";
+import attackImageSrc from "../../images/attackImage.png";
 import GameUISelectionHandler from "./gameUISelection";
 
 import { onCharacter } from "./gameSceneUtil";
 
 import { TILE_WIDTH } from "./constants";
-import Attack from "./attack";
-import AttackOption from "./attackOption";
-import ContextHandler from "./contextHandler";
+import Attack from "./attack/attack";
+import AttackOption from "./attack/attackOption";
+import ContextHandler from "../contextHandler";
 
 const ATTACK_IMAGE = new Image();
 ATTACK_IMAGE.src = attackImageSrc;

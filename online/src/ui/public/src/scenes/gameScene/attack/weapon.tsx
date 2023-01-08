@@ -1,10 +1,10 @@
-import sharpStick from "./images/weapons/sharpStick.png"
-import sickle from "./images/weapons/sickle.png"
-import hatchet from "./images/weapons/hatchet.png"
-import club from "./images/weapons/club.png"
-import trident from "./images/weapons/trident.png"
-import greataxe from "./images/weapons/greataxe.png"
-import war_scythe from "./images/weapons/war_scythe.png"
+import sharpStick from "../../../images/weapons/sharpStick.png"
+import sickle from "../../../images/weapons/sickle.png"
+import hatchet from "../../../images/weapons/hatchet.png"
+import club from "../../../images/weapons/club.png"
+import trident from "../../../images/weapons/trident.png"
+import greataxe from "../../../images/weapons/greataxe.png"
+import war_scythe from "../../../images/weapons/war_scythe.png"
 
 let imagesDict = new Map();
 imagesDict.set("sharp_stick", sharpStick);

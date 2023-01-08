@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import ContextHandler from "./contextHandler";
+import ContextHandler from "./scenes/contextHandler";
 
 import './ui.css'
 

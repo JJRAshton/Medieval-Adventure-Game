@@ -1,5 +1,5 @@
-import { Lobby } from "./lobby"
-import { Game } from "./gameScene";
+import { Lobby } from "./lobby/lobby"
+import { Game } from "./gameScene/gameScene";
 
 import Context from "./context";
 import { FC } from "react";

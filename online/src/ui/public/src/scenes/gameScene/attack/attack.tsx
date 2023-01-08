@@ -1,6 +1,6 @@
 import AttackOption from "./attackOption";
-import Character from "./character";
-import { GameUISelection } from "./gameUISelection";
+import Character from "../parsing/character";
+import { GameUISelection } from "../gameUISelection";
 
 /**
  * Type used to set attack options

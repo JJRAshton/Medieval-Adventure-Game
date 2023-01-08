@@ -1,6 +1,6 @@
-import Context from "./context";
-import ContextHandler from "./contextHandler";
-import { Game } from "./gameScene";
+import Context from "../context";
+import ContextHandler from "../contextHandler";
+import { Game } from "../gameScene/gameScene";
 
 var React = require("react");
 

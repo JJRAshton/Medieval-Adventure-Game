@@ -1,12 +1,12 @@
 import React from "react";
 
-import orc from "./images/orc.png";
-import me from "./images/me.png";
-import notMe from "./images/notMe.png";
+import orc from "../../../images/orc.png";
+import me from "../../../images/me.png";
+import notMe from "../../../images/notMe.png";
 
 import PlayerInfoParser from "./playerInfoParser";
-import Weapon from "./weapon";
-import AttackOption from "./attackOption";
+import Weapon from "../attack/weapon";
+import AttackOption from "../attack/attackOption";
 
 type CharacterInfo =  {
     Weapons: JSON;
