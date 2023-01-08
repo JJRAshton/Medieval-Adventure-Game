@@ -14,16 +14,16 @@ module.exports = {
                 loader: 'babel-loader'
             },
 
-            {
-                test: /\.m?js$/,
-                exclude: /(node_modules|bower_components)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-env']
-                    }
-                }
-            },
+            // {
+            //     test: /\.m?js$/,
+            //     exclude: /(node_modules|bower_components)/,
+            //     use: {
+            //         loader: 'babel-loader',
+            //         options: {
+            //             presets: ['@babel/preset-env']
+            //         }
+            //     }
+            // },
             {
                 test: /\.css$/i,
                 use: ["style-loader", "css-loader"],
@@ -39,6 +39,6 @@ module.exports = {
         ],
     },
     resolve: {
-        extensions: ['', '.js', '.jsx', '.png', '.ts', '.tsx'],
+        extensions: ['', '.png', '.tsx'],
     }
 };
