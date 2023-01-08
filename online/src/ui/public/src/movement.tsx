@@ -11,12 +11,12 @@ export default class Movement implements GameUISelection {
         this.moveStack.push([xStart, yStart]);
     }
 
-    draw(ctx, tileWidth) {
+    draw(ctx) {
         // Draw on the path being plotted
         ctx.fillStyle = 'yellow';
 
         this.moveStack.forEach((tile) => {
-            ctx.fillRect(tile[0] * tileWidth, tile[1] * tileWidth , tileWidth, tileWidth);
+            ctx.fillRect(tile[0] * TILE_WIDTH, tile[1] * TILE_WIDTH , TILE_WIDTH, TILE_WIDTH);
         })
     }
 

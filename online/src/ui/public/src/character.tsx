@@ -8,11 +8,6 @@ import PlayerInfoParser from "./playerInfoParser";
 import Weapon from "./weapon";
 import AttackOption from "./attackOption";
 
-export type CharacterMinimumInfo = {
-    id: number,
-    location: [number, number],
-}
-
 type CharacterInfo =  {
     Weapons: JSON;
     Attacks: JSON;

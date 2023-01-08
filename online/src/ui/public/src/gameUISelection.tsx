@@ -1,5 +1,5 @@
 import Attack, { AttackOptions } from "./attack";
-import { Context } from "./context";
+import Context from "./context";
 import Movement from "./movement";
 
 import { TILE_WIDTH } from "./constants";
@@ -39,9 +39,6 @@ export default class GameUISelectionHandler {
     }
 
     setAttackOptions(options: AttackOptions): void {
-        if (!(this.selection instanceof Attack)) {
-            return;
-        }
         if (this.onTurn) {
             if (this.selection instanceof Attack) {
                 this.selection.setOptions(options)

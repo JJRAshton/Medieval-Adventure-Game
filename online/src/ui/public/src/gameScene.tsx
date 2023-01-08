@@ -1,8 +1,7 @@
-import { Context } from "./context";
+import Context from "./context";
 import React from "react";
 import Canvas from "./gameCanvas";
 import Character from "./character";
-import { CharacterMinimumInfo } from "./character"
 import Movement from "./movement";
 
 import attackImageSrc from "./images/attackImage.png";
@@ -13,6 +12,7 @@ import { onCharacter } from "./gameSceneUtil";
 import { TILE_WIDTH } from "./constants";
 import Attack from "./attack";
 import AttackOption from "./attackOption";
+import ContextHandler from "./contextHandler";
 
 const ATTACK_IMAGE = new Image();
 ATTACK_IMAGE.src = attackImageSrc;
@@ -52,7 +52,7 @@ export class Game extends Context {
             setStyle={this.setStyle}></Canvas>
     }
 
-    parseCharacters(characters: any) {
+    parseCharacters(characters: any): Map<number, Character> {
         const characterMap = new Map();
         for (var i = 0; i < characters.length; i++) {
             const character = characters[i];
@@ -62,7 +62,7 @@ export class Game extends Context {
         return characterMap
     }
 
-    render() {
+    render(): void {
         this.reactRoot.render(
         <div>
             <h2>
@@ -84,7 +84,7 @@ export class Game extends Context {
 
     // Used to display attack options. Has two modes, either returns min dist to any enemy (if
     // no target is selected), or min dist against the current attack target.
-    getMinDistToTarget() {
+    getMinDistToTarget(): number {
         if (this.selectionHandler.selection instanceof Attack) {
             if (this.selectionHandler.selection.target !== null) {
                 const target = this.selectionHandler.selection.target;
@@ -114,7 +114,7 @@ export class Game extends Context {
         return null;
     }
 
-    getHealthBar() {
+    private getHealthBar(): JSX.Element {
         return <div className="healthBar" style={{
                     position:"relative",
                     width: "100%",
@@ -138,24 +138,24 @@ export class Game extends Context {
         </div>
     }
 
-    getEndTurnButton() {
+    getEndTurnButton(): JSX.Element {
         return <div className="button"
             onClick={()=>this.socket.send(JSON.stringify({event: "endTurnRequest"}))}>End Turn</div>
     }
 
-    getConfirmButton() {
+    getConfirmButton(): JSX.Element {
         return <div className="button"
         onClick={() => this.selectionHandler.confirmAttack()}>Confirm</div>
     }
 
-    getCurrentMessage() {
+    getCurrentMessage(): string {
         if (this.takingTurn) {
             return "It's your turn"
         }
         return "It's someone else's turn"
     }
 
-    handleKeyPress(event) {
+    handleKeyPress(event: { keyCode: number; }): void {
         switch (event.keyCode) {
             // Handling wasd and arrow keys, probably wont be used now
             case 38:
@@ -184,18 +184,18 @@ export class Game extends Context {
     }
 
     // Handling mouse movements inside the canvas
-    handleMouseMove(x, y) {
+    handleMouseMove(x: number, y: number): void {
         this.mouseX = x;
         this.mouseY = y;
         this.selectionHandler.handleMouseMove(x, y, this.mapWidth, this.mapHeight);
     }
 
-    setStyle() {
+    setStyle(): any {
         return {cursor: "pointer"}
     }
 
     // Drawing to the canvas, passed in as a callback
-    drawCanvas(ctx) {
+    drawCanvas(ctx: CanvasRenderingContext2D): void {
 
         //ctx.clearRect(0, 0, this.mapWidth * TILE_WIDTH, this.mapHeight * TILE_WIDTH);
         ctx.fillStyle = 'rgb(109, 153, 87)';
@@ -203,7 +203,7 @@ export class Game extends Context {
 
         // Draw the move path if its not null
         if (this.selectionHandler.selection instanceof Movement) {
-            this.selectionHandler.selection.draw(ctx, TILE_WIDTH);
+            this.selectionHandler.selection.draw(ctx);
         }
 
         // Draw the grid
@@ -238,7 +238,7 @@ export class Game extends Context {
     }
 
     // Handling click events in the canvas, passed in as a callback
-    handleClick(clickX, clickY) {
+    handleClick(clickX: number, clickY: number): void {
         // Handling movement
         if (this.selectionHandler.selection instanceof Movement) {
             this.socket.send(JSON.stringify(this.selectionHandler.selection.getMoveRequest(this.playerID)));
@@ -262,13 +262,13 @@ export class Game extends Context {
     }
 
     // Resizes the canvas, for some reason this has to be passed as a callback
-    resize(canvas) {
+    resize(canvas: HTMLCanvasElement) {
         canvas.width = TILE_WIDTH * this.mapWidth;
         canvas.height = TILE_WIDTH * this.mapHeight;
     }
 
     // Processing events from server
-    handleEvent(contextHandler, event) {
+    handleEvent(contextHandler: ContextHandler, event: any): void {
         console.log(event);
         switch (event.responseType) {
             case "turnNotification":
@@ -292,13 +292,13 @@ export class Game extends Context {
         }
     }
 
-    checkAttackable(character) {
+    private checkAttackable(character: Character): boolean {
         return (this.takingTurn
             &&!(character.team === this.character.team)
             && Math.max(Math.abs(this.character.x - character.x), Math.abs(this.character.y - character.y)) <= this.character.range);
         }
 
-    updatePlayers(charactersInfo) {
+    private updatePlayers(charactersInfo: any): void {
         for (let id in charactersInfo) {
             this.getPlayerWithId(parseInt(id)).update(charactersInfo[id]);
         }

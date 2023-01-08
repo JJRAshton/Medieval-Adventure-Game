@@ -1,11 +1,11 @@
 import { Lobby } from "./lobby"
 import { Game } from "./gameScene";
 
-import { Context } from "./context";
+import Context from "./context";
 import { FC } from "react";
 
 
-export class ContextHandler {
+export default class ContextHandler {
 
     private reactRoot: any;
     private socket: any;

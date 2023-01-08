@@ -1,12 +1,12 @@
 import React from "react";
-import { ContextHandler } from "./contextHandler";
+import ContextHandler from "./contextHandler";
 
-export abstract class Context {
+export default abstract class Context {
     protected socket: WebSocket;
     protected reactRoot: any;
     private contextString: String;
 
-    constructor(socket, reactRoot, contextString) {
+    constructor(socket: WebSocket, reactRoot: any, contextString: String) {
         this.socket = socket;
         this.reactRoot = reactRoot;
         this.contextString = contextString;

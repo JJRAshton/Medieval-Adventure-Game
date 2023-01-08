@@ -1,5 +1,5 @@
-import { Context } from "./context";
-import { ContextHandler } from "./contextHandler";
+import Context from "./context";
+import ContextHandler from "./contextHandler";
 import { Game } from "./gameScene";
 
 var React = require("react");
