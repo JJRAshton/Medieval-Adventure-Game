@@ -45,7 +45,7 @@ export default class Character {
 
         this.health = characterInfo.Health;
         this.maxHealth = characterInfo.Max_health;
-        this.range = characterInfo.Range; // This seems like a random thing to expose given that it should be attainable from the attacks/weapons as well?
+        this.range = Math.floor(characterInfo.Range / 5); // This seems like a random thing to expose given that it should be attainable from the attacks/weapons as well?
         this.movesLeft = Math.floor(characterInfo.Remaining_movement / 5);
         this.team = characterInfo.Team;
 
@@ -72,7 +72,7 @@ export default class Character {
             this.image.src = orc;
         }
         this.image.onerror = (error) => {
-            console.log("An error occured loading image" + error);
+            console.log("An error occured loading image: " + error);
         }
     }
 

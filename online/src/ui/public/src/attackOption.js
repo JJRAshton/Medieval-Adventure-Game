@@ -16,9 +16,10 @@ export default class AttackOption {
         this.selectionHandler = selectionHandler;
     }
 
-    selectAttackOption() {
-        console.log(this);
-        this.selectionHandler.setAttackOptions({attackType: this})
+    selectAttackOption(inRange) {
+        if (inRange) {
+            this.selectionHandler.setAttackOptions({attackType: this})
+        }
     }
 
     getStyle(available, selected) {
@@ -52,6 +53,6 @@ export default class AttackOption {
         return <li
             style={this.getStyle(inRange, selected)}
             key={this.name+"_"+this.weapon.name}
-            onClick={() => {this.selectAttackOption()}}><div style={{margin: "auto"}}>{this.name}</div><div><img src={this.weapon.imageSource} width={"32px"} height={"32px"}></img></div></li>
+            onClick={() => {this.selectAttackOption(inRange)}}><div style={{margin: "auto"}}>{this.name}</div><div><img src={this.weapon.imageSource} width={"32px"} height={"32px"}></img></div></li>
     }
 }

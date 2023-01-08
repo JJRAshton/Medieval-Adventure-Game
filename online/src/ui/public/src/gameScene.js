@@ -66,7 +66,8 @@ export class Game extends Context {
         </div>);
     }
 
-    // Used to display attack options
+    // Used to display attack options. Has two modes, either returns min dist to any enemy (if
+    // no target is selected), or min dist against the current attack target.
     getMinDistToTarget() {
         if (this.selectionHandler.current === "Attack") {
             if (this.selectionHandler.selection.target !== null) {
@@ -277,7 +278,7 @@ export class Game extends Context {
     checkAttackable(character) {
         return (this.takingTurn
             &&!(character.team === this.character.team)
-            && Math.max(Math.abs(this.character.x - character.x), Math.abs(this.character.y - character.y)) < this.character.range);
+            && Math.max(Math.abs(this.character.x - character.x), Math.abs(this.character.y - character.y)) <= this.character.range);
         }
 
     updatePlayers(charactersInfo) {
