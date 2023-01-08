@@ -7,10 +7,12 @@ import Movement from "./movement";
 import attackImageSrc from "./images/attackImage.png";
 import GameUISelectionHandler from "./gameUISelection";
 
+import { onCharacter } from "./gameSceneUtil";
+
+import { TILE_WIDTH } from "./constants";
+
 const ATTACK_IMAGE = new Image();
 ATTACK_IMAGE.src = attackImageSrc;
-
-const TILE_WIDTH = 64;
 
 export class Game extends Context {
 
@@ -226,16 +228,13 @@ export class Game extends Context {
         else {
             if (this.takingTurn) {
                 const player = this.characters.get(this.playerID);
-                if (player.x * TILE_WIDTH < clickX && clickX < (player.x + 1) * TILE_WIDTH
-                        && player.y * TILE_WIDTH < clickY && clickY < (player.y + 1) * TILE_WIDTH) {
+                if (onCharacter(clickX, clickY, player)) {
                     this.selectionHandler.setMovement(new Movement(player.x, player.y));
                 }
                 else {
                     this.characters.forEach(player => {
                         // Inefficient way of finding players, they should probably be stored in 2d array
-                        if (this.checkAttackable(player)
-                                && player.x * TILE_WIDTH < clickX && clickX < (player.x + 1) * TILE_WIDTH
-                                && player.y * TILE_WIDTH < clickY && clickY < (player.y + 1) * TILE_WIDTH) {
+                        if (this.checkAttackable(player) && onCharacter(clickX, clickY, player)) {
                             this.selectionHandler.setAttackOptions({target: player})
                         }
                     }, this)
