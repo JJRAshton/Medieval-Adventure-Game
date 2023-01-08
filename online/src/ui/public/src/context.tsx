@@ -1,6 +1,7 @@
 import React from "react";
+import { ContextHandler } from "./contextHandler";
 
-export class Context {
+export abstract class Context {
 
     constructor(socket, reactRoot, contextString) {
         this.socket = socket;
@@ -15,4 +16,6 @@ export class Context {
     render() {
         this.reactRoot.render(<div>Abstract context should not be rendered.</div>);
     }
+
+    abstract handleEvent(contextHandler: ContextHandler, event: any);
 }

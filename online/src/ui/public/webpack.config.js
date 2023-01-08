@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    entry: path.join(__dirname, "src", "index.ts"),
+    entry: path.join(__dirname, "src", "index.tsx"),
     output: {
         filename: 'bundle.js',
     },
@@ -39,6 +39,6 @@ module.exports = {
         ],
     },
     resolve: {
-        extensions: ['', '.js', '.jsx', '.png', '.ts'],
+        extensions: ['', '.js', '.jsx', '.png', '.ts', '.tsx'],
     }
 };

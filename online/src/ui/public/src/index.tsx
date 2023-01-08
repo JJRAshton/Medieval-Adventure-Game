@@ -1,5 +1,5 @@
-import { createRoot }  from "react-dom/client";
-import { ContextHandler } from "./contextHandler.js";
+import { createRoot } from "react-dom/client";
+import { ContextHandler } from "./contextHandler";
 
 import './ui.css'
 
@@ -15,10 +15,7 @@ websocket.addEventListener("open", () => {
     };
 });
 
-/**
- * @param { JSON } data
- */
-function debugServerMessages(data) {
+function debugServerMessages(data: JSON) {
     console.log("MESSAGE:");
     console.log(data);
 }

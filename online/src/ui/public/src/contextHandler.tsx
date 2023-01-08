@@ -1,10 +1,13 @@
-import { Lobby } from "./lobby.js"
-import { Game } from "./gameScene.js";
+import { Lobby } from "./lobby"
+import { Game } from "./gameScene";
 
-import { Context } from "./context.js";
+import { Context } from "./context";
 
 
 export class ContextHandler {
+    private context: Context;
+    private reactRoot: any;
+    private socket: any;
 
     constructor(root, socket) {
         this.context = new Lobby(socket, root);
