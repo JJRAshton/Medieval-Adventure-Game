@@ -197,7 +197,14 @@ export class Game extends Context {
             if (character.imageLoaded) {
                 ctx.drawImage(character.image, character.x * TILE_WIDTH, character.y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
                 if (this.checkAttackable(character)) {
-                    ctx.drawImage(ATTACK_IMAGE, character.x * TILE_WIDTH, character.y * TILE_WIDTH, TILE_WIDTH / 2, TILE_WIDTH / 2);
+                    if (this.selectionHandler.current === "Attack" 
+                            && this.selectionHandler.selection.target
+                            && this.selectionHandler.selection.target.id === character.id) {
+                        ctx.drawImage(ATTACK_IMAGE, character.x * TILE_WIDTH + 2, character.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH - 4);
+                    }
+                    else {
+                        ctx.drawImage(ATTACK_IMAGE, character.x * TILE_WIDTH, character.y * TILE_WIDTH, TILE_WIDTH / 2, TILE_WIDTH / 2);
+                    }
                 }
             }
         }, this);
