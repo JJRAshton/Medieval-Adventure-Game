@@ -2,6 +2,7 @@ import { Context } from "./context";
 import React from "react";
 import Canvas from "./gameCanvas";
 import Character from "./character";
+import { CharacterMinimumInfo } from "./character"
 import Movement from "./movement";
 
 import attackImageSrc from "./images/attackImage.png";
@@ -15,15 +16,32 @@ const ATTACK_IMAGE = new Image();
 ATTACK_IMAGE.src = attackImageSrc;
 
 export class Game extends Context {
+    private mapWidth: number;
+    private mapHeight: number;
+    private playerID: number;
+    private selectionHandler: GameUISelectionHandler;
+    private characters: Map<number, Character>;
+    private character: Character;
+    private takingTurn: boolean;
+    
+    private mouseX: number;
+    private mouseY: number;
+    
+    private canvas: JSX.Element;
 
-    constructor(socket, reactRoot, mapWidth, mapHeight, playerID, characters) {
+    constructor(socket: WebSocket, reactRoot: React.FC, mapWidth: number, mapHeight: number, playerID: number, characters: JSON) {
         super(socket, reactRoot, "game");
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.playerID = playerID;
         this.selectionHandler = new GameUISelectionHandler(socket, playerID, this);
+        console.log("Character type: ", typeof(characters));
         this.characters = this.parseCharacters(characters);
-        this.character = this.characters.get(this.playerID);
+        let thisChar = this.characters.get(this.playerID);
+        if (!thisChar) {
+            throw new Error("Critical error: Could not identify player")
+        }
+        this.character = thisChar;
         this.takingTurn = false; // Boolean value to record whether we're currently taking a turn
         this.mouseX, this.mouseY = 0, 0;
         this.canvas = <Canvas
@@ -36,7 +54,7 @@ export class Game extends Context {
             setStyle={this.setStyle}></Canvas>
     }
 
-    parseCharacters(characters) {
+    parseCharacters(characters: any) {
         const characterMap = new Map();
         for (var i = 0; i < characters.length; i++) {
             const character = characters[i];

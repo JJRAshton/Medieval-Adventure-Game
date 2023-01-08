@@ -1,4 +1,6 @@
 import React from "react";
+import GameUISelectionHandler from "./gameUISelection";
+import Weapon from "./weapon";
 
 const NOT_AVAILABLE_COLOUR = "#dbbb7c";
 const DEFAULT = "#d1941c";
@@ -8,21 +10,25 @@ const NOT_AVAILABLE_COLOUR_FONT = "#777";
 const AVAILABLE_COLOUR_FONT = "#000";
 
 export default class AttackOption {
+    private weapon: Weapon;
+    public name: String;
+    public range: number;
+    private selectionHandler: GameUISelectionHandler;
 
-    constructor(weapon, name, selectionHandler) {
+    constructor(weapon: Weapon, name: String, selectionHandler: GameUISelectionHandler) {
         this.weapon = weapon;
         this.name = name;
         this.range = this.weapon.range;
         this.selectionHandler = selectionHandler;
     }
 
-    selectAttackOption(inRange) {
+    selectAttackOption(inRange: boolean) {
         if (inRange) {
             this.selectionHandler.setAttackOptions({attackType: this})
         }
     }
 
-    getStyle(available, selected) {
+    getStyle(available: boolean, selected: boolean) {
         let background = NOT_AVAILABLE_COLOUR;
         let color = NOT_AVAILABLE_COLOUR_FONT;
     
@@ -36,7 +42,6 @@ export default class AttackOption {
         }
         return {
             display: "flex",
-            padding: 0,
             margin: 0,
             justifyContent: "space-around",
             border: "2px solid",
@@ -49,7 +54,7 @@ export default class AttackOption {
         }
     }
 
-    renderAttackOptionElement(inRange, selected) {
+    renderAttackOptionElement(inRange: boolean, selected: boolean): JSX.Element {
         return <li
             style={this.getStyle(inRange, selected)}
             key={this.name+"_"+this.weapon.name}

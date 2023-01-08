@@ -1,1 +1,1 @@
-export const TILE_WIDTH = 64;
+export const TILE_WIDTH: number = 64;

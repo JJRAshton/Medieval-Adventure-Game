@@ -1,15 +1,18 @@
-export default class Attack {
+import AttackOption from "./attackOption";
+import Character from "./character";
+import { GameUISelection } from "./gameUISelection";
 
-    /**
-     * options = {target, attackType}
-     */
-    constructor(options) {
+export default class Attack implements GameUISelection {
+    target: Character | null;
+    attackType: AttackOption | null;
+
+    constructor(options: { target: any; attackType: any; }) {
         this.target = null;
         this.attackType = null; // This is an AttackOption or null
         this.setOptions(options);
     }
 
-    setOptions(options) {
+    setOptions(options: { target: any; attackType: any; }) {
         if (options.target) {
             this.target = options.target;
             console.log("Setting target");
@@ -20,11 +23,11 @@ export default class Attack {
         }
     }
 
-    setAttackType(attackType) {
+    setAttackType(attackType: AttackOption) {
         this.attackType = attackType;
     }
 
-    setTarget(target) {
+    setTarget(target: Character) {
         this.target = target;
     }
 

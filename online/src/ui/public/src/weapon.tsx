@@ -18,8 +18,11 @@ imagesDict.set("greataxe", greataxe);
  * for attacks that apply to that weapon specific (stuff like light/normal?).
  */
 export default class Weapon {
+    public name: String;
+    public imageSource: string;
+    public range: number;
 
-    constructor(weaponType, range) {
+    constructor(weaponType: string, range: number) {
         this.name = weaponType;
         this.imageSource = imagesDict.get(weaponType);
         this.range = range; // Range is attached to weapon to reflect how the backend does it, but should really be on an AttackOption

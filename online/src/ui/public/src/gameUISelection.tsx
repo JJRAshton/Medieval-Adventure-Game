@@ -1,6 +1,17 @@
 import Attack from "./attack";
+import Movement from "./movement";
+
+export interface GameUISelection {
+
+}
 
 export default class GameUISelectionHandler {
+    private _socket: any;
+    private onTurn: boolean;
+    private context: any;
+    private playerID: any;
+    private current: string;
+    private selection: GameUISelection | null;
 
     /**
      * This is a really overengineered way of a user making a single selection at a time
@@ -21,7 +32,7 @@ export default class GameUISelectionHandler {
         this.context.render();
     }
 
-    setMovement(movement) {
+    setMovement(movement: Movement) {
         if (this.onTurn) {
             this.current = "Movement";
             this.selection = movement;
@@ -63,5 +74,4 @@ export default class GameUISelectionHandler {
             this.selection = null;
         }
     }
-
 }
