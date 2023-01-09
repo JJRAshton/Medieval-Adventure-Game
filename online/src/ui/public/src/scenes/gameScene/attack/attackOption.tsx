@@ -22,7 +22,7 @@ export default class AttackOption {
         this.selectionHandler = selectionHandler;
     }
 
-    selectAttackOption(inRange: boolean) {
+    selectAttackOption(inRange: boolean): void {
         if (inRange) {
             this.selectionHandler.setAttackOptions({attackType: this})
         }

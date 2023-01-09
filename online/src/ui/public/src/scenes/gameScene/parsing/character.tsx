@@ -67,6 +67,9 @@ export default class Character {
         this.y = updateInfo.coords[1];
     }
 
+    /**
+     * Called when a full player info is received from the server
+     */
     construct(characterInfo: CharacterInfo, isPlayer: any, selectionHandler: any) {
         console.log(characterInfo);
 
@@ -82,16 +85,16 @@ export default class Character {
         this.movesLeft = Math.floor(characterInfo.Remaining_movement / 5);
         this.team = characterInfo.Team;
 
-        this.loadImage(isPlayer);
+        this._loadImage(isPlayer);
         
         this.infoReceived = true;
 
     }
 
-    loadImage(isPlayer: boolean) {
+    private _loadImage(isPlayer: boolean) {
         this.image = new Image()
         this.imageLoaded = false;
-        this.image.onload = this.loadImage.bind(this);
+        this.image.onload = this._loadImage.bind(this);
         this.image.onload = () => {
             this.imageLoaded = true;
         }
@@ -109,7 +112,12 @@ export default class Character {
         }
     }
 
-    renderAttacks(minDistToTarget, currentSelectionOrNull) {
+    public checkAttackable(character: Character): boolean {
+        return (this.team !== character.team)
+            && Math.max(Math.abs(this.x - character.x), Math.abs(this.y - character.y)) <= this.range;
+        }
+
+    public renderAttacks(minDistToTarget: number, currentSelectionOrNull: AttackOption | null) {
         if (this.infoReceived) {
             let children: Array<JSX.Element> = [];
             this.attacks.forEach((attack) => {
@@ -127,19 +135,16 @@ export default class Character {
         }
     }
 
-    renderStats() {
+    public renderStats(): JSX.Element {
         if (this.infoReceived) {
             let children: Array<JSX.Element> = [];
-            this.stats.forEach((value, stat) => {children.push(this.createStatRow(stat, value))});
+            this.stats.forEach((value, stat) => {
+                children.push(<tr key={stat}><td>{stat}</td><td>{value}</td></tr>)
+            });
             return <div className="stats"><table className="statTable"><tbody>{children}</tbody></table></div>
         }
         else {
             return <div className="stats">Could not load stats</div>
         }
     }
-
-    createStatRow(statName: string, stat: number): JSX.Element {
-        return <tr key={statName}><td>{statName}</td><td>{stat}</td></tr>
-    }
-   
 }
