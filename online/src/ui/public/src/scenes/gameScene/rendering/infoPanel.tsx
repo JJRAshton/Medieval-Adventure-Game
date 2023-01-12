@@ -22,7 +22,7 @@ export default class InfoPanel {
 
     public render(): JSX.Element {
         return <div className="info">
-            <div className="infoComponent" style={{width: "100%"}}>{this._healthBar}</div>
+            <div className="infoComponent" style={{width: "100%"}}>{this._healthBar.render()}</div>
             <div className="infoComponent">{this._gameState.character.renderStats()}</div>
             <div className="attackList"><div>Attacks available</div>{this._gameState.character.renderAttacks(this._getMinDistToTarget(), this._getCurrentSelectionOrNull())}</div>
             <div className="infoComponent">{this._getConfirmButton()}</div>

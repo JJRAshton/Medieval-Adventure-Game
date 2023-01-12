@@ -2,7 +2,7 @@ import { TILE_WIDTH } from "../constants";
 import { GameUISelection } from "../gameUISelection";
 
 export default class Movement implements GameUISelection {
-    private moveStack: Array<Array<any>>;
+    private moveStack: Array<[number, number]>;
 
     // Basically a stack that can also draw itself
     constructor(xStart: number, yStart: number) {
@@ -25,7 +25,6 @@ export default class Movement implements GameUISelection {
         const x = Math.floor(mouseX / TILE_WIDTH);
         const y = Math.floor(mouseY / TILE_WIDTH);
 
-        // No peek in javascript :(
         const currentLocation = this.moveStack[this.moveStack.length - 1];
         if (Math.abs(x - currentLocation[0]) <= 1 && Math.abs(y - currentLocation[1]) <= 1 ) {
             if (!this.contains(x, y)) { // .includes doesn't work, I think its checking each element
