@@ -1,8 +1,4 @@
-export default abstract class Renderable {
+export default interface Renderable {
 
-    constructor() {
-
-    }
-
-    abstract render(): void;
+    render(): JSX.Element;
 } 

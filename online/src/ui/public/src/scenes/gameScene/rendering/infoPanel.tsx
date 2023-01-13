@@ -3,7 +3,10 @@ import Attack from "../attack/attack";
 import AttackOption from "../attack/attackOption";
 import GameState from "../gameState";
 import GameUISelectionHandler from "../gameUISelection";
-import { HealthBar } from "./infoPanelComponent";
+import AttackOptionInterface from "./availableAttacks";
+import { HealthBar } from "./healthBar";
+import Renderable from "./renderable";
+import StatInfo from "./statInfo";
 
 export default class InfoPanel {
 
@@ -11,6 +14,8 @@ export default class InfoPanel {
     private _socket: WebSocket;
     private _gameState: GameState;
     private _healthBar: HealthBar;
+    private _statsInterface: StatInfo;
+    private _attacksInterface: AttackOptionInterface;
 
     constructor(selectionHandler: GameUISelectionHandler, socket: WebSocket, gameState: GameState) {
         this._selectionHandler = selectionHandler;
@@ -18,13 +23,15 @@ export default class InfoPanel {
         this._gameState = gameState;
 
         this._healthBar = new HealthBar(this._gameState.character);
+        this._attacksInterface = new AttackOptionInterface(this._gameState.character);
+        this._statsInterface = new StatInfo(this._gameState.character);
     }
 
     public render(): JSX.Element {
         return <div className="info">
             <div className="infoComponent" style={{width: "100%"}}>{this._healthBar.render()}</div>
-            <div className="infoComponent">{this._gameState.character.renderStats()}</div>
-            <div className="attackList"><div>Attacks available</div>{this._gameState.character.renderAttacks(this._getMinDistToTarget(), this._getCurrentSelectionOrNull())}</div>
+            <div className="infoComponent">{this._statsInterface.render()}</div>
+            <div className="attackList"><div>Attacks available</div>{this._attacksInterface.render(this._getMinDistToTarget(), this._getCurrentSelectionOrNull())}</div>
             <div className="infoComponent">{this._getConfirmButton()}</div>
             <div className="infoComponent">{this._getEndTurnButton()}</div>
         </div>

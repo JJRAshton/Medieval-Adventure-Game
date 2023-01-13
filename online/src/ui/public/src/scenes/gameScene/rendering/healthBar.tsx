@@ -1,23 +1,17 @@
 import React from "react";
 
 import Character from "../parsing/character";
+import Renderable from "./renderable";
 
-abstract class InfoPanelComponent {
 
-    constructor() {}
-
-    public abstract render(): JSX.Element;
-}
-
-export class HealthBar extends InfoPanelComponent {
+export class HealthBar implements Renderable {
     _character: Character;
 
     constructor(character: Character) {
-        super();
         this._character = character;
     }
 
-    public override render(): JSX.Element {
+    public render(): JSX.Element {
         return <div className="healthBar" style={{
             position:"relative",
             width: "100%",

@@ -66,7 +66,7 @@ const Canvas = (props: CanvasProps) => {
   return <canvas ref={canvasRef} width="100" height="400" style={setStyle()} {...rest}/>
 }
 
-export default class CanvasComponent extends Renderable {
+export default class CanvasComponent implements Renderable {
     private _selectionHandler: GameUISelectionHandler;
     private _state: GameState;
     private _socket: WebSocket;
@@ -76,7 +76,6 @@ export default class CanvasComponent extends Renderable {
     private canvasOffset: [number, number];
 
     constructor(selectionHandler: GameUISelectionHandler, socket: WebSocket, gameState: GameState) {
-        super();
         this._selectionHandler = selectionHandler;
         this._socket = socket;
         this._state = gameState;
@@ -112,7 +111,7 @@ export default class CanvasComponent extends Renderable {
 
         //ctx.clearRect(0, 0, this.mapWidth * TILE_WIDTH, this.mapHeight * TILE_WIDTH);
         ctx.fillStyle = 'rgb(109, 153, 87)';
-        ctx.fillRect(0, 0, this._state.mapWidth * TILE_WIDTH, this._state.mapHeight * TILE_WIDTH);
+        ctx.fillRect(0, 0, this._state.mapState.mapWidth * TILE_WIDTH, this._state.mapState.mapHeight * TILE_WIDTH);
 
         // Draw the move path if its not null
         if (this._selectionHandler.selection instanceof Movement) {
@@ -120,8 +119,8 @@ export default class CanvasComponent extends Renderable {
         }
 
         // Draw the grid
-        for (var i = 0; i < this._state.mapWidth; i++) {
-            for (var j = 0; j < this._state.mapWidth; j++) {
+        for (var i = 0; i < this._state.mapState.mapWidth; i++) {
+            for (var j = 0; j < this._state.mapState.mapWidth; j++) {
                 ctx.strokeRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
             }
         }
@@ -144,7 +143,7 @@ export default class CanvasComponent extends Renderable {
         }, this);
 
         // Draw outer boundary
-        ctx.strokeRect(1, 1, this._state.mapWidth * TILE_WIDTH - 2, this._state.mapHeight * TILE_WIDTH - 2);
+        ctx.strokeRect(1, 1, this._state.mapState.mapWidth * TILE_WIDTH - 2, this._state.mapState.mapHeight * TILE_WIDTH - 2);
         ctx.beginPath();
     
         ctx.fill()
@@ -178,8 +177,8 @@ export default class CanvasComponent extends Renderable {
 
     // Resizes the canvas, for some reason this has to be passed as a callback
     resize(canvas: HTMLCanvasElement) {
-        canvas.width = TILE_WIDTH * this._state.mapWidth;
-        canvas.height = TILE_WIDTH * this._state.mapHeight;
+        canvas.width = TILE_WIDTH * this._state.mapState.mapWidth;
+        canvas.height = TILE_WIDTH * this._state.mapState.mapHeight;
     }
 
     handleKeyPress(event: { keyCode: number; }): void {
@@ -213,6 +212,6 @@ export default class CanvasComponent extends Renderable {
     // Handling mouse movements inside the canvas
     handleMouseMove(event: MouseEvent): void {
         [this._mouseX, this._mouseY] = this.translateMouseCoords(event.pageX, event.pageY);
-        this._selectionHandler.handleMouseMove(this._mouseX, this._mouseY, this._state.mapWidth, this._state.mapHeight);
+        this._selectionHandler.handleMouseMove(this._mouseX, this._mouseY, this._state.mapState.mapWidth, this._state.mapState.mapHeight);
     }
 }

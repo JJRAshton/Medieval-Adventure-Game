@@ -88,7 +88,6 @@ export default class Character {
         this._loadImage(isPlayer);
         
         this.infoReceived = true;
-
     }
 
     private _loadImage(isPlayer: boolean) {
@@ -116,35 +115,4 @@ export default class Character {
         return (this.team !== character.team)
             && Math.max(Math.abs(this.x - character.x), Math.abs(this.y - character.y)) <= this.range;
         }
-
-    public renderAttacks(minDistToTarget: number, currentSelectionOrNull: AttackOption | null) {
-        if (this.infoReceived) {
-            let children: Array<JSX.Element> = [];
-            this.attacks.forEach((attack) => {
-                children.push(attack.renderAttackOptionElement(attack.range >= minDistToTarget, attack === currentSelectionOrNull))
-            });
-            return <ul className="attack"
-                style={{
-                    listStyleType: "none",
-                    padding: 0,
-                    margin: 0,
-                }}>{children}</ul>
-        }
-        else {
-            return <div className="attack stats">Could not load attacks</div>
-        }
-    }
-
-    public renderStats(): JSX.Element {
-        if (this.infoReceived) {
-            let children: Array<JSX.Element> = [];
-            this.stats.forEach((value, stat) => {
-                children.push(<tr key={stat}><td>{stat}</td><td>{value}</td></tr>)
-            });
-            return <div className="stats"><table className="statTable"><tbody>{children}</tbody></table></div>
-        }
-        else {
-            return <div className="stats">Could not load stats</div>
-        }
-    }
 }

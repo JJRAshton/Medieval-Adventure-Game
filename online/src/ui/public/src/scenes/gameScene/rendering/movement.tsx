@@ -11,7 +11,7 @@ export default class Movement implements GameUISelection {
         this.moveStack.push([xStart, yStart]);
     }
 
-    draw(ctx) {
+    draw(ctx: CanvasRenderingContext2D) {
         // Draw on the path being plotted
         ctx.fillStyle = 'yellow';
 
@@ -35,7 +35,7 @@ export default class Movement implements GameUISelection {
         }
     }
 
-    contains(x, y) {
+    contains(x: number, y: number) {
         // Javascript was written deliberately to make this difficult
         for (let i = this.moveStack.length - 1; i > -1; i--) {
             var move = this.moveStack[i];
