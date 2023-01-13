@@ -5,6 +5,26 @@ First game target:
 •	1 medium sized player with 1 weapon
 •	2 medium sized monsters with 1 weapon each
 •	Entities can: move, attack
-•	Entities have: health, AC, attack roll bonus, size, movement
+•	Entities have: health, AC, attack roll bonus, movement
 •	Weapons have: range, damage dice
 
+
+13/01/23
+Front end:
+
+	- Hover over person interface
+	- Click person for information
+    - Support > 10x10 maps
+
+Back end and front end:
+
+	- Walls (effect AI)
+    - Configurable map generation
+
+Back end:
+
+	- Tests
+    - Movement bug
+
+Other:
+    - Art
