@@ -30,12 +30,9 @@ class NPC(ch.Character):
         self.getEquipment()
         self.convAttacks()
 
-    # Checks if the player is proficient with the weapon
+    # Checks if the character is proficient with the weapon
     def is_Proficient(self, weapon):
-        if weapon.name in self.starting_items:
-            return True
-        else:
-            return False
+        return weapon.name in self.starting_items
 
     # Sees if the npc max bulk has been exceeded
     def is_exceededBulk(self):

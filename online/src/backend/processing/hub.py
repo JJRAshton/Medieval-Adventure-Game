@@ -73,7 +73,7 @@ class Hub:
             print(indicator)
             defender.checkAlive()
             if not defender.is_alive:
-                if entID2 < 100:
+                if is_character(entID2):
                     if defender.behaviour_type >= 2:
                         self.calcDrop(defender)
                 else:

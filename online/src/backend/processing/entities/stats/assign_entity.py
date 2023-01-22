@@ -158,8 +158,8 @@ class EntityStats:
             inventory = convertList(charDict['Inventory'])
             character.inventory = inventory
             startingItems += inventory
-        if charDict['Hit Proficiency']:
-            character.skill = int(charDict['Hit Proficiency'])
+        if charDict['Skill']:
+            character.skill = int(charDict['Skill'])
 
         character.base_attacks = convertList(charDict['Attacks'])
 
@@ -190,7 +190,8 @@ class EntityStats:
         character.actionsTotal = int(charDict['Actions'])
         character.baseMovement = int(charDict['Speed'])
         character.drop_rate = int(charDict['Drop Rate'])
-        # character.skill = int(charDict['Skill'])
+        character.skill = int(charDict['Skill']) if charDict['Skill'] else 0
+        character.difficulty = int(charDict['Difficulty'])
 
         character.baseStat['STR'] = int(charDict['STR'])
         character.baseStat['DEX'] = int(charDict['DEX'])

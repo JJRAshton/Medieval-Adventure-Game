@@ -1,4 +1,4 @@
-﻿Name,Size,Difficulty,Hit Proficiency,STR,DEX,CON,WIT,Speed,Base Armour,Actions,Armour Level,Left,Right,Both,Vulnerabilities,Resistances,Drop Rate,Inventory,Attacks
+﻿Name,Size,Difficulty,Skill,STR,DEX,CON,WIT,Speed,Base Armour,Actions,Armour Level,Left,Right,Both,Vulnerabilities,Resistances,Drop Rate,Inventory,Attacks
 armour,medium,2,,35,28,33,1,25,12,2,,,,,,,0,,hit
 earth elemental,large,3,,50,20,50,13,30,10,2,,,,,bludgeon,slash,0,,stomp
 ghast,medium,1,,40,43,25,28,30,4,1,,,,,,,0,,"claw, bite"
