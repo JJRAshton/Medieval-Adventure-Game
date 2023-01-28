@@ -2,7 +2,6 @@ import Context from "../context";
 import React from "react";
 import Canvas from "./rendering/gameCanvas";
 import Character from "./parsing/character";
-import Movement from "./rendering/movement";
 
 import GameUISelectionHandler from "./gameUISelection";
 
@@ -33,7 +32,8 @@ export class Game extends Context {
         for (var i = 0; i < characters.length; i++) {
             const character = characters[i];
             this.socket.send(JSON.stringify({event: "playerInfoRequest", characterID: character[0]}))
-            characterMap.set(character[0], new Character(character[0], character[1][0], character[1][1]))
+            const chr = new Character(character[0], character[1][0], character[1][1]);
+            characterMap.set(character[0], chr)
         }
         return characterMap
     }
@@ -71,9 +71,12 @@ export class Game extends Context {
                 break;
             case "mapUpdate":
                 // These get sent when someone moves, or when something changes
-                event.characters.forEach((character: Character) => {
-                    this.getPlayerWithId(character[0]).setPosition(character[1][0], character[1][1]);
-                })
+                this._state.mapState.resetMap();
+                event.characters.forEach((characterInfo: [number, [number, number]]) => {
+                    const chr = this.getPlayerWithId(characterInfo[0]);
+                    chr.setPosition(characterInfo[1][0], characterInfo[1][1]);
+                    this._state.mapState.set(chr.x, chr.y, chr);
+                }, this)
                 break;
             case "playerInfo":
                 this.getPlayerWithId(event.characterID).construct(event.playerInfo, event.characterID === this._state.character.id, this.selectionHandler);
@@ -84,8 +87,12 @@ export class Game extends Context {
     }
 
     private updatePlayers(charactersInfo: any): void {
+        console.log(charactersInfo);
+        this._state.mapState.resetMap();
         for (let id in charactersInfo) {
-            this.getPlayerWithId(parseInt(id)).update(charactersInfo[id]);
+            const chr = this.getPlayerWithId(parseInt(id));
+            chr.update(charactersInfo[id]);
+            this._state.mapState.set(chr.x, chr.y, chr);
         }
     }
 

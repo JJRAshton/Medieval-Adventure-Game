@@ -6,6 +6,7 @@ import GameUISelectionHandler from "../gameUISelection";
 import AttackOptionInterface from "./availableAttacks";
 import { HealthBar } from "./healthBar";
 import Renderable from "./renderable";
+import SelectionInfo from "./selectionInfo";
 import StatInfo from "./statInfo";
 
 export default class InfoPanel {
@@ -16,6 +17,7 @@ export default class InfoPanel {
     private _healthBar: HealthBar;
     private _statsInterface: StatInfo;
     private _attacksInterface: AttackOptionInterface;
+    private _selectionInfo: SelectionInfo;
 
     constructor(selectionHandler: GameUISelectionHandler, socket: WebSocket, gameState: GameState) {
         this._selectionHandler = selectionHandler;
@@ -25,6 +27,7 @@ export default class InfoPanel {
         this._healthBar = new HealthBar(this._gameState.character);
         this._attacksInterface = new AttackOptionInterface(this._gameState.character);
         this._statsInterface = new StatInfo(this._gameState.character);
+        this._selectionInfo = new SelectionInfo(selectionHandler);
     }
 
     public render(): JSX.Element {
@@ -32,6 +35,7 @@ export default class InfoPanel {
             <div className="infoComponent" style={{width: "100%"}}>{this._healthBar.render()}</div>
             <div className="infoComponent">{this._statsInterface.render()}</div>
             <div className="attackList"><div>Attacks available</div>{this._attacksInterface.render(this._getMinDistToTarget(), this._getCurrentSelectionOrNull())}</div>
+            <div className="infoCompenet">{this._selectionInfo.render()}</div>
             <div className="infoComponent">{this._getConfirmButton()}</div>
             <div className="infoComponent">{this._getEndTurnButton()}</div>
         </div>

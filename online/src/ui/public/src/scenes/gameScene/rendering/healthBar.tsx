@@ -13,7 +13,7 @@ export class HealthBar implements Renderable {
 
     public render(): JSX.Element {
         return <div className="healthBar" style={{
-            position:"relative",
+            position: "relative",
             width: "100%",
             backgroundColor: "red",
             height: "1.2em",

@@ -38,7 +38,7 @@ export default class Character {
     public maxHealth: number;
     public range: number;
     public movesLeft: number;
-    public team: any;
+    public team: number;
 
     public image: HTMLImageElement;
     public imageLoaded: boolean;
