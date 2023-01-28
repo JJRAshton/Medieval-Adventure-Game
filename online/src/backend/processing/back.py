@@ -190,13 +190,15 @@ class Back:
 
     # Drops an item from an inventory
     def dropInv(self, character):
-        index = rd.randint(0, len(character.inventory)-1)
-        item = character.inventory.pop(index)
+        inv_length = len(character.inventory)
+        if inv_length > 0:
+            index = rd.randint(0, inv_length-1)
+            item = character.inventory.pop(index)
 
-        item.coords = character.coords
-        self.itemGrid[item.coords[0]][item.coords[1]] = item
+            item.coords = character.coords
+            self.itemGrid[item.coords[0]][item.coords[1]] = item
 
-        item.is_carried = False
+            item.is_carried = False
 
     # Drops the characters weapon
     def dropWeapon(self, character):  # Needs update to new weapon system
