@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 
-inputs_dir = os.path.dirname(__file__) + '/../../../../../resources/inputs'
+inputs_dir = os.path.dirname(__file__) + '/../../../../../../resources/inputs'
 
 
 class Class:
