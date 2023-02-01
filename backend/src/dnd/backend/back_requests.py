@@ -1,5 +1,5 @@
 from . import processing as pr
-from ai.ai_manager import AIManager
+from dnd.ai.ai_manager import AIManager
 
 
 class Requests:
