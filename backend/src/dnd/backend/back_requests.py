@@ -8,6 +8,13 @@ class Requests:
         turn_notification_subscription.requests = self
         self.functions = pr.Hub(turn_notification_subscription, ai_manager)
 
+    # Requests the generation of the given map
+    def init(self, player_quantity, map_number=1, builtin=True):
+
+        self.functions.requestMapStart(player_quantity, map_number, builtin)
+
+        return self.functions.returnPlayers(), self.functions.map_size
+
     # Requests to move an entity with ID 'globalID' to a given coords.
     # Returns true if the request is carried out and false if not.
     def moveRequest(self, globalID, coords):
@@ -29,14 +36,6 @@ class Requests:
         completed = self.functions.requestAttack(globalID1, globalID2)
 
         return completed
-    
-
-    # Requests the generation of the given map
-    def init(self, player_quantity, map_number=1):
-
-        self.functions.requestMapStart(player_quantity, map_number)
-
-        return self.functions.returnPlayers(), self.functions.map_size
 
     # Starts the combat cycle
     def startRequest(self):

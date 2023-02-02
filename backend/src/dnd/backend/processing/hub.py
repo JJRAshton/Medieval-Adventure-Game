@@ -22,7 +22,6 @@ def is_item(entID):
 class Hub:
 
     def __init__(self, turn_notification_subscription, ai_manager):
-        self.map = 0
         self.map_size = (0, 0)
 
         self.chart = None
@@ -83,9 +82,8 @@ class Hub:
             return False
 
     # Generates the map
-    def requestMapStart(self, n_players, mapNumber=1):
-        self.map = mapNumber
-        self.chart = bk.Back(self.map, n_players)
+    def requestMapStart(self, n_players, map, builtin):
+        self.chart = bk.Back(map, n_players, builtin)
 
         turn_notifier = TurnNotifier()
         

@@ -81,8 +81,10 @@ export class Game extends Context {
             case "playerInfo":
                 this.getPlayerWithId(event.characterID).construct(event.playerInfo, event.characterID === this._state.character.id, this.selectionHandler);
                 break;
+            case "attackResult":
+                break;
             default:
-                console.log("Unrecognised event" + event)
+                console.log("Unrecognised even with type " + event.responseType)
         }
     }
 

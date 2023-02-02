@@ -1,6 +1,7 @@
 import json
 import websockets
-from backend import Requests
+
+from backend.back_requests import Requests
 from api.api_turn_notification_subscription import APITurnNotificationSubscription
 from ai import AIManager
 
@@ -19,7 +20,7 @@ class APISession:
         self.translator = PythonToJSONTranslator()
 
         # Starting the DnD encounter:
-        character_info_list, size = self.backend.init(len(playerPool), 1)
+        character_info_list, size = self.backend.init(len(playerPool))
         mapWidth, mapHeight = size
         if len(character_info_list) != len(playerPool):
             raise ValueError("Wrong number of players created on games start")

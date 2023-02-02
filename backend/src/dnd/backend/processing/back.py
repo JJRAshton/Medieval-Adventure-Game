@@ -21,8 +21,11 @@ def calcPathDist(coords1, coords2):
 class Back:
     maps_dir = os.path.dirname(__file__) + '/../../../../resources/inputs/maps'
 
-    def __init__(self, mapLevel=1, nPlayers=1, classes=None):
-        self.map = mapLevel
+    def __init__(self, map, nPlayers, builtin_map, classes=None):
+        if builtin_map:
+            self.map_path = f'{Back.maps_dir}/map{map}'
+        else:
+            self.map_path=map
         self.player_n = nPlayers
         self.size = (0, 0)
 
@@ -61,16 +64,14 @@ class Back:
 
     # Loads in the map from the map number given
     def loadMap(self):
-        map_dir = f'{Back.maps_dir}/map{self.map}'
-
-        self.terrainGrid = pkl.load(open(f'{map_dir}/terrain.pkl', 'rb'))
+        self.terrainGrid = pkl.load(open(f'{self.map_path}/terrain.pkl', 'rb'))
         self.size = (len(self.terrainGrid), len(self.terrainGrid[0]))
 
         self.characterGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
         self.itemGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
 
         self.objectGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
-        objectList = pkl.load(open(f'{map_dir}/objects.pkl', 'rb'))
+        objectList = pkl.load(open(f'{self.map_path}/objects.pkl', 'rb'))
         for objectID, object_info in enumerate(objectList, start=100):
             name, coords = object_info
             i_object = ent.Object(name)
@@ -80,14 +81,14 @@ class Back:
             self.entities[objectID] = i_object
 
         self.spawn = {
-            'Player': pkl.load(open(f'{map_dir}/player_spawn.pkl', 'rb')),
-            'Monster': pkl.load(open(f'{map_dir}/monster_spawn.pkl', 'rb')),
-            'NPC': pkl.load(open(f'{map_dir}/npc_spawn.pkl', 'rb'))
+            'Player': pkl.load(open(f'{self.map_path}/player_spawn.pkl', 'rb')),
+            'Monster': pkl.load(open(f'{self.map_path}/monster_spawn.pkl', 'rb')),
+            'NPC': pkl.load(open(f'{self.map_path}/npc_spawn.pkl', 'rb'))
         }
 
     # Adds in the map NPCs
     def addMapNPCs(self):
-        df = pd.read_csv(f'{Back.maps_dir}/map{self.map}/entities.csv', keep_default_na=False)
+        df = pd.read_csv(f'{self.map_path}/entities.csv', keep_default_na=False)
         monster_list = [x for x in df['Monsters'] if x != '']
         npc_list = [x for x in df['NPCs'] if x != '']
 
