@@ -1,7 +1,8 @@
 import json
 import websockets
 from backend import Requests
-from .api_turn_notification_subscription import APITurnNotificationSubscription
+from api.api_turn_notification_subscription import APITurnNotificationSubscription
+from ai import AIManager
 
 
 class APISession:
@@ -14,7 +15,7 @@ class APISession:
         
         turnNotifier = APITurnNotificationSubscription(playerPool)
 
-        self.backend = Requests(turnNotifier)
+        self.backend = Requests(turnNotifier, AIManager())
         self.translator = PythonToJSONTranslator()
 
         # Starting the DnD encounter:

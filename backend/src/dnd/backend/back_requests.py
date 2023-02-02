@@ -1,11 +1,10 @@
 from . import processing as pr
-from dnd.ai.ai_manager import AIManager
 
 
 class Requests:
 
-    def __init__(self, turn_notification_subscription):
-        ai_manager = AIManager(self)
+    def __init__(self, turn_notification_subscription, ai_manager):
+        ai_manager.bind_to(self)
         turn_notification_subscription.requests = self
         self.functions = pr.Hub(turn_notification_subscription, ai_manager)
 

@@ -3,7 +3,6 @@ import random as rd
 from . import turn_manager as tn
 from . import back as bk
 from .turn_notifications import TurnNotifier
-from dnd.ai.ai_manager import AIManager
 
 
 # Checks for what type of entity the id is

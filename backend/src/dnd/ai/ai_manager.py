@@ -1,14 +1,21 @@
 from .brain import Brain1
+
+
 class AIManager:
     # Gets prompted to make a move or decision by a backend endpoint,
     # then makes a call to the backend API.
 
-    def __init__(self, backend):
+    def __init__(self):
         # This is the access point to the backend
         self.brains = []
+        self.backend = None
+
+    def bind_to(self, backend):
         self.backend = backend
 
     def notify(self, turn_character_id, is_player):
+        if not self.backend:
+            raise ValueError("AI manager has not been to a request API")
         if not is_player:
             self.takeTurn(self.backend, turn_character_id)
 
