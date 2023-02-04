@@ -13,7 +13,7 @@ def calcPathDist(coords1, coords2):
     xdiff = abs(coords2[0] - coords1[0])
     ydiff = abs(coords2[1] - coords1[1])
 
-    dist = 5 * (min(xdiff, ydiff))
+    dist = 5 * (max(xdiff, ydiff))
 
     return dist
 
