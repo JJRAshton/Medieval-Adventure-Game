@@ -13,7 +13,7 @@ class Requests:
 
         self.functions.requestMapStart(player_quantity, map_number, builtin)
 
-        return self.functions.returnPlayers(), self.functions.map_size
+        return self.functions.getPlayers(), self.functions.map_size
 
     # Requests to move an entity with ID 'globalID' to a given coords.
     # Returns true if the request is carried out and false if not.
@@ -45,7 +45,7 @@ class Requests:
     # Requests the coords of characters with their IDs
     def locationsRequest(self):
 
-        return self.functions.giveCharLoc()
+        return self.functions.getCharLoc()
 
     # Request to end turn, no validation the request came from the right person
     def endTurnRequest(self):

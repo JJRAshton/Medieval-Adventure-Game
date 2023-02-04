@@ -98,7 +98,7 @@ class Hub:
         self.turn_manager.start()
 
     # Returns the players names with their IDs
-    def returnPlayers(self):
+    def getPlayers(self):
         players = []
 
         for player in self.chart.players:
@@ -111,8 +111,8 @@ class Hub:
     def endTurn(self):
         self.turn_manager.endTurn()
 
-    # Gives the locations of all characters
-    def giveCharLoc(self):
+    # Returns the locations of all characters
+    def getCharLoc(self):
         char_locs = {}
 
         for character in self.chart.characters:
@@ -120,8 +120,8 @@ class Hub:
 
         return char_locs
 
-    # Gives the locations of all objects
-    def giveObjLoc(self):
+    # Returns the locations of all objects
+    def getObjLoc(self):
         obj_locs = {}
 
         for i_object in self.chart.objects:
@@ -129,8 +129,8 @@ class Hub:
 
         return obj_locs
 
-    # Gives the locations of all items on map
-    def giveMapItemLoc(self):
+    # Returns the locations of all items on map
+    def getMapItemLoc(self):
         item_locs = {}
 
         for item in self.chart.items:

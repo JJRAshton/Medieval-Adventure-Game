@@ -18,7 +18,7 @@ class TestHub(TestCase):
         hub = Hub(turn_subscription, turn_subscription)
         map_uri = resource_dir+"back_map"
         hub.requestMapStart(1, map_uri, False)
-        assert len(hub.returnPlayers()) == 1, hub.returnPlayers()
+        assert len(hub.getPlayers()) == 1, hub.returnPlayers()
         assert len(hub.chart.characters) == 6, hub.chart.characters
 
 
