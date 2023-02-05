@@ -68,22 +68,37 @@ class Brain1:
         target_location = self.locations[target_id]
         while self.actions > 0:
             while not self.check_can_attack(target_id):
-                sign = lambda i: 0 if not i else int(i/abs(i))
-                x_diff = (target_location[0] - self.my_location[0])
-                x_movement = sign(x_diff)
-                y_diff = (target_location[1] - self.my_location[1])
-                y_movement = sign(y_diff)
-                movement_coords = (int(self.my_location[0] + x_movement), int(self.my_location[1] + y_movement))
-                # I think this line will also make a move request, not just check if true?
-                if backend.moveRequest(self.my_id, movement_coords):
-                    self.my_location = backend.locationsRequest()[self.my_id]
-                else:
-                    self.actions = 0    # Not really needed now
-                    print('ran out of movement')
+                if self.my_movement <= 0:
+                    print('No movement left, ending turn early')
                     return
+                else:
+                    sign = lambda i: 0 if not i else int(i/abs(i))
+                    x_diff = (target_location[0] - self.my_location[0])
+                    x_movement = sign(x_diff)
+                    y_diff = (target_location[1] - self.my_location[1])
+                    y_movement = sign(y_diff)
+                    movement_coords = (int(self.my_location[0] + x_movement), int(self.my_location[1] + y_movement))
+                    # I think this line will also make a move request, not just check if true?
+                    if backend.moveRequest(self.my_id, movement_coords):
+                        self.my_location = backend.locationsRequest()[self.my_id]
+                        self.my_movement -= 1
+                    else:
+                        self.actions = 0    # Not really needed now
+                        print('Invalid move requested, ending turn')
+                        return
             backend.attackRequest(self.my_id, target_id)
             self.actions -= 1
-        # Ends turn after a move request is denied (i.e. out of movement) or using up all actions
+        # Ends turn after using all actions, being unable to move or attack, or making an invalid move request
 
+"""
+Brain2 plan:
+
+Same as Brain1 but with additional features:
+ - Will navigate around terrain walls:
+        - Has a 'line-of-sight' check
+        - Can calculate the nearest location at which it will gain line-of-sight to a potential target
+        - The perceived distance to targets blocked by terrain includes this distance needed to gain line-of-sight
+
+"""
 
 print('Started')
