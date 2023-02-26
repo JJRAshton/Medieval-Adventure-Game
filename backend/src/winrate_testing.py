@@ -1,4 +1,4 @@
-from arena import Arena
+from dnd.arena import Arena
 
 
 if __name__ == '__main__':

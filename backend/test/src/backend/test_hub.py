@@ -8,17 +8,20 @@ resource_dir = os.path.split(os.path.realpath(__file__))[0].replace("/src/", "/r
 
 class TestHub(TestCase):
 
-    def testMovement(self):
-        i = 0
+    def test_movement(self):
+        """ Test movement on hub """
         class TurnSubscription():
-            def notify(character_on_turn, is_player):
-                print(character_on_turn, is_player)
+            """ Utility subscription for tests """
+            def notify(self, character_on_turn, is_player):
+                """ We don't need to do anything here """
+                pass
 
         turn_subscription = TurnSubscription()
         hub = Hub(turn_subscription, turn_subscription)
         map_uri = resource_dir+"back_map"
         hub.requestMapStart(1, map_uri, False)
-        assert len(hub.getPlayers()) == 1, hub.returnPlayers()
+        hub.requestMove
+        assert len(hub.getPlayers()) == 1, hub.getPlayers()
         assert len(hub.chart.characters) == 6, hub.chart.characters
 
 

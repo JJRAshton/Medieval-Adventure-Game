@@ -4,7 +4,8 @@ from dnd.backend.processing.back import Back
 
 class TestBack(TestCase):
 
-    def testMovement(self):
+    def test_movement(self):
+        """ Test movement on back """
         back = Back(1, 1, True)
         first_chr = back.characters[0]
         first_chr_coords = first_chr.coords

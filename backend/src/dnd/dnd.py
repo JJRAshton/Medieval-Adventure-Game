@@ -30,9 +30,9 @@ def value_event():
 async def addToLobby(websocket):
     global UUID_TRACKER
     print("new connection")
+    user = User(websocket, UUID_TRACKER)
     try:
         # Wrap the websocket in a User
-        user = User(websocket, UUID_TRACKER)
         print(currentUsers)
         # Send current state to user
         await websocket.send(value_event())

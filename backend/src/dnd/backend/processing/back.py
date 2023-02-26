@@ -259,12 +259,11 @@ class Back:
 
         if x > size[0] or x < 0 or y > size[1] or y < 0:
             return False
-        elif self.is_character(newCoords):
+        if self.is_character(newCoords):
             return False
-        elif self.is_object(newCoords):
+        if self.is_object(newCoords):
             return False
-        else:
-            return True
+        return True
 
     # Checks if character has the movement to move to coords
     def is_validMovement(self, charID, newCoords):

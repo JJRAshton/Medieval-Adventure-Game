@@ -1,1 +1,1 @@
-from .ai_manager import AIManager
+from . import ai_manager

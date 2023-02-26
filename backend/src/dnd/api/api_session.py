@@ -1,9 +1,9 @@
 import json
 import websockets
 
-from backend.back_requests import Requests
-from api.api_turn_notification_subscription import APITurnNotificationSubscription
-from ai import AIManager
+from ..ai.ai_manager import AIManager
+from ..api.api_turn_notification_subscription import APITurnNotificationSubscription
+from ..backend.back_requests import Requests
 
 
 class APISession:
@@ -13,7 +13,7 @@ class APISession:
         self.playerPool = playerPool # This is a set of api.users.User
         for player in playerPool:
             player.session = self
-        
+
         turnNotifier = APITurnNotificationSubscription(playerPool)
 
         self.backend = Requests(turnNotifier, AIManager())
@@ -27,7 +27,7 @@ class APISession:
         locations = self.backend.locationsRequest()
         characterLocations = [(characterID, locations[characterID]) for characterID in locations]
         for character_info, user in zip(character_info_list, playerPool):
-            websockets.broadcast(
+            websockets.broadcast( # type: ignore
                 {user.socket},
                 self.translator.translate({
                     "responseType": "gameStart",
@@ -39,7 +39,7 @@ class APISession:
 
     # Called by the backend, sends a json message
     def broadcast(self, message):
-        websockets.broadcast({user.socket for user in self.playerPool}, json.dumps(message))
+        websockets.broadcast({user.socket for user in self.playerPool}, json.dumps(message)) # type: ignore
 
     def sendToUserWithID(self, message, uuid):
         for user in self.playerPool:
@@ -58,7 +58,7 @@ class APISession:
         if jsonEvent["event"] == "moveRequest":
             try:
                 playerID = int(jsonEvent["playerID"])
-            except:
+            except Exception:
                 raise ValueError("Could not convert player ID")
             if len(jsonEvent["route"]) < 2:
                 return
@@ -83,7 +83,7 @@ class APISession:
                 "characterID": characterID,
                 "playerInfo": self.backend.infoRequest(characterID)
             })
-            websockets.broadcast({user.socket}, output)
+            websockets.broadcast({user.socket}, output) # type: ignore
             
         elif jsonEvent["event"] == "attackRequest":
             attack=self.backend.attackRequest(jsonEvent["playerID"], jsonEvent["enemyID"])
@@ -91,12 +91,12 @@ class APISession:
                 "responseType": "attackResult",
                 "attackResult": str(attack)
             })
-            websockets.broadcast({user.socket}, output)
+            websockets.broadcast({user.socket}, output) # type: ignore
 
         elif jsonEvent["event"] == "mapRequest":
-            map = self.backend.locationsRequest()
-            output = self.translator.map_to_json(map)
-            websockets.broadcast({user.socket}, output)
+            dnd_map = self.backend.locationsRequest()
+            output = self.translator.map_to_json(dnd_map)
+            websockets.broadcast({user.socket}, output) # type: ignore
 
         elif jsonEvent["event"] == "endTurnRequest":
             self.backend.endTurnRequest()

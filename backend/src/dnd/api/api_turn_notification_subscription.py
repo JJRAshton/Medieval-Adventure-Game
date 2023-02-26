@@ -1,7 +1,7 @@
 import websockets
 import json
 
-from backend import TurnNotificationSubscription
+from ..backend import TurnNotificationSubscription
 
 class APITurnNotificationSubscription(TurnNotificationSubscription):
 
@@ -11,7 +11,7 @@ class APITurnNotificationSubscription(TurnNotificationSubscription):
         self.requests = None
 
     def notify(self, character_on_turn, is_player):
-        websockets.broadcast(self.socketPool, json.dumps(
+        websockets.broadcast(self.socketPool, json.dumps( # type: ignore
             {
                 "responseType": "turnNotification",
                 "onTurnID": character_on_turn,
