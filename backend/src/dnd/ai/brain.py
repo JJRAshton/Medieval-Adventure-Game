@@ -1,5 +1,8 @@
 import math
 
+from ..backend.back_requests import Requests
+
+from typing import List, Tuple
 
 class Brain1:
 
@@ -22,50 +25,50 @@ class Brain1:
      - Do anything other than move and attack
     """
 
-    def __init__(self, backend, bot_id):
+    def __init__(self, backend: Requests, bot_id: int):
         self.locations = backend.locationsRequest()
-        self.player_ids = [x for x in backend.locationsRequest() if backend.infoRequest(x)['Team'] == 1]
-        self.my_id = bot_id
-        self.my_location = backend.locationsRequest()[bot_id]
-        self.my_range = backend.infoRequest(bot_id)['Range']
-        self.my_movement = backend.infoRequest(bot_id)['Remaining_movement']
-        self.actions = backend.infoRequest(bot_id)['Action_number']
+        self.player_ids: List[int] = [x for x in backend.locationsRequest() if backend.infoRequest(x)['Team'] == 1]
+        self.my_id: int = bot_id
+        self.my_location: Tuple[int, int] = backend.locationsRequest()[bot_id]
+        self.my_range: int = backend.infoRequest(bot_id)['Range']
+        self.my_movement: int = backend.infoRequest(bot_id)['Remaining_movement']
+        self.actions: int = backend.infoRequest(bot_id)['Action_number']
 
-    def check_distance(self, char_id):
-        target_location = self.locations[char_id]
-        x_distance = self.my_location[0] - target_location[0]
-        y_distance = self.my_location[1] - target_location[1]
+    def check_distance(self, char_id: int):
+        target_location: Tuple[int, int] = self.locations[char_id]
+        x_distance: int = self.my_location[0] - target_location[0]
+        y_distance: int = self.my_location[1] - target_location[1]
         distance = math.sqrt(x_distance ** 2 + y_distance ** 2)
 
         return distance
 
 # Not currently used but might in future
-    def check_team(self, char_id, backend):
+    def check_team(self, char_id: int, backend: Requests):
         print(char_id)
-        team = backend.infoRequest(char_id)['Team']  # 1 is player, 2 is npc
+        team: int = backend.infoRequest(char_id)['Team']  # 1 is player, 2 is npc
 
         return team
 
-    def choose_target(self):
+    def choose_target(self) -> int:
         character_distances = {}
         for option in self.player_ids:
             option_distance = self.check_distance(option)
             character_distances[option] = option_distance
 
-        target_id = sorted(character_distances.items(), key=lambda item: item[1])[0][0]
+        target_id: int = sorted(character_distances.items(), key=lambda item: item[1])[0][0]
         print(f"chosen target is {target_id}")
 
         return target_id
 
-    def check_can_attack(self, target_id):
+    def check_can_attack(self, target_id: int):
         if self.my_range / 5 >= self.check_distance(target_id):
             print("target is in range!")
             return True
         return False
 
 # Temporary backend references below
-    def approach_and_attack_target(self, backend, target_id):
-        target_location = self.locations[target_id]
+    def approach_and_attack_target(self, backend: Requests, target_id: int):
+        target_location: Tuple[int, int] = self.locations[target_id]
         while self.actions > 0:
             while not self.check_can_attack(target_id):
                 if self.my_movement <= 0:

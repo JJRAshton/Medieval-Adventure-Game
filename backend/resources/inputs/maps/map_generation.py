@@ -2,24 +2,25 @@ import pickle as pkl
 import csv
 import os
 
+from typing import List, Dict, Tuple, Optional
 
 class MapGen:
-	def __init__(self, size):
+	def __init__(self, size: Tuple[int, int]):
 		self.mapGrid = [[0 for _ in range(size[1])] for _ in range(size[0])]
 
-		self.objects = []
+		self.objects: List[Tuple[str, List[int]]] = []
 
-		self.spawn = {
+		self.spawn: Dict[str, List[Tuple[int, int]]] = {
 			'Player': [],
 			'Monster': [],
 			'NPC': []
 		}
 
-	def addObject(self, name, coords):
+	def addObject(self, name: str, coords: List[int]):
 		info = (name, coords)
 		self.objects.append(info)
 
-	def addSpawn(self, entity, coordsTL, coordsBR=None):
+	def addSpawn(self, entity: str, coordsTL: Tuple[int, int], coordsBR: Optional[Tuple[int,int]]=None):
 		if coordsBR is None:
 			self.spawn[entity].append(coordsTL)
 		else:
@@ -33,7 +34,7 @@ class MapGen:
 					coords = (x,y)
 					self.spawn[entity].append(coords)
 
-	def save(self, number):
+	def save(self, number: int):
 
 		if not os.path.exists(f'./map{number}'):
 			os.mkdir(f'./map{number}')
