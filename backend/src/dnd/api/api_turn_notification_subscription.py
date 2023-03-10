@@ -1,3 +1,4 @@
+from typing import Set
 import websockets
 import json
 
@@ -11,7 +12,7 @@ class APITurnNotificationSubscription(TurnNotificationSubscription):
         self.socketPool = {user.socket for user in playerPool}
         self.requests = None
 
-    def notify(self, character_on_turn, is_player):
+    def notify(self, character_on_turn, is_player: bool):
         websockets.broadcast(self.socketPool, json.dumps( # type: ignore
             {
                 "responseType": "turnNotification",

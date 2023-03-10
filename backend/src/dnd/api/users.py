@@ -2,15 +2,13 @@
 from typing import Set
 from websockets.legacy.server import WebSocketServerProtocol as WebSocket
 
-from .api_session import APISession
-
 
 class User:
     def __init__(self, socket: WebSocket, uuid: int):
         self.uuid: int = uuid
         self.socket: WebSocket = socket
         self.ready: bool = False
-        self.session: APISession | None = None
+        self.session = None
         currentUsers.add(self)
 
     def __str__(self):

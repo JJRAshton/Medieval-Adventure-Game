@@ -1,11 +1,13 @@
 import pickle as pkl
 import random as rd
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 import pandas as pd
 import os
 
+from .entities.entity import Entity
+from .entities.character import Character
+
 from . import entities as ent
-from .entities.character import calcRadDist
 
 
 # Gets the in game distance between two coords for travel
@@ -38,7 +40,7 @@ class Back:
 
         self.spawn = {}
 
-        self.entities = {}  # All entities in dictionary with ids as keys
+        self.entities: Dict[int, Entity] = {}  # All entities in dictionary with ids as keys
 
         self.objects = []
 
@@ -100,7 +102,7 @@ class Back:
             self.npcs.append(self.createCharacter('NPC', npc_str))
 
     # Creates and registers a character and its inventory
-    def createCharacter(self, character_type, sub_type=None):
+    def createCharacter(self, character_type: str, sub_type: str | None=None):
         if character_type == 'Player' and sub_type is None:
             character = ent.Player(self.classes.pop(0))
         elif character_type == 'Monster' and sub_type is not None:
@@ -151,7 +153,7 @@ class Back:
         return character
 
     # Moves a character on the grid
-    def moveCharacter(self, charID, newCoords):
+    def moveCharacter(self, charID: int, newCoords: Tuple[int, int]):
         character = self.entities[charID]
         prevCoords = character.coords
         vector = (newCoords[0]-prevCoords[0], newCoords[1]-prevCoords[1])
@@ -203,27 +205,29 @@ class Back:
             item.is_carried = False
 
     # Drops the characters weapon
-    def dropWeapon(self, character):  # Needs update to new weapon system
-        weapon = character.equippedWeapons
-        character.equippedWeapons = None
+    def dropWeapon(self, character: Character) -> None:  # Needs update to new weapon system
+        raise NotImplementedError("Dropping weapons not implemented")
+        # weapon = character.equippedWeapons
+        # character.equippedWeapons = None
 
-        weapon.coords = character.coords
-        self.itemGrid[weapon.coords[0]][weapon.coords[1]] = weapon
+        # weapon.coords = character.coords
+        # self.itemGrid[weapon.coords[0]][weapon.coords[1]] = weapon
 
-        weapon.is_carried = False
+        # weapon.is_carried = False
 
     # Drops the characters armour
-    def dropArmour(self, character):  # Needs update to new armour system
-        armour = character.equippedArmour
-        character.equippedArmour = None
+    def dropArmour(self, character: Character) -> None:  # Needs update to new armour system
+        raise NotImplementedError("Dropping armour not implemented")
+        # armour = character.equippedArmour
+        # character.equippedArmour = None
 
-        armour.coords = character.coords
-        self.itemGrid[armour.coords[0]][armour.coords[1]] = armour
+        # armour.coords = character.coords
+        # self.itemGrid[armour.coords[0]][armour.coords[1]] = armour
 
-        armour.is_carried = False
+        # armour.is_carried = False
 
     # Moves the character along the given path to the given index
-    def pathCharacter(self, charID, pathCoords, index):  # For now, just moves to the final allowed coord
+    def pathCharacter(self, charID: int, pathCoords: List[Tuple[int, int]], index: int):  # For now, just moves to the final allowed coord
         if index != -1:
             finalCoord = pathCoords[index]
 

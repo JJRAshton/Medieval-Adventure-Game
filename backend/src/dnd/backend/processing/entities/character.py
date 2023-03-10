@@ -73,15 +73,15 @@ class Character(ent.HealthEntity):
 
         self.inventory = []
 
-        self.baseReach = 5
+        self.baseReach: int = 5
 
-        self.reach = 0
-        self.range = 0
+        self.reach: int = 0
+        self.range: int = 0
         
-        self.is_conscious = True
-        self.is_stable = True
+        self.is_conscious: bool = True
+        self.is_stable: bool = True
         self.savingThrows = (0, 0)
-        self.drop_rate = 0
+        self.drop_rate: float = 0
 
     # Allows for sorting by initiative order in sorted list
     def __lt__(self, other) -> bool:
