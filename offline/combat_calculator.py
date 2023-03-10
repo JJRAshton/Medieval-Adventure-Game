@@ -1,169 +1,160 @@
-import random as rdm
-import math as mt
-import monster_stats as ms
+import random as rd
+from sortedcontainers import SortedList
+
+import stats_loader as sl
 """Keeps Track of Creature Healths and Initiative Order in Combat"""
 
+
+# Rolls n dice of d sides
 def roll(n, d):
     total = 0
     for i in range(n):
-        total += int(rdm.random()*d)+1
+        total += rd.randint(1, d)
     return total
-        
+
+
+# Creature class for containing all creature parameters
 class Creature:
-    def __init__(self, ctype, team = 'opponent', colour = None, healthTemp=0):
-        self.team = team
-        self.init = 0
-        self.ctype = ctype
-        
-        if ctype != 'player':
-            self.colour = colour
-            
-            n, d = ms.stats[ctype]['Hit_Dice']
-            b = n*ms.stats[ctype]['CON']
+    def __init__(self, stats, colour=None):
+        self.stats = stats
+
+        if self.ctype != 'player':
+            n = self.stats['Level']
+            d = self.stats['Hit_Dice']
+            b = n*self.stats['CON']
+
             self.hp = roll(n, d)+b
-            self.tempHP = healthTemp
-            self.prevhp = self.hp
-            
-            self.DEX = ms.stats[ctype]['DEX']
-        
-    #Updates the health of a creature
-    def updateHealth(self, damage, tempHP=0):
-        self.prevhp = self.hp
-        self.tempHP += tempHP
-        if damage >= self.tempHP:
-            damage -= self.tempHP
-            self.tempHP = 0
-            self.hp -= damage
-        else:
-            self.tempHP -= damage
-            
-    #Reverts health back to previous in case of mistake
-    def revertHealth(self):
-        self.hp = self.prevhp
-      
-def createCreatureGroups(ctype, nCreatures, nGroups, team):
-    
-    #Magnet Colours
+            self.temp_hp = 0
+
+            self.colour = colour
+
+    # Updates the health of a creature: type1=damage, type2=heal, type3=temphp
+    def updateHealth(self, hp_change, hp_type=1):
+        # Damages the creature
+        if hp_type == 1:
+            if hp_change >= self.temp_hp:
+                excess_damage = hp_change - self.temp_hp
+                self.tempHP = 0
+                self.hp -= excess_damage
+            else:
+                self.tempHP -= hp_change
+
+        # Heals the creature
+        elif hp_type == 2:
+            self.hp += hp_change
+
+        elif hp_type == 3:
+            self.temp_hp = hp_change
+
+
+# Creatures bundled into one group for initiative
+class CreatureGroup:
+    # Magnet Colours
     colours = ['red', 'blue', 'yellow', 'orange', 'green']
-    
-    sizeGroups = [round(nCreatures/nGroups) for _ in range(nGroups-1)] + [nCreatures - (nGroups-1)*round(nCreatures/nGroups)]
-    groups = {}
-       
-    if nGroups == 1:
-        group = []
-        creature = Creature(ctype, team)
-        group.append(creature)
-        groups[ctype] = group
-    else:
-        for n in range(nGroups):
-            group = []
-            for c in range(sizeGroups[n]):
-                creature = Creature(ctype, team, colours[c])
-                group.append(creature)
-            groups[ctype+str(n+1)] = group
-    
-    return groups
-    
-#Outputs the initiative order of the creatures
-def initiativeOrder(creatureGroups, rolls):
-    
-    groupList = []
-    for creatureGroup in creatureGroups:
-        groupList.append(creatureGroup)
-        
-    #Checks that the number of creatures and creature rolls is equal
-    if len(groupList) != len(rolls):
-        print('Invalid Number of Creature Rolls')
-        return
-    
-    creatureRolls = list(zip(groupList, rolls))
-    creatureRolls.sort(reverse=True)
-    
-    initOrder = [x[0] for x in creatureRolls]
-    
-    return initOrder
 
-#Looks for repeated rolls now with players included
-def checkRepeats(creatureGroups, rolls):
-    
-    for r1, group1 in enumerate(creatureGroups):
-        for r2, group2 in enumerate(creatureGroups):
-            if r1 == r2 or creatureGroups[group1][0].ctype != 'player' or creatureGroups[group2][0].ctype == 'player':
-                continue
-            if rolls[r1] == rolls[r2]:
-                if creatureGroups[group2][0].team == 'opponent':
-                    roll2 = 0
-                    roll1 = 0
-                    while roll1 == roll2:
-                        print(group1+' has the same roll as '+group2) #Change to Interface
-                        
-                        roll1 = int(input(group1+' roll: ')) #Change to Interface
-                        roll2 = roll(1, 20)+creatureGroups[group2][0].DEX
-                else:
-                    print(group1+' has the same roll as '+group2) #Change to Interface
-                    roll2 = 10
-                    x = int(input('x: ')) #Change to Interface
-                    roll1 = roll2 + x
-                if roll1 > roll2:
-                    rolls[r1] += 0.2
-                else:
-                    rolls[r2] += 0.2
-    
-    return creatureGroups, rolls
+    def __init__(self, c_type, group_size, init, group_no=''):
+        self.c_type = c_type
+        self.size = group_size
+        self.stats = sl.creature_stats[self.c_type]
 
-#Rolls for creatures and checks for their repeats
-def rollCreatures(creatureSpec):
-    
-    #Storage of all creature stats
-    creatureGroups = {}
-    #Adds creatures to creatureGroup dictionary
-    for creature in creatureSpec:
-        creat, number, numberG, team = creatureSpec[creature]
-        groups = createCreatureGroups(creat, number, numberG, team)
-        for group in groups:
-            creatureGroups[group] = groups[group]
-        
-    #Rolls initiative for creatures
-    rolls = []
-    for group in creatureGroups:
-        rolls.append(roll(1, 20)+creatureGroups[group][0].DEX)
-        
-    #Rerolls repeated creature rolls
-    for r1, group1 in enumerate(creatureGroups):
-        for r2, group2 in enumerate(creatureGroups):
-            if r1 == r2:
-                continue
-            if rolls[r1] == rolls[r2]:
-                roll1 = 0
-                roll2 = 0
-                while roll1 == roll2:
-                    roll1 = roll(1, 20)+creatureGroups[group1][0].DEX
-                    roll2 = roll(1, 20)+creatureGroups[group2][0].DEX
-                if roll1 > roll2:
-                    rolls[r1] += 0.1
-                else:
-                    rolls[r2] += 0.1
-                    
-    return creatureGroups, rolls
+        self.name = c_type + group_no
 
-#Performs combat startup calculations
-def createCombat(playersRoll, creatureSpec):
+        self.members = []
 
-    creatureGroups, rolls = rollCreatures(creatureSpec)
-    
-    
-    
-    creatureGroups, rolls = checkRepeats(creatureGroups, rolls)
-    
-    initOrder = initiativeOrder(creatureGroups, rolls)
-    
-    return initOrder, creatureGroups, rolls
+        self.init = init
 
-#Initiates combat
-def startCombat(initOrder, creatureGroups, rolls):
-    
-    combatRound = 0
-    while True:
-        combatRound += 1
-        for turn in range(len(initOrder)):
-            x = input(initOrder[turn])
+        self.create()
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __lt__(self, other):
+        return self.init > other.init
+
+    def __str__(self):
+        return self.name
+
+    # Rolls initiative
+    def init_roll(self):
+        return roll(1, 20) + self.stats['DEX']
+
+    # Creates the group from given creature type and group size
+    def create(self):
+
+        if self.size > len(CreatureGroup.colours):
+            raise ValueError
+
+        for i in range(self.size):
+            colour = CreatureGroup.colours[i]
+
+            new_creature = Creature(self.stats, colour)
+
+            self.members.append(new_creature)
+
+
+# Player for initiative order
+class Player:
+
+    def __init__(self, name, init):
+        self.name = name
+        self.init = init
+
+        self.c_type = 'player'
+
+    def __lt__(self, other):
+        return self.init > other.init
+
+    def __str__(self):
+        return self.name
+
+
+# Calculator for initialising
+class Calculator:
+
+    def __init__(self):
+        self.groups = []
+        self.initiative_order = SortedList()
+
+        self.reroll_list = []  # Unused
+
+    # Arranges many creatures into groups
+    def arrange(self, c_type, c_number, n_groups, team):
+
+        # Finds the two group sizes for if the number does not divide evenly
+        remainder = c_number % n_groups
+        group_size_n = (c_number - remainder) / n_groups
+
+        group_sizes_lrg = [group_size_n+1 for _ in range(remainder)]
+        group_sizes_sml = [group_size_n for _ in range(n_groups - remainder)]
+
+        group_sizes = group_sizes_lrg + group_sizes_sml
+
+        # Name group with a number if there are multiple groups
+        num_name = n_groups > 1
+
+        for i, sz in enumerate(group_sizes):
+            group_no = str(i) if num_name else ''
+
+            group = CreatureGroup(c_type, sz, team, group_no)
+            self.groups.append(group)
+
+    # Adds a player to the groups
+    def add_player(self, name, init):
+
+        player = Player(name, init)
+
+        self.groups.append(player)
+
+    # Makes the initiative order
+    def order_initiative(self):
+
+        for group in self.groups:
+            self.initiative_order.add(group)
+
+    # Checks for any initiative roll duplicates
+    def check_initiative(self):
+
+        for i in range(len(self.initiative_order)-1):
+            if self.initiative_order[i].init == self.initiative_order[i+1].init:
+                reroll = [i, i+1]
+                self.reroll_list.append(reroll)
