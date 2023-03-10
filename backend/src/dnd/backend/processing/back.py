@@ -1,5 +1,6 @@
 import pickle as pkl
 import random as rd
+from typing import List, Tuple
 import pandas as pd
 import os
 
@@ -8,7 +9,7 @@ from .entities.character import calcRadDist
 
 
 # Gets the in game distance between two coords for travel
-def calcPathDist(coords1, coords2):
+def calcPathDist(coords1: Tuple[int, int], coords2: Tuple[int, int]) -> int:
 
     xdiff = abs(coords2[0] - coords1[0])
     ydiff = abs(coords2[1] - coords1[1])
@@ -21,7 +22,7 @@ def calcPathDist(coords1, coords2):
 class Back:
     maps_dir = os.path.dirname(__file__) + '/../../../../resources/inputs/maps'
 
-    def __init__(self, map_no, nPlayers, builtin_map, classes=None):
+    def __init__(self, map_no: int or str, nPlayers: int, builtin_map: int, classes: List[str] | None=None):
         if builtin_map:
             self.map_path = f'{Back.maps_dir}/map{map_no}'
         else:
@@ -168,7 +169,7 @@ class Back:
             character.inventory.append(item)
 
     # Moves an object on the grid
-    def moveObject(self, objID, newCoords):
+    def moveObject(self, objID: int, newCoords: Tuple[int, int]):
         entity = self.entities[objID]
         prevCoords = entity.coords
         vector = (newCoords[0]-prevCoords[0], newCoords[1]-prevCoords[1])
@@ -179,7 +180,7 @@ class Back:
         self.objectGrid[prevCoords[0]][prevCoords[1]] = None
 
     # Moves an item on the grid
-    def moveItem(self, itemID, newCoords):
+    def moveItem(self, itemID: int, newCoords: Tuple[int, int]):
         item = self.entities[itemID]
         prevCoords = item.coords
         vector = (newCoords[0]-prevCoords[0], newCoords[1]-prevCoords[1])

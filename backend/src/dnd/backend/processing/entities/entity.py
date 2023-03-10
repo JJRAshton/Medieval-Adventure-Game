@@ -1,13 +1,11 @@
-import random as rd
-
+from typing import Tuple
 from .stats import EntityStats
-from . import attack as at
 
 
 class Entity:
     entityStats = EntityStats()
 
-    def __init__(self, entityName):
+    def __init__(self, entityName: str):
         self.name = entityName
         self.id = 0
 
@@ -16,11 +14,11 @@ class Entity:
         
         self.coords = (0, 0)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object):
         return self.id == other
     
     # Moves to new coords
-    def move(self, vector):
+    def move(self, vector: Tuple[int, int]):
         self.coords = (self.coords[0]+vector[0], self.coords[1]+vector[1])
     
     def resetSize(self):
@@ -28,7 +26,7 @@ class Entity:
 
 
 class HealthEntity(Entity):
-    def __init__(self, entityName):
+    def __init__(self, entityName: str):
         super().__init__(entityName)
 
         self.baseHealth = 0

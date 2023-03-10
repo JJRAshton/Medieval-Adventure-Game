@@ -2,7 +2,7 @@ import math
 
 from ..backend.back_requests import Requests
 
-from typing import List, Tuple
+from typing import List, Tuple, Callable
 
 class Brain1:
 
@@ -75,7 +75,7 @@ class Brain1:
                     print('No movement left, ending turn early')
                     return
                 else:
-                    sign = lambda i: 0 if not i else int(i/abs(i))
+                    sign: Callable[[int], int] = lambda i: 0 if not i else int(i/abs(i))
                     x_diff = (target_location[0] - self.my_location[0])
                     x_movement = sign(x_diff)
                     y_diff = (target_location[1] - self.my_location[1])

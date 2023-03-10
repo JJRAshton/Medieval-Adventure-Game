@@ -3,13 +3,13 @@ from . import processing as pr
 
 class Requests:
 
-    def __init__(self, turn_notification_subscription, ai_manager):
+    def __init__(self, turn_notification_subscription, ai_manager: TurnNo):
         ai_manager.bind_to(self)
         turn_notification_subscription.requests = self
         self.functions = pr.Hub(turn_notification_subscription, ai_manager)
 
     # Requests the generation of the given map
-    def init(self, player_quantity, map_number=1, builtin=True):
+    def init(self, player_quantity: int, map_number: int=1, builtin: bool=True):
 
         self.functions.requestMapStart(player_quantity, map_number, builtin)
 
@@ -31,7 +31,7 @@ class Requests:
 
     # Requests an attack to be carried out between entities by 'globalID1' upon 'globalID2'
     # Returns true if the request is carried out and false if not.
-    def attackRequest(self, globalID1, globalID2):
+    def attackRequest(self, globalID1: int, globalID2: int) -> bool:
 
         completed = self.functions.requestAttack(globalID1, globalID2)
 
@@ -52,6 +52,6 @@ class Requests:
         self.functions.endTurn()
 
     # Requests for info about a character
-    def infoRequest(self, globalID):
+    def infoRequest(self, globalID: int):
 
         return self.functions.getInfo(globalID)

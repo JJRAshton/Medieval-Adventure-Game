@@ -4,7 +4,7 @@ from . import character as ch
 
 # A non-playable character
 class NPC(ch.Character):
-    def __init__(self, npcName):
+    def __init__(self, npcName: str):
         self.target = None
         self.behaviour_type = 2
         self.team = 1
@@ -41,7 +41,7 @@ class NPC(ch.Character):
 
 # A hostile character
 class Monster(NPC):
-    def __init__(self, monsterName):
+    def __init__(self, monsterName: str):
         super().__init__(monsterName)
         self.team = 2
 

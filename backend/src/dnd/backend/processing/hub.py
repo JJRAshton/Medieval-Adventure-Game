@@ -1,27 +1,28 @@
 import random as rd
+from typing import Tuple
 
 from . import turn_manager as tn
 from . import back as bk
-from .turn_notifications import TurnNotifier
+from .turn_notifications import TurnNotificationSubscription, TurnNotifier
 
 
 # Checks for what type of entity the id is
-def is_character(entID):
+def is_character(entID: int) -> bool:
     return 0 <= entID < 100
 
 
-def is_object(entID):
+def is_object(entID: int) -> bool:
     return 100 <= entID < 200
 
 
-def is_item(entID):
+def is_item(entID: int) -> bool:
     return 200 <= entID < 300
 
 
 # Function comments are in back_requests
 class Hub:
 
-    def __init__(self, turn_notification_subscription, ai_manager):
+    def __init__(self, turn_notification_subscription: TurnNotificationSubscription, ai_manager: TurnNotificationSubscription):
         self.map_size = (0, 0)
 
         self.chart = None
@@ -30,13 +31,13 @@ class Hub:
         self.ai_manager = ai_manager
 
     # Moves an entity to given coords
-    def requestMove(self, entID, coords):
+    def requestMove(self, entID: int, coords: Tuple[int, int]):
     
-        if is_object:
+        if is_object(entID):
             self.chart.moveObject(entID, coords)
             return True
 
-        elif is_character:
+        elif is_character(entID):
             self.chart.moveCharacter(entID, coords)
             return True
 
