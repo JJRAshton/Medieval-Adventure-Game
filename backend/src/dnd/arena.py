@@ -1,7 +1,7 @@
 import random as rd
 import copy
 
-import backend.processing as pr
+from .backend import processing as pr
 
 
 class Arena:
@@ -105,7 +105,7 @@ class Arena:
     def newBack(self):
         self.backs += 1
         classes = copy.copy(self.classes)
-        self.arena_back = pr.Back(1, len(classes), classes)
+        self.arena_back = pr.Back(1, len(classes), 1, classes)
         self.r_points = [0 for _ in range(len(self.players))]
 
         self.players = self.arena_back.characters

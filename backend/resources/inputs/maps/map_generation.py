@@ -65,4 +65,4 @@ chart.addSpawn('Monster', (8, 8), (9, 1))
 chart.addSpawn('NPC', (2, 9), (4, 8))
 chart.addSpawn('NPC', (2, 1), (4, 0))
 
-chart.save(2)
+chart.save(1)

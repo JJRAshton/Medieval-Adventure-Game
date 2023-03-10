@@ -21,11 +21,11 @@ def calcPathDist(coords1, coords2):
 class Back:
     maps_dir = os.path.dirname(__file__) + '/../../../../resources/inputs/maps'
 
-    def __init__(self, map, nPlayers, builtin_map, classes=None):
+    def __init__(self, map_no, nPlayers, builtin_map, classes=None):
         if builtin_map:
-            self.map_path = f'{Back.maps_dir}/map{map}'
+            self.map_path = f'{Back.maps_dir}/map{map_no}'
         else:
-            self.map_path=map
+            self.map_path = map_no
         self.player_n = nPlayers
         self.size = (0, 0)
 

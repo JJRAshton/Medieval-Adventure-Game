@@ -1,5 +1,5 @@
-import backend.back_requests as bk
-import backend.processing as pr
+from .backend import back_requests as bk
+from .backend import processing as pr
 
 if __name__ == '__main__':
     requester = bk.Requests(bk.TurnNotificationSubscription())
