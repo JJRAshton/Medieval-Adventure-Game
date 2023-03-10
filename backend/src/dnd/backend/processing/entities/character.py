@@ -1,12 +1,13 @@
 import random as rd
+from typing import Dict, List, Tuple
 
 from . import entity as ent
-from . import attack as at
+from .attack import Attack
 from . import item as it
 
 
 # Gets the in game distance between two coords for attacks
-def calcRadDist(coords1, coords2):
+def calcRadDist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
     xdiff = abs(coords2[0] - coords1[0])
     ydiff = abs(coords2[1] - coords1[1])
 
@@ -17,13 +18,13 @@ def calcRadDist(coords1, coords2):
 
 
 class Character(ent.HealthEntity):
-    def __init__(self, entityName):
+    def __init__(self, entityName: str):
         super().__init__(entityName)
         self.baseEvasion = 0
         self.baseArmour = 0
         self.baseMovement = 0
         self.baseCoverage = 0
-        self.base_attacks = []
+        self.base_attacks: List[Attack] = []
 
         self.dmg_mult = 1  # For larger creatures to do more damage
 
@@ -35,7 +36,7 @@ class Character(ent.HealthEntity):
             'CON': 0,
             'WIT': 0
             }
-        self.stat = {}
+        self.stat: Dict[str, int] = {}
 
         self.initiative = 0
 
@@ -57,7 +58,7 @@ class Character(ent.HealthEntity):
         self.maxMovement = 0
         self.maxHealth = 0
 
-        self.equippedWeapons = {
+        self.equippedWeapons: Dict[str, str | None] = {
             'Left': None,
             'Right': None,
             'Both': None
@@ -83,7 +84,7 @@ class Character(ent.HealthEntity):
         self.drop_rate = 0
 
     # Allows for sorting by initiative order in sorted list
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return self.initiative > other.initiative
 
     # Resets health to max health
@@ -91,7 +92,7 @@ class Character(ent.HealthEntity):
         self.health = self.maxHealth
     
     # Moves entity by given vector and decreases movement
-    def move(self, vector):
+    def move(self, vector: Tuple[int, int]):
         super().move(vector)
         count = abs(vector[0])+abs(vector[1])
         self.movement -= 5*count
@@ -112,11 +113,11 @@ class Character(ent.HealthEntity):
         self.initiative = init_roll
 
     # To be used in player for finding class traits
-    def has_Trait(self, trait_str):
+    def has_Trait(self, trait_str: str):
         return False
 
     # Makes a stat roll with given stat depending on condition -1: disadv, 0: normal, 1: adv
-    def statRoll(self, stat, condition=0):
+    def statRoll(self, stat: str, condition: int=0):
         if stat not in self.stat:
             raise ValueError
 
@@ -131,7 +132,7 @@ class Character(ent.HealthEntity):
             raise ValueError
 
     # Makes an attack roll returning whether it -1:miss, 0:blocked, 1:hit, 2:critical hit
-    def hitContest(self, attack, hitBonus, opponent):
+    def hitContest(self, attack: Attack, hitBonus, opponent):
 
         distance = calcRadDist(self.coords, opponent.coords)
         size_diff = self.size - opponent.size
@@ -179,7 +180,7 @@ class Character(ent.HealthEntity):
         return result
 
     # Performs a single attack on another entity
-    def singleAttack(self, attackID, creature):
+    def singleAttack(self, attackID: int, creature: ent.Entity):
         attack = self.attack_options[attackID]
 
         AA_stat = self.stat['WIT'] if self.has_Trait('Anti-armour_expert') else None
@@ -423,7 +424,7 @@ class Character(ent.HealthEntity):
     def convAttacks(self):
         new_list = []
         for i, attack_str in enumerate(self.base_attacks):
-            attack = at.Attack(attack_str)
+            attack = Attack(attack_str)
             attack.id = i
             new_list.append(attack)
         self.base_attacks = new_list

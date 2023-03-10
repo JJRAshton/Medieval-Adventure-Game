@@ -1,42 +1,43 @@
-# I feel like all of this should ultimately become part of the api module,
-# once there's a bit more to the lobby management.
 import asyncio
 import json
 import websockets
 import copy
 
-from api.users import currentUsers
-from api.users import User
-from api.api_session import APISession
+from typing import Set
+from websockets.legacy.server import WebSocketServerProtocol as WebSocket
+
+from .api.users import currentUsers
+from .api.users import User
+from .api.api_session import APISession
 
 # Potentially these shouldn't yet be api.users.User, and get transformed only once a game starts?
-playerPool = set()
-UUID_TRACKER = 1 # Initialise at 1
+playerPool: Set[User] = set()
+uuid_tracker: int = 1
 
-def getUserByWS(socket):
+def getUserByWS(socket: WebSocket):
     for user in currentUsers:
         if user.socket == socket:
             return user
 
-def broadcast(event):
-    websockets.broadcast({user.socket for user in currentUsers}, event)
+def broadcast(event: str) -> None:
+    websockets.broadcast({user.socket for user in currentUsers}, event) # type: ignore
 
-def users_event():
+def users_event() -> str:
     return json.dumps({"responseType": "users", "inLobby": len(currentUsers), "ready": len(playerPool)})
 
-def value_event():
-    return json.dumps({"responseType": "value", "value": UUID_TRACKER})
+def value_event() -> str:
+    return json.dumps({"responseType": "value", "value": uuid_tracker})
 
-async def addToLobby(websocket):
-    global UUID_TRACKER
+async def addToLobby(websocket: WebSocket):
+    global uuid_tracker
     print("new connection")
-    user = User(websocket, UUID_TRACKER)
+    user = User(websocket, uuid_tracker)
     try:
         # Wrap the websocket in a User
         print(currentUsers)
         # Send current state to user
         await websocket.send(value_event())
-        UUID_TRACKER += 1
+        uuid_tracker += 1
         broadcast(users_event())
 
         # Manage state changes
@@ -62,11 +63,11 @@ async def addToLobby(websocket):
         if user in playerPool:
             playerPool.remove(user)
         currentUsers.remove(user)
-        websockets.broadcast({user.socket for user in currentUsers}, users_event())
+        websockets.broadcast({user.socket for user in currentUsers}, users_event()) # type: ignore
 
 async def main():
-    async with websockets.serve(addToLobby, "localhost", 8001):
-        await asyncio.Future()  # run forever
+    async with websockets.serve(addToLobby, "localhost", 8001): # type: ignore
+        await asyncio.Future()
 
 if __name__ == "__main__":
     asyncio.run(main())

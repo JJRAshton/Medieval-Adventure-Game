@@ -2,10 +2,11 @@ import websockets
 import json
 
 from ..backend import TurnNotificationSubscription
+from .users import User
 
 class APITurnNotificationSubscription(TurnNotificationSubscription):
 
-    def __init__(self, playerPool):
+    def __init__(self, playerPool: Set[User]):
         super().__init__()
         self.socketPool = {user.socket for user in playerPool}
         self.requests = None

@@ -1,9 +1,11 @@
+from typing import Tuple
+from .processing.turn_notifications import TurnNotificationSubscription
 from . import processing as pr
 
 
 class Requests:
 
-    def __init__(self, turn_notification_subscription, ai_manager: TurnNo):
+    def __init__(self, turn_notification_subscription: TurnNotificationSubscription, ai_manager: TurnNotificationSubscription):
         ai_manager.bind_to(self)
         turn_notification_subscription.requests = self
         self.functions = pr.Hub(turn_notification_subscription, ai_manager)
@@ -17,14 +19,14 @@ class Requests:
 
     # Requests to move an entity with ID 'globalID' to a given coords.
     # Returns true if the request is carried out and false if not.
-    def moveRequest(self, globalID, coords):
+    def moveRequest(self, globalID: int, coords: Tuple[int, int]):
 
         completed = self.functions.requestMove(globalID, coords)
         
         return completed
 
     # Requests to verify whether a move is valid
-    def moveVerificationRequest(self, globalID, coords):
+    def moveVerificationRequest(self, globalID: int, coords: Tuple[int, int]):
         valid = self.functions.requestMoveVerification(globalID, coords)
 
         return valid

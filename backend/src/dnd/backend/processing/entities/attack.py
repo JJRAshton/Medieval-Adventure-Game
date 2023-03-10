@@ -6,7 +6,7 @@ from .stats import assign_attack as st
 class Attack:
     stats = st.AttackStats()
 
-    def __init__(self, atk_name):
+    def __init__(self, atk_name: str):
         self.name = atk_name
         self.type = ''  # Raw or Weapon attack
 

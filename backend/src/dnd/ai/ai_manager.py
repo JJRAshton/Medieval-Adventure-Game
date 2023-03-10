@@ -1,8 +1,9 @@
 from ..backend.back_requests import Requests
 from .brain import Brain1
 from typing import Optional
+from ..api.api_turn_notification_subscription import TurnNotificationSubscription
 
-class AIManager:
+class AIManager(TurnNotificationSubscription):
     # Gets prompted to make a move or decision by a backend endpoint,
     # then makes a call to the backend API.
 
@@ -33,7 +34,7 @@ class AIManager:
         backend.endTurnRequest()
         print('AI turn has ended')
 
-    def checkReaction(self):
+    def checkReaction(self) -> None:
         # I think we've agreed not to do reactions for now, but this is where it would go
         raise NotImplementedError
 
