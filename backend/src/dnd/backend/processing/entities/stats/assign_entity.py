@@ -1,5 +1,10 @@
 import random as rd
+from typing import List
 import pandas as pd
+
+from ..entity import HealthEntity
+from ..item import Weapon
+from ..item import Armour
 
 from .make_dataframes import EntityTables
 
@@ -23,7 +28,7 @@ armour_levels = {
 }
 
 
-def convertDice(dice):
+def convertDice(dice: str):
     dIndex = dice.index('d')
 
     nDice = int(dice[:dIndex])
@@ -32,7 +37,7 @@ def convertDice(dice):
     return nDice, sDice
 
 
-def rollStat(number, dice, bonus):
+def rollStat(number: int, dice: int, bonus: int):
     base = 0
     for _ in range(number):
         base += rd.randint(1, dice)
@@ -41,11 +46,11 @@ def rollStat(number, dice, bonus):
     return stat
 
 
-def convertList(list_str):
+def convertList(list_str: str):
     while ' ' in list_str:
         index = list_str.index(' ')
         list_str = list_str[:index] + list_str[index + 1:]
-    str_list = []
+    str_list: List[str] = []
     while ',' in list_str:
         c_index = list_str.index(',')
         item = list_str[:c_index]
@@ -58,26 +63,26 @@ def convertList(list_str):
 
 class EntityStats:
     
-    def __init__(self, mapNumber=1):
+    def __init__(self, mapNumber: int=1):
         self.tables = EntityTables(mapNumber)
 
     # Returns a dictionary of stats for the given weapon
-    def getWeaponDict(self, weaponName):
+    def getWeaponDict(self, weaponName: str):
         weaponDict = self.tables.get_weapon_stats_dict(weaponName)
         return weaponDict
 
     # Returns a dictionary of stats for the given character
-    def getCharacterDict(self, characterName):
+    def getCharacterDict(self, characterName: str):
         characterDict = self.tables.get_character_stats_dict(characterName)
         return characterDict
 
     # Returns a dictionary of stats for the given armour
-    def getArmourDict(self, armourName):
+    def getArmourDict(self, armourName: str):
         armourDict = self.tables.get_armour_stats_dict(armourName)
         return armourDict
 
     # Adds the stats to the given weapon
-    def getWeaponStats(self, weapon):   # Doesn't collect all data
+    def getWeaponStats(self, weapon: Weapon):   # Doesn't collect all data
         wepDict = self.getWeaponDict(weapon.name)
 
         weapon.type = wepDict['Type']
@@ -114,13 +119,13 @@ class EntityStats:
             weapon.protection = int(wepDict['Protection'])
             weapon.defense_type = wepDict['Defense Type']
 
-    def getArmourStats(self, armour):
+    def getArmourStats(self, armour: Armour):
         arDict = self.getArmourDict(armour.name)
 
         armour.type = arDict['Type']
         armour.material = arDict['Material']
-        armour.bulk = arDict['Bulk']
-        armour.coverage = arDict['Coverage']
+        armour.bulk = int(arDict['Bulk'])
+        armour.coverage = int(arDict['Coverage'])
         armour.value = int(arDict['Armour Value'])
         armour.flex = int(arDict['Flex']) / 100
         armour.weight = int(arDict['Movement Penalty'])
@@ -139,10 +144,10 @@ class EntityStats:
             i_object.inventory = []
 
     # Adds the stats to the given character (not player)
-    def getCharacterStats(self, character):  # Doesn't collect all data
+    def getCharacterStats(self, character: HealthEntity):  # Doesn't collect all data
         characterName = character.name
         charDict = self.getCharacterDict(characterName)
-        startingItems = []
+        startingItems: List[object] = []
 
         size = charDict['Size']
 
@@ -240,7 +245,7 @@ class EntityStats:
         wep_option_df = pd.DataFrame()
         for wep_type in player.p_class.weapons:
             wepData = df[(df.Type == wep_type) & (df.Tier == 4)]
-            wep_option_df = pd.concat([wep_option_df, wepData])
+            wep_option_df = pd.concat([wep_option_df, wepData]) 
 
         choices = wep_option_df.index.tolist()
         weapon_str = rd.choice(choices)

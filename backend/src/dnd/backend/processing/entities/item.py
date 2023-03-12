@@ -69,7 +69,7 @@ class Armour(Item):
         super().__init__(armourName)
         self.type = ''
         self.value = 0
-        self.flex = 0
+        self.flex: float = 0
         self.weight = 0
         self.material = ''
         self.coverage = 0

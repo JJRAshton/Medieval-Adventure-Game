@@ -1,6 +1,3 @@
-import random as rd
-import pandas as pd
-
 from .assign_entity import convertDice
 from .make_dataframes import AttackTables
 
@@ -12,12 +9,12 @@ class AttackStats:
         self.tables = AttackTables()
 
     # Returns a dictionary of stats for the given attack
-    def getWeaponAttackDict(self, attackName):
+    def getWeaponAttackDict(self, attackName: str):
         attackDict = self.tables.get_weapon_attack_stats_dict(attackName)
         return attackDict
 
     # Returns a dictionary of stats for the given attack
-    def getRawAttackDict(self, attackName):
+    def getRawAttackDict(self, attackName: str):
         attackDict = self.tables.get_raw_attack_stats_dict(attackName)
         return attackDict
 

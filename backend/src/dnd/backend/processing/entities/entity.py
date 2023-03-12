@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Optional, Tuple
 from .stats import EntityStats
 
 
@@ -33,8 +33,8 @@ class HealthEntity(Entity):
         self.maxHealth = 0
         self.health = 0
 
-        self.vulnerabilities = []
-        self.resistances = []
+        self.vulnerabilities: List[str] = []
+        self.resistances: List[str] = []
 
         self.armour = {
             'piercing': 0,
@@ -57,10 +57,10 @@ class HealthEntity(Entity):
         self.health = self.maxHealth
 
     # Damages the entity
-    def takeDamage(self, damage, dmg_type, is_AP=False, is_critical=False, AA_stat=None):
+    def takeDamage(self, damage: float, dmg_type: str, is_AP: bool=False, is_critical: bool=False, AA_stat: Optional[float]=None):
         appliedDamage = damage
 
-        armour = 0
+        armour: float = 0
         if not is_critical:
             if dmg_type in self.armour:
                 armour = self.armour[dmg_type]
@@ -88,7 +88,7 @@ class HealthEntity(Entity):
 
 
 class Object(HealthEntity):
-    def __init__(self, objectName):
+    def __init__(self, objectName: str):
         super().__init__(objectName)
 
         self.getStats()

@@ -180,8 +180,8 @@ class Character(ent.HealthEntity):
         return result
 
     # Performs a single attack on another entity
-    def singleAttack(self, attackID: int, creature: ent.Entity):
-        attack = self.attack_options[attackID]
+    def singleAttack(self, attackID: int, creature: ent.HealthEntity):
+        attack: Attack = self.attack_options[attackID]
 
         AA_stat = self.stat['WIT'] if self.has_Trait('Anti-armour_expert') else None
 
@@ -362,8 +362,7 @@ class Character(ent.HealthEntity):
 
         self.stat['DEX'] = self.stat['DEX'] ** total_flex
         if self.is_exceededBulk():
-            self.stat['DEX'] /= 2
-        self.stat['DEX'] = round(self.stat['DEX'])
+            self.stat['DEX'] = round(self.stat['DEX'])
 
         self.maxMovement -= min(total_weight, max_movement_reduction)
 
@@ -372,7 +371,7 @@ class Character(ent.HealthEntity):
         self.baseEvasion = self.stat['DEX']
 
     # Returns if the character exceeds their max bulk
-    def is_exceededBulk(self):
+    def is_exceededBulk(self) -> bool:
         return False
 
     # Makes a saving throw
@@ -454,5 +453,5 @@ class Character(ent.HealthEntity):
         self.inventory = new_list
 
     # Functions to be redefined with npc and player classes
-    def is_Proficient(self, weapon):
+    def is_Proficient(self, weapon: it.Weapon):
         pass

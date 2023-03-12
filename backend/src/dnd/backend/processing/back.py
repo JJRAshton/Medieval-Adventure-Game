@@ -4,8 +4,10 @@ from typing import Dict, List, Tuple
 import pandas as pd
 import os
 
-from .entities.entity import Entity
+from .entities.entity import HealthEntity
+from .entities.npc import NPC, Monster
 from .entities.character import Character
+from .entities.player import Player
 
 from . import entities as ent
 
@@ -40,7 +42,7 @@ class Back:
 
         self.spawn = {}
 
-        self.entities: Dict[int, Entity] = {}  # All entities in dictionary with ids as keys
+        self.entities: Dict[int, HealthEntity] = {}  # All entities in dictionary with ids as keys
 
         self.objects = []
 
@@ -48,10 +50,10 @@ class Back:
         self.weapons = []
         self.armour = []
 
-        self.characters = []
-        self.players = []
-        self.monsters = []
-        self.npcs = []  # Non-monsters
+        self.characters: List[HealthEntity] = []
+        self.players: List[HealthEntity] = []
+        self.monsters: List[HealthEntity] = []
+        self.npcs: List[HealthEntity] = []  # Non-monsters
 
         if classes is None:
             classes = ['Raider', 'Gladiator', 'Guardian', 'Knight', 'Samurai']
@@ -91,9 +93,9 @@ class Back:
 
     # Adds in the map NPCs
     def addMapNPCs(self):
-        df = pd.read_csv(f'{self.map_path}/entities.csv', keep_default_na=False)
-        monster_list = [x for x in df['Monsters'] if x != '']
-        npc_list = [x for x in df['NPCs'] if x != '']
+        df: pd.DataFrame = pd.read_csv(f'{self.map_path}/entities.csv', keep_default_na=False) # type: ignore
+        monster_list: List[str] = [x for x in df['Monsters'] if x != ''] # type: ignore
+        npc_list: List[str] = [x for x in df['NPCs'] if x != ''] # type: ignore
 
         for monster_str in monster_list:
             self.monsters.append(self.createCharacter('Monster', monster_str))
@@ -102,13 +104,13 @@ class Back:
             self.npcs.append(self.createCharacter('NPC', npc_str))
 
     # Creates and registers a character and its inventory
-    def createCharacter(self, character_type: str, sub_type: str | None=None):
+    def createCharacter(self, character_type: str, sub_type: str | None=None) -> HealthEntity:
         if character_type == 'Player' and sub_type is None:
-            character = ent.Player(self.classes.pop(0))
+            character: HealthEntity = Player(self.classes.pop(0))
         elif character_type == 'Monster' and sub_type is not None:
-            character = ent.Monster(sub_type)
+            character: HealthEntity = Monster(sub_type)
         elif character_type == 'NPC' and sub_type is not None:
-            character = ent.NPC(sub_type)
+            character: HealthEntity = NPC(sub_type)
         else:
             raise ValueError
 
@@ -193,7 +195,7 @@ class Back:
         self.itemGrid[prevCoords[0]][prevCoords[1]] = None
 
     # Drops an item from an inventory
-    def dropInv(self, character):
+    def dropInv(self, character: Character):
         inv_length = len(character.inventory)
         if inv_length > 0:
             index = rd.randint(0, inv_length-1)
@@ -237,28 +239,28 @@ class Back:
             return False
 
     # Checks if there is an item at the given coords
-    def is_item(self, coords):
+    def is_item(self, coords: Tuple[int, int]):
         if self.itemGrid[coords[0]][coords[1]] is None:
             return False
         else:
             return True
 
     # Checks if there is a character at the given coords
-    def is_character(self, coords):
+    def is_character(self, coords: Tuple[int, int]):
         if self.characterGrid[coords[0]][coords[1]] is None:
             return False
         else:
             return True
 
     # Checks if there is an object at the given coords
-    def is_object(self, coords):
+    def is_object(self, coords: Tuple[int, int]):
         if self.objectGrid[coords[0]][coords[1]] is None:
             return False
         else:
             return True
 
     # Checks if coords are valid to move to
-    def is_validCoords(self, newCoords):
+    def is_validCoords(self, newCoords: Tuple[int, int]):
         x, y = newCoords
         size = (len(self.characterGrid[0]), len(self.characterGrid))
 
@@ -271,7 +273,7 @@ class Back:
         return True
 
     # Checks if character has the movement to move to coords
-    def is_validMovement(self, charID, newCoords):
+    def is_validMovement(self, charID: int, newCoords: Tuple[int, int]):
         x, y = newCoords
         oldx, oldy = self.entities[charID].coords
         if self.entities[charID].movement < calcPathDist((oldx, oldy), (x, y)):
@@ -280,7 +282,7 @@ class Back:
             return True
 
     # Checks if the character can move along the given path
-    def is_validPath(self, charID, pathCoords):
+    def is_validPath(self, charID: int, pathCoords: Tuple[int, int]):
         character = self.entities[charID]
         remaining_movement = character.movement
 
@@ -294,7 +296,7 @@ class Back:
         return index
 
     # Checks if an attack is valid
-    def is_validAttack(self, atkID, defID):
+    def is_validAttack(self, atkID: int, defID: int):
 
         atkCoords = self.entities[atkID].coords
         radius = int(self.entities[atkID].reach/5)
