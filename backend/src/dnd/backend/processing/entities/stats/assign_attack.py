@@ -1,5 +1,5 @@
-from .assign_entity import convertDice
 from .make_dataframes import AttackTables
+from . import dice_utils
 
 
 class AttackStats:
@@ -47,4 +47,4 @@ class AttackStats:
             dmg_type2 = atkDict['Dmg Typ 2']
             attack.damage_types[dmg_type2] = 1 - int(atkDict['Fraction 1'])
 
-        attack.damage = convertDice(atkDict['Damage'])
+        attack.damage = dice_utils.convertDice(atkDict['Damage'])

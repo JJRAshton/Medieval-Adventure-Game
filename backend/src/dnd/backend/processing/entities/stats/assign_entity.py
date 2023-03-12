@@ -2,9 +2,9 @@ import random as rd
 from typing import List
 import pandas as pd
 
-from ..entity import HealthEntity
 from ..item import Weapon
 from ..item import Armour
+from . import dice_utils
 
 from .make_dataframes import EntityTables
 
@@ -28,37 +28,6 @@ armour_levels = {
 }
 
 
-def convertDice(dice: str):
-    dIndex = dice.index('d')
-
-    nDice = int(dice[:dIndex])
-    sDice = int(dice[dIndex + 1:])
-
-    return nDice, sDice
-
-
-def rollStat(number: int, dice: int, bonus: int):
-    base = 0
-    for _ in range(number):
-        base += rd.randint(1, dice)
-    stat = base + bonus
-
-    return stat
-
-
-def convertList(list_str: str):
-    while ' ' in list_str:
-        index = list_str.index(' ')
-        list_str = list_str[:index] + list_str[index + 1:]
-    str_list: List[str] = []
-    while ',' in list_str:
-        c_index = list_str.index(',')
-        item = list_str[:c_index]
-        list_str = list_str[c_index + 1:]
-        str_list.append(item)
-    str_list.append(list_str)
-
-    return str_list
 
 
 class EntityStats:
@@ -90,7 +59,7 @@ class EntityStats:
         if wepDict['Damage Dice']:
             weapon.damage_dice = int(wepDict['Damage Dice'][1:])
 
-        weapon.attacks = convertList(wepDict['Attacks'])
+        weapon.attacks = dice_utils.convertList(wepDict['Attacks'])
 
         if wepDict['Ranged']:
             weapon.is_ranged = True
@@ -144,7 +113,7 @@ class EntityStats:
             i_object.inventory = []
 
     # Adds the stats to the given character (not player)
-    def getCharacterStats(self, character: HealthEntity):  # Doesn't collect all data
+    def getCharacterStats(self, character):  # Doesn't collect all data
         characterName = character.name
         charDict = self.getCharacterDict(characterName)
         startingItems: List[object] = []
@@ -160,13 +129,13 @@ class EntityStats:
             character.baseArmour = charDict['Base Armour']
             character.baseCoverage = 1
         if charDict['Inventory']:
-            inventory = convertList(charDict['Inventory'])
+            inventory = dice_utils.convertList(charDict['Inventory'])
             character.inventory = inventory
             startingItems += inventory
         if charDict['Skill']:
             character.skill = int(charDict['Skill'])
 
-        character.base_attacks = convertList(charDict['Attacks'])
+        character.base_attacks = dice_utils.convertList(charDict['Attacks'])
 
         character.starting_items = startingItems
 
@@ -186,10 +155,10 @@ class EntityStats:
                 character.armour['Light'] = rd.choice(armour_list)
 
         if charDict['Vulnerabilities']:
-            vulnerabilities = convertList(charDict['Vulnerabilities'])
+            vulnerabilities = dice_utils.convertList(charDict['Vulnerabilities'])
             character.vulnerabilities += vulnerabilities
         if charDict['Resistances']:
-            resistances = convertList(charDict['Resistances'])
+            resistances = dice_utils.convertList(charDict['Resistances'])
             character.resistances += resistances
 
         character.actionsTotal = int(charDict['Actions'])
@@ -205,7 +174,7 @@ class EntityStats:
 
         character.baseEvasion = character.baseStat['DEX']
         
-        character.baseHealth = rollStat(int(charDict['Difficulty']), character.baseStat['CON'], character.baseStat['CON'])
+        character.baseHealth = dice_utils.rollStat(int(charDict['Difficulty']), character.baseStat['CON'], character.baseStat['CON'])
         if size == 'large':
             character.baseSize = 10
             character.dmg_mult = 2
