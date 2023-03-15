@@ -1,6 +1,6 @@
 ﻿Name,Health Mod,Evasion Mod,Max Bulk,Skill,Base Movement,Armour
-Raider,1.5,1,16,5,35,"arming_doublet, hauberk_riveted"
-Gladiator,1.85,1.1,10,20,30,"padded_tunic, breastplate"
+Raider,1.5,1,16,5,30,"arming_doublet, hauberk_riveted"
+Gladiator,1.85,1.1,14,20,30,"padded_tunic, breastplate"
 Guardian,1.75,0.75,20,10,25,"arming_doublet, full_plate"
 Knight,1.35,0.75,18,10,25,"arming_doublet, plate"
 Samurai,1.75,1,15,15,30,"arming_doublet, laminar"
