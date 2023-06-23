@@ -1,31 +1,30 @@
 from .make_dataframes import AttackStatDictionaryProvider
 from . import dice_utils
+from ..attack import Attack
 
 
-class AttackStats:
+class AttackFactory:
 
+    ''' Attack factory that takes a partially constructed attack '''
     def __init__(self):
+        self.__attack_stat_provider = AttackStatDictionaryProvider()
 
-        self.tables = AttackStatDictionaryProvider()
-
-    # Returns a dictionary of stats for the given attack
-    def getWeaponAttackDict(self, attackName: str):
-        attackDict = self.tables.get_weapon_attack_stats_dict(attackName)
-        return attackDict
-
-    # Returns a dictionary of stats for the given attack
-    def getRawAttackDict(self, attackName: str):
-        attackDict = self.tables.get_raw_attack_stats_dict(attackName)
-        return attackDict
-
-    def getAttackStats(self, attack):
-        if attack.name in self.tables.weapon_attacks.index.tolist():
-            self.getWeaponAttackStats(attack)
-        if attack.name in self.tables.raw_attacks.index.tolist():
-            self.getRawAttackStats(attack)
-
-    def getWeaponAttackStats(self, attack):
-        atkDict = self.getWeaponAttackDict(attack.name)
+    def create(self, attack_name: str) -> Attack:
+        ''' Create an attack '''
+        attack = Attack(attack_name)
+        if attack_name in self.__attack_stat_provider.weapon_attacks.index.tolist():
+            self.__assign_weapon_attack_stats(attack)
+        elif attack_name in self.__attack_stat_provider.raw_attacks.index.tolist():
+            self.__assign_raw_attack_stats(attack)
+        else:
+            raise ValueError(f"Attack with name {attack_name} was not recognised")
+        return attack
+    
+        
+    
+    def __assign_weapon_attack_stats(self, attack):
+        ''' Create an attack from a weapon '''
+        atkDict = self.__attack_stat_provider.get_weapon_attack_stats_dict(attack.name)
         attack.type = 'weapon'
 
         dmg_type1 = atkDict['Dmg Typ 1']
@@ -37,8 +36,9 @@ class AttackStats:
 
         attack.damage = (int(atkDict['Dice No.']), 0)
 
-    def getRawAttackStats(self, attack):
-        atkDict = self.getRawAttackDict(attack.name)
+    def __assign_raw_attack_stats(self, attack):
+        ''' Create an innate attack '''
+        atkDict = self.__attack_stat_provider.get_raw_attack_stats_dict(attack.name)
         attack.type = 'raw'
 
         dmg_type1 = atkDict['Dmg Typ 1']

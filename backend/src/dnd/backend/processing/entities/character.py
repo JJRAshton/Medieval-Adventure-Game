@@ -2,6 +2,7 @@ import random as rd
 from typing import Dict, List, Tuple
 
 from . import entity as ent
+from .stats.assign_attack import AttackFactory
 from .attack import Attack
 from . import item as it
 
@@ -20,6 +21,7 @@ def calcRadDist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
 class Character(ent.HealthEntity):
     def __init__(self, entityName: str):
         super().__init__(entityName)
+        self.__attack_factory = AttackFactory()
         self.baseEvasion = 0
         self.baseArmour = 0
         self.baseMovement = 0
@@ -423,7 +425,7 @@ class Character(ent.HealthEntity):
     def convAttacks(self):
         new_list = []
         for i, attack_str in enumerate(self.base_attacks):
-            attack = Attack(attack_str)
+            attack = self.__attack_factory.create(attack_str)
             attack.id = i
             new_list.append(attack)
         self.base_attacks = new_list

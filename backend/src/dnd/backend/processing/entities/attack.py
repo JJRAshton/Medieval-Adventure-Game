@@ -4,7 +4,6 @@ from .stats import assign_attack as st
 
 
 class Attack:
-    stats = st.AttackStats()
 
     def __init__(self, atk_name: str):
         self.name = atk_name
@@ -17,11 +16,6 @@ class Attack:
 
         self.id = 0
         self.from_weapon = None
-
-        self.getStats()
-
-    def getStats(self):
-        Attack.stats.getAttackStats(self)
 
     def updateDamage(self):
 

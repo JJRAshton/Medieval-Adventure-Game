@@ -1,6 +1,7 @@
 from . import entity as ent
 from . import attack as at
 from .stats.make_dataframes import weapon_types
+from .stats.assign_attack import AttackFactory
 
 
 class Item(ent.Entity):
@@ -28,6 +29,7 @@ class Item(ent.Entity):
 class Weapon(Item):
     def __init__(self, weaponName):
         super().__init__(weaponName)
+        self.__attack_factory = AttackFactory()
         self.damage_dice = 0
         self.range = 0
         self.holder_size = 0
@@ -57,7 +59,7 @@ class Weapon(Item):
         ent.Entity.entityStats.getWeaponStats(self)
         attacks_list = []
         for attack_str in self.attacks:
-            attack = at.Attack(attack_str)
+            attack = self.__attack_factory.create(attack_str)
             attack.setWeapon(self)
             attack.updateDamage()
             attacks_list.append(attack)
