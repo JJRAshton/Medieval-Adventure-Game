@@ -33,11 +33,6 @@ class EntityStats:
     def __init__(self, mapNumber: int=1):
         self.tables = EntityStatDictionaryProvider(mapNumber)
 
-    # Returns a dictionary of stats for the given weapon
-    def __getWeaponDict(self, weaponName: str):
-        weaponDict = self.tables.get_weapon_stats_dict(weaponName)
-        return weaponDict
-
     # Returns a dictionary of stats for the given character
     def __getCharacterDict(self, characterName: str):
         characterDict = self.tables.get_character_stats_dict(characterName)
@@ -47,44 +42,6 @@ class EntityStats:
     def __getArmourDict(self, armourName: str):
         armourDict = self.tables.get_armour_stats_dict(armourName)
         return armourDict
-
-    # Adds the stats to the given weapon
-    def getWeaponStats(self, weapon: Weapon):   # Doesn't collect all data
-        wepDict = self.__getWeaponDict(weapon.name)
-
-        weapon.type = wepDict['Type']
-        weapon.range = int(wepDict['Range'])
-        if wepDict['Damage Dice']:
-            weapon.damage_dice = int(wepDict['Damage Dice'][1:])
-
-        weapon.attacks = dice_utils.convertList(wepDict['Attacks'])
-
-        if wepDict['Ranged']:
-            weapon.is_ranged = True
-        if wepDict['Loading']:
-            weapon.is_loading = True
-        if wepDict['Two-handed']:
-            weapon.is_twoHanded = True
-        if wepDict['Arrows']:
-            weapon.is_arrows = True
-        if wepDict['Bolts']:
-            weapon.is_bolts = True
-        if wepDict['Light']:
-            weapon.is_light = True
-        if wepDict['Finesse']:
-            weapon.is_finesse = True
-        if wepDict['Armour Piercing']:
-            weapon.is_AP = True
-        if wepDict['Fine']:
-            weapon.is_fine = True
-        if wepDict['Magic']:
-            weapon.is_magic = True
-        if wepDict['Melee']:
-            weapon.is_melee = False
-
-        if wepDict['Protection']:
-            weapon.protection = int(wepDict['Protection'])
-            weapon.defense_type = wepDict['Defense Type']
 
     def getArmourStats(self, armour: Armour):
         arDict = self.__getArmourDict(armour.name)

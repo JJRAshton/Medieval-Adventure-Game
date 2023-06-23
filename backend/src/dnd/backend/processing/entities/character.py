@@ -1,8 +1,10 @@
 import random as rd
 from typing import Dict, List, Tuple
 
+from .stats.make_dataframes import AttackStatDictionaryProvider
 from . import entity as ent
-from .stats.assign_attack import AttackFactory
+from .stats.attack_factory import AttackFactory
+from .stats.weapon_factory import WeaponFactory
 from .attack import Attack
 from . import item as it
 
@@ -21,7 +23,9 @@ def calcRadDist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
 class Character(ent.HealthEntity):
     def __init__(self, entityName: str):
         super().__init__(entityName)
-        self.__attack_factory = AttackFactory()
+        stat_provider = AttackStatDictionaryProvider()
+        self.__attack_factory = AttackFactory(stat_provider)
+        self.__weapon_factory = WeaponFactory(stat_provider,  self.__attack_factory)
         self.baseEvasion = 0
         self.baseArmour = 0
         self.baseMovement = 0
@@ -414,7 +418,7 @@ class Character(ent.HealthEntity):
     def getEquipment(self):
         for hand in self.equippedWeapons:
             if self.equippedWeapons[hand] is not None:
-                self.equippedWeapons[hand] = it.Weapon(self.equippedWeapons[hand])
+                self.equippedWeapons[hand] = self.__weapon_factory.create(self.equippedWeapons[hand])
         for armour_type in self.equippedArmour:
             if self.equippedArmour[armour_type] is not None:
                 self.equippedArmour[armour_type] = it.Armour(self.equippedArmour[armour_type])
@@ -450,7 +454,7 @@ class Character(ent.HealthEntity):
     def createInventory(self):
         new_list = []
         for item_str in self.inventory:
-            item = it.Weapon(item_str)  # Converts to weapon for now
+            item = self.__weapon_factory.create(item_str)  # Converts to weapon for now
             new_list.append(item)
         self.inventory = new_list
 

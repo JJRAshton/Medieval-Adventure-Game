@@ -5,9 +5,9 @@ from ..attack import Attack
 
 class AttackFactory:
 
-    ''' Attack factory that takes a partially constructed attack '''
-    def __init__(self):
-        self.__attack_stat_provider = AttackStatDictionaryProvider()
+    ''' Attack factory '''
+    def __init__(self, stat_provider: AttackStatDictionaryProvider):
+        self.__attack_stat_provider = stat_provider
 
     def create(self, attack_name: str) -> Attack:
         ''' Create an attack '''
