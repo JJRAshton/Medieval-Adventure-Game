@@ -6,7 +6,7 @@ from ..item import Weapon
 from ..item import Armour
 from . import dice_utils
 
-from .make_dataframes import EntityTables
+from .make_dataframes import EntityStatDictionaryProvider
 
 
 # Different armour levels for characters
@@ -28,31 +28,29 @@ armour_levels = {
 }
 
 
-
-
 class EntityStats:
     
     def __init__(self, mapNumber: int=1):
-        self.tables = EntityTables(mapNumber)
+        self.tables = EntityStatDictionaryProvider(mapNumber)
 
     # Returns a dictionary of stats for the given weapon
-    def getWeaponDict(self, weaponName: str):
+    def __getWeaponDict(self, weaponName: str):
         weaponDict = self.tables.get_weapon_stats_dict(weaponName)
         return weaponDict
 
     # Returns a dictionary of stats for the given character
-    def getCharacterDict(self, characterName: str):
+    def __getCharacterDict(self, characterName: str):
         characterDict = self.tables.get_character_stats_dict(characterName)
         return characterDict
 
     # Returns a dictionary of stats for the given armour
-    def getArmourDict(self, armourName: str):
+    def __getArmourDict(self, armourName: str):
         armourDict = self.tables.get_armour_stats_dict(armourName)
         return armourDict
 
     # Adds the stats to the given weapon
     def getWeaponStats(self, weapon: Weapon):   # Doesn't collect all data
-        wepDict = self.getWeaponDict(weapon.name)
+        wepDict = self.__getWeaponDict(weapon.name)
 
         weapon.type = wepDict['Type']
         weapon.range = int(wepDict['Range'])
@@ -89,7 +87,7 @@ class EntityStats:
             weapon.defense_type = wepDict['Defense Type']
 
     def getArmourStats(self, armour: Armour):
-        arDict = self.getArmourDict(armour.name)
+        arDict = self.__getArmourDict(armour.name)
 
         armour.type = arDict['Type']
         armour.material = arDict['Material']
@@ -100,7 +98,7 @@ class EntityStats:
         armour.weight = int(arDict['Movement Penalty'])
 
     def getObjectStats(self, i_object):
-        objDict = self.getArmourDict(i_object.name)
+        objDict = self.__getArmourDict(i_object.name)
 
         i_object.armour['piercing'] = int(objDict['AC'])
         i_object.armour['slashing'] = int(objDict['AC'])
@@ -115,7 +113,7 @@ class EntityStats:
     # Adds the stats to the given character (not player)
     def getCharacterStats(self, character):  # Doesn't collect all data
         characterName = character.name
-        charDict = self.getCharacterDict(characterName)
+        charDict = self.__getCharacterDict(characterName)
         startingItems: List[object] = []
 
         size = charDict['Size']
@@ -210,7 +208,7 @@ class EntityStats:
         for stat in player.p_class.stat_order:
             player.baseStat[stat] = stat_rolls.pop(0)
 
-        df = self.tables.weapons
+        df = self.tables.__weapons
         wep_option_df = pd.DataFrame()
         for wep_type in player.p_class.weapons:
             wepData = df[(df.Type == wep_type) & (df.Tier == 4)]

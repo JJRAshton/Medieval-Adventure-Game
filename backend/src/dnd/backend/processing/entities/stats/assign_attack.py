@@ -1,4 +1,4 @@
-from .make_dataframes import AttackTables
+from .make_dataframes import AttackStatDictionaryProvider
 from . import dice_utils
 
 
@@ -6,7 +6,7 @@ class AttackStats:
 
     def __init__(self):
 
-        self.tables = AttackTables()
+        self.tables = AttackStatDictionaryProvider()
 
     # Returns a dictionary of stats for the given attack
     def getWeaponAttackDict(self, attackName: str):
