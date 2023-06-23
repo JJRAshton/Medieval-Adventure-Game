@@ -1,10 +1,9 @@
 import random as rd
 
-from .stats import assign_attack as st
-
 
 class Attack:
 
+    ''' An attack, don't construct this directly, use AttackFactory instead '''
     def __init__(self, atk_name: str):
         self.name = atk_name
         self.type = ''  # Raw or Weapon attack
