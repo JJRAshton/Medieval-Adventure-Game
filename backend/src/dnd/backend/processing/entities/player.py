@@ -46,11 +46,11 @@ class Player(ch.Character):
         self.calcProfB()
         self.calcHealth()
 
-        self.resetHealth()
+        self.reset_health()
 
         self.calcInitiative()
 
-        self.resetHealth()
+        self.reset_health()
 
     # Gets the player stats
     def getStats(self):
@@ -72,9 +72,9 @@ class Player(ch.Character):
 
     # Unequips a weapon if one present in given location
     def unequipWeapon(self, location):
-        weapon = self.equippedWeapons[location]
+        weapon = self.equipped_weapons[location]
         if weapon is not None:
-            self.equippedWeapons[location] = None
+            self.equipped_weapons[location] = None
             self.inventory.append(weapon)
 
     # Equips a weapon
@@ -96,7 +96,7 @@ class Player(ch.Character):
         self.unequipWeapon('Both')
         self.unequipWeapon(location)
 
-        self.equippedWeapons[location] = weapon
+        self.equipped_weapons[location] = weapon
 
         self.inventory.pop(invIndex)
 
@@ -104,10 +104,10 @@ class Player(ch.Character):
     def equipDoubleWeapon(self, invIndex):
         weapon = self.inventory[invIndex]
 
-        for location in self.equippedWeapons:
+        for location in self.equipped_weapons:
             self.unequipWeapon(location)
 
-        self.equippedWeapons['Both'] = weapon
+        self.equipped_weapons['Both'] = weapon
 
         self.inventory.pop(invIndex)
 

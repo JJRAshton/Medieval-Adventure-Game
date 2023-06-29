@@ -10,7 +10,7 @@ class Object(HealthEntity):
         super().__init__(objectName)
 
         self.getStats()
-        self.resetHealth()
+        self.reset_health()
         self.resetSize()
 
     def getStats(self):

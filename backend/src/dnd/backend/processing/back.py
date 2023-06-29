@@ -124,17 +124,17 @@ class Back:
         if character.reach > self.maxReach:
             self.maxReach = character.reach
 
-        for hand in character.equippedWeapons:
-            if character.equippedWeapons[hand] is not None:
-                character.equippedWeapons[hand].id = itemIDNum
-                self.items.append(character.equippedWeapons[hand])
-                self.weapons.append(character.equippedWeapons[hand])
+        for hand in character.equipped_weapons:
+            if character.equipped_weapons[hand] is not None:
+                character.equipped_weapons[hand].id = itemIDNum
+                self.items.append(character.equipped_weapons[hand])
+                self.weapons.append(character.equipped_weapons[hand])
                 itemIDNum += 1
-        for armour_type in character.equippedArmour:
-            if character.equippedArmour[armour_type] is not None:
-                character.equippedArmour[armour_type].id = itemIDNum
-                self.items.append(character.equippedArmour[armour_type])
-                self.armour.append(character.equippedArmour[armour_type])
+        for armour_type in character.equipped_armour:
+            if character.equipped_armour[armour_type] is not None:
+                character.equipped_armour[armour_type].id = itemIDNum
+                self.items.append(character.equipped_armour[armour_type])
+                self.armour.append(character.equipped_armour[armour_type])
                 itemIDNum += 1
         for item in character.inventory:
             item.id = itemIDNum

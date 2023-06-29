@@ -70,7 +70,7 @@ class Hub:
             
             indicator = attacker.attack(attack_list, defender)
             print(indicator)
-            defender.checkAlive()
+            defender.check_alive()
             if not defender.is_alive:
                 if is_character(entID2):
                     if defender.behaviour_type >= 2:

@@ -29,17 +29,17 @@ armour_levels = {
 ''' Factory for armour, objects, characters and players. '''
 class EntityFactory:
 
-    def __init__(self, mapNumber: int=1):
-        self.tables = EntityStatDictionaryProvider(mapNumber)
+    def __init__(self, map_number: int=1):
+        self.tables = EntityStatDictionaryProvider(map_number)
 
     # Returns a dictionary of stats for the given character
-    def __getCharacterDict(self, characterName: str):
-        characterDict = self.tables.get_character_stats_dict(characterName)
-        return characterDict
+    def __getCharacterDict(self, character_name: str):
+        character_dict = self.tables.get_character_stats_dict(character_name)
+        return character_dict
 
     # Returns a dictionary of stats for the given armour
-    def __getArmourDict(self, armourName: str):
-        armourDict = self.tables.get_armour_stats_dict(armourName)
+    def __getArmourDict(self, armour_name: str):
+        armourDict = self.tables.get_armour_stats_dict(armour_name)
         return armourDict
 
     def getArmourStats(self, armour: Armour):
@@ -54,48 +54,48 @@ class EntityFactory:
         armour.weight = int(arDict['Movement Penalty'])
 
     def getObjectStats(self, i_object):
-        objDict = self.__getArmourDict(i_object.name)
+        obj_dict = self.__getArmourDict(i_object.name)
 
-        i_object.armour['piercing'] = int(objDict['AC'])
-        i_object.armour['slashing'] = int(objDict['AC'])
-        i_object.armour['bludgeoning'] = int(objDict['AC'])
-        i_object.baseHealth = int(objDict['Health'])
+        i_object.armour['piercing'] = int(obj_dict['AC'])
+        i_object.armour['slashing'] = int(obj_dict['AC'])
+        i_object.armour['bludgeoning'] = int(obj_dict['AC'])
+        i_object.baseHealth = int(obj_dict['Health'])
 
-        is_inv = bool(objDict['Inventory'])
+        is_inv = bool(obj_dict['Inventory'])
 
         if is_inv:
             i_object.inventory = []
 
     # Adds the stats to the given character (not player)
     def getCharacterStats(self, character):  # Doesn't collect all data
-        characterName = character.name
-        charDict = self.__getCharacterDict(characterName)
-        startingItems: List[object] = []
+        character_name = character.name
+        char_dict = self.__getCharacterDict(character_name)
+        starting_items: List[object] = []
 
-        size = charDict['Size']
+        size = char_dict['Size']
 
         for location in ['Left', 'Right', 'Both']:
-            if charDict[location]:
-                character.equippedWeapons[location] = charDict[location]
-                startingItems.append(charDict[location])
+            if char_dict[location]:
+                character.equippedWeapons[location] = char_dict[location]
+                starting_items.append(char_dict[location])
 
-        if charDict['Base Armour']:
-            character.baseArmour = charDict['Base Armour']
+        if char_dict['Base Armour']:
+            character.baseArmour = char_dict['Base Armour']
             character.baseCoverage = 1
-        if charDict['Inventory']:
-            inventory = dice_utils.convertList(charDict['Inventory'])
+        if char_dict['Inventory']:
+            inventory = dice_utils.convertList(char_dict['Inventory'])
             character.inventory = inventory
-            startingItems += inventory
-        if charDict['Skill']:
-            character.skill = int(charDict['Skill'])
+            starting_items += inventory
+        if char_dict['Skill']:
+            character.skill = int(char_dict['Skill'])
 
-        character.base_attacks = dice_utils.convertList(charDict['Attacks'])
+        character.base_attacks = dice_utils.convertList(char_dict['Attacks'])
 
-        character.starting_items = startingItems
+        character.starting_items = starting_items
 
         # Randomly selects armour according to armour level
-        if charDict['Armour Level']:
-            level = int(charDict['Armour Level'])
+        if char_dict['Armour Level']:
+            level = int(char_dict['Armour Level'])
 
             if level > 2:
                 for armour_type in armour_levels[level]:
@@ -108,27 +108,27 @@ class EntityFactory:
                 armour_list = armour_levels[level]
                 character.armour['Light'] = rd.choice(armour_list)
 
-        if charDict['Vulnerabilities']:
-            vulnerabilities = dice_utils.convertList(charDict['Vulnerabilities'])
+        if char_dict['Vulnerabilities']:
+            vulnerabilities = dice_utils.convertList(char_dict['Vulnerabilities'])
             character.vulnerabilities += vulnerabilities
-        if charDict['Resistances']:
-            resistances = dice_utils.convertList(charDict['Resistances'])
+        if char_dict['Resistances']:
+            resistances = dice_utils.convertList(char_dict['Resistances'])
             character.resistances += resistances
 
-        character.actionsTotal = int(charDict['Actions'])
-        character.baseMovement = int(charDict['Speed'])
-        character.drop_rate = int(charDict['Drop Rate'])
-        character.skill = int(charDict['Skill']) if charDict['Skill'] else 0
-        character.difficulty = int(charDict['Difficulty'])
+        character.actionsTotal = int(char_dict['Actions'])
+        character.baseMovement = int(char_dict['Speed'])
+        character.drop_rate = int(char_dict['Drop Rate'])
+        character.skill = int(char_dict['Skill']) if char_dict['Skill'] else 0
+        character.difficulty = int(char_dict['Difficulty'])
 
-        character.baseStat['STR'] = int(charDict['STR'])
-        character.baseStat['DEX'] = int(charDict['DEX'])
-        character.baseStat['CON'] = int(charDict['CON'])
-        character.baseStat['WIT'] = int(charDict['WIT'])
+        character.baseStat['STR'] = int(char_dict['STR'])
+        character.baseStat['DEX'] = int(char_dict['DEX'])
+        character.baseStat['CON'] = int(char_dict['CON'])
+        character.baseStat['WIT'] = int(char_dict['WIT'])
 
         character.baseEvasion = character.baseStat['DEX']
         
-        character.baseHealth = dice_utils.rollStat(int(charDict['Difficulty']), character.baseStat['CON'], character.baseStat['CON'])
+        character.baseHealth = dice_utils.rollStat(int(char_dict['Difficulty']), character.baseStat['CON'], character.baseStat['CON'])
         if size == 'large':
             character.baseSize = 10
             character.dmg_mult = 2

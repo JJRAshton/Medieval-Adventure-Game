@@ -11,7 +11,7 @@ from . import item as it
 
 
 # Gets the in game distance between two coords for attacks
-def calcRadDist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
+def calc_rad_dist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
     xdiff = abs(coords2[0] - coords1[0])
     ydiff = abs(coords2[1] - coords1[1])
 
@@ -27,17 +27,17 @@ class Character(HealthEntity):
         stat_provider = AttackStatDictionaryProvider()
         self.__attack_factory = AttackFactory(stat_provider)
         self.__weapon_factory = WeaponFactory(stat_provider,  self.__attack_factory)
-        self.baseEvasion = 0
-        self.baseArmour = 0
-        self.baseMovement = 0
-        self.baseCoverage = 0
+        self.base_evasion = 0
+        self.base_armour = 0
+        self.base_movement = 0
+        self.base_coverage = 0
         self.base_attacks: List[Attack] = []
 
         self.dmg_mult = 1  # For larger creatures to do more damage
 
         self.skill = 0
         
-        self.baseStat = {
+        self.base_stat = {
             'STR': 0,
             'DEX': 0,
             'CON': 0,
@@ -47,8 +47,8 @@ class Character(HealthEntity):
 
         self.initiative = 0
 
-        self.actionsTotal = 2
-        self.reactionsTotal = 1
+        self.actions_total = 2
+        self.reactions_total = 1
 
         self.actions = 2
         self.reactions = 1
@@ -62,16 +62,16 @@ class Character(HealthEntity):
 
         self.attack_options = []
 
-        self.maxMovement = 0
-        self.maxHealth = 0
+        self.max_movement = 0
+        self.max_health = 0
 
-        self.equippedWeapons: Dict[str, str | None] = {
+        self.equipped_weapons: Dict[str, str | None] = {
             'Left': None,
             'Right': None,
             'Both': None
         }
 
-        self.equippedArmour = {
+        self.equipped_armour = {
             'Under': None,
             'Over': None
         }
@@ -80,14 +80,14 @@ class Character(HealthEntity):
 
         self.inventory = []
 
-        self.baseReach: int = 5
+        self.base_reach: int = 5
 
         self.reach: int = 0
         self.range: int = 0
         
         self.is_conscious: bool = True
         self.is_stable: bool = True
-        self.savingThrows = (0, 0)
+        self.saving_throws = (0, 0)
         self.drop_rate: float = 0
 
     # Allows for sorting by initiative order in sorted list
@@ -96,7 +96,7 @@ class Character(HealthEntity):
 
     # Resets health to max health
     def refreshHealth(self):
-        self.health = self.maxHealth
+        self.health = self.max_health
     
     # Moves entity by given vector and decreases movement
     def move(self, vector: Tuple[int, int]):
@@ -106,10 +106,10 @@ class Character(HealthEntity):
 
     # Initialises the relevant stats to start a new turn
     def initialiseTurn(self):
-        self.movement = self.maxMovement
+        self.movement = self.max_movement
 
-        self.actions = self.actionsTotal
-        self.reactions = self.reactionsTotal
+        self.actions = self.actions_total
+        self.reactions = self.reactions_total
 
     # Calculates the initiative roll
     def calcInitiative(self):
@@ -141,7 +141,7 @@ class Character(HealthEntity):
     # Makes an attack roll returning whether it -1:miss, 0:blocked, 1:hit, 2:critical hit
     def hitContest(self, attack: Attack, hitBonus, opponent):
 
-        distance = calcRadDist(self.coords, opponent.coords)
+        distance = calc_rad_dist(self.coords, opponent.coords)
         size_diff = self.size - opponent.size
 
         opponentCritResistance = opponent.stat['DEX'] * ((1 + opponent.coverage) ** 2)
@@ -228,14 +228,14 @@ class Character(HealthEntity):
             if creature.equippedArmour['Over'] is not None:
                 if creature.equippedArmour['Over'].material == 'mail' and attack.from_weapon.is_fine:
                     is_AP = True
-            appliedDamage += creature.takeDamage(damage[attack.damage_maintype], attack.damage_maintype,
+            appliedDamage += creature.take_damage(damage[attack.damage_maintype], attack.damage_maintype,
                                                  is_AP, is_critical, AA_stat)
             for damage_type in damage:  # Apply other (non-main) damage types associated with the attack
                 if damage_type == attack.damage_maintype:
                     continue
                 if appliedDamage > 0:
                     is_critical = True
-                appliedDamage += creature.takeDamage(damage[damage_type], damage_type,
+                appliedDamage += creature.take_damage(damage[damage_type], damage_type,
                                                      is_AP, is_critical, AA_stat)
 
             indicator = hitStatus + str(appliedDamage)
@@ -257,7 +257,7 @@ class Character(HealthEntity):
         return indicatorList
 
     # Checks if entity is still alive
-    def checkAlive(self):
+    def check_alive(self):
         if self.health <= 0:
             if abs(self.health) < self.baseHealth:
                 self.is_alive = False
@@ -269,27 +269,27 @@ class Character(HealthEntity):
     # Heals the entity
     def heal(self, appliedHealing):
         self.health += appliedHealing
-        if self.health > self.maxHealth:
-            self.health = self.maxHealth
+        if self.health > self.max_health:
+            self.health = self.max_health
             
     # Resets the stats to the base stats
     def resetStats(self):
-        for stat in self.baseStat:
-            self.stat[stat] = self.baseStat[stat]
+        for stat in self.base_stat:
+            self.stat[stat] = self.base_stat[stat]
         
     def refreshMovement(self):
-        self.movement = self.maxMovement
+        self.movement = self.max_movement
 
     # Recalculates the entity damage and reach
     def refreshStatAfterWeapon(self):
 
         self.resetEvasion()
-        self.reach = self.baseReach
-        self.range = self.baseReach
+        self.reach = self.base_reach
+        self.range = self.base_reach
         self.getAttackOptions()
 
-        for hand in self.equippedWeapons:
-            eq_weapon = self.equippedWeapons[hand]
+        for hand in self.equipped_weapons:
+            eq_weapon = self.equipped_weapons[hand]
             if eq_weapon is None:
                 continue
             if eq_weapon.is_melee:
@@ -307,8 +307,8 @@ class Character(HealthEntity):
 
     # Resets evasion
     def resetEvasion(self):
-        self.evasion['Melee'] = self.baseEvasion
-        self.evasion['Ranged'] = self.baseEvasion
+        self.evasion['Melee'] = self.base_evasion
+        self.evasion['Ranged'] = self.base_evasion
 
     def refreshStatAfterEquipment(self):
         self.refreshStatAfterArmour()
@@ -327,16 +327,16 @@ class Character(HealthEntity):
             max_movement_reduction = 30  # A number larger than the armour movement reductions
 
         self.bulk = 0
-        self.stat['DEX'] = self.baseStat['DEX']
+        self.stat['DEX'] = self.base_stat['DEX']
         for dmg_type in self.armour:
-            self.armour[dmg_type] = self.baseArmour
-        self.maxMovement = self.baseMovement
-        self.coverage = self.baseCoverage
+            self.armour[dmg_type] = self.base_armour
+        self.max_movement = self.base_movement
+        self.coverage = self.base_coverage
 
         total_flex = 1
         total_weight = 0
-        for armour_type in self.equippedArmour:
-            eq_armour = self.equippedArmour[armour_type]
+        for armour_type in self.equipped_armour:
+            eq_armour = self.equipped_armour[armour_type]
             if eq_armour is None:
                 continue
 
@@ -371,11 +371,11 @@ class Character(HealthEntity):
         if self.is_exceededBulk():
             self.stat['DEX'] = round(self.stat['DEX'])
 
-        self.maxMovement -= min(total_weight, max_movement_reduction)
+        self.max_movement -= min(total_weight, max_movement_reduction)
 
     # Calculates the new evasion after a stat change
     def calcEvasion(self):
-        self.baseEvasion = self.stat['DEX']
+        self.base_evasion = self.stat['DEX']
 
     # Returns if the character exceeds their max bulk
     def is_exceededBulk(self) -> bool:
@@ -388,21 +388,21 @@ class Character(HealthEntity):
         dies = False
         
         if throw == 1:
-            self.savingThrows = (self.savingThrows[0], self.savingThrows[1]+2)
+            self.saving_throws = (self.saving_throws[0], self.saving_throws[1]+2)
             output = 'Critical Fail'
         elif throw < 10:
-            self.savingThrows = (self.savingThrows[0], self.savingThrows[1]+1)
+            self.saving_throws = (self.saving_throws[0], self.saving_throws[1]+1)
             output = 'Fail'
         elif throw == 20:
             saved = True
             output = 'Critical Success!'
         else:
-            self.savingThrows = (self.savingThrows[0]+1, self.savingThrows[1])
+            self.saving_throws = (self.saving_throws[0]+1, self.saving_throws[1])
             output = 'Success!'
             
-        if self.savingThrows[0] >= 3:
+        if self.saving_throws[0] >= 3:
             saved = True
-        elif self.savingThrows[1] >= 3:
+        elif self.saving_throws[1] >= 3:
             dies = True
             
         if saved:
@@ -417,12 +417,12 @@ class Character(HealthEntity):
 
     # Turns the weapon, armour and inventory strings into entities
     def getEquipment(self):
-        for hand in self.equippedWeapons:
-            if self.equippedWeapons[hand] is not None:
-                self.equippedWeapons[hand] = self.__weapon_factory.create(self.equippedWeapons[hand])
-        for armour_type in self.equippedArmour:
-            if self.equippedArmour[armour_type] is not None:
-                self.equippedArmour[armour_type] = it.Armour(self.equippedArmour[armour_type])
+        for hand in self.equipped_weapons:
+            if self.equipped_weapons[hand] is not None:
+                self.equipped_weapons[hand] = self.__weapon_factory.create(self.equipped_weapons[hand])
+        for armour_type in self.equipped_armour:
+            if self.equipped_armour[armour_type] is not None:
+                self.equipped_armour[armour_type] = it.Armour(self.equipped_armour[armour_type])
 
         self.createInventory()
 
@@ -439,8 +439,8 @@ class Character(HealthEntity):
     def getAttackOptions(self):
         i = 0
         self.attack_options = []
-        for location in self.equippedWeapons:
-            weapon = self.equippedWeapons[location]
+        for location in self.equipped_weapons:
+            weapon = self.equipped_weapons[location]
             if weapon is None:
                 continue
             for attack in weapon.attacks:

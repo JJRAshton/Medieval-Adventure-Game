@@ -18,7 +18,7 @@ class NPC(ch.Character):
         self.getStats()
 
         self.resetStats()
-        self.resetHealth()
+        self.reset_health()
 
         self.refreshStatAfterEquipment()
 
@@ -46,7 +46,7 @@ class Monster(NPC):
         self.team = 2
 
     # Checks if entity is still alive
-    def checkAlive(self):
+    def check_alive(self):
         if self.health < 0:
             self.is_alive = False
             self.health = 0

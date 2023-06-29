@@ -4,8 +4,8 @@ from .entity import Entity
 
 
 class HealthEntity(Entity):
-    def __init__(self, entityName: str):
-        super().__init__(entityName)
+    def __init__(self, entity_name: str):
+        super().__init__(entity_name)
 
         self.baseHealth = 0
         self.maxHealth = 0
@@ -24,18 +24,18 @@ class HealthEntity(Entity):
         self.is_alive = True
 
     # Checks if entity is still alive
-    def checkAlive(self):
+    def check_alive(self):
         if self.health <= 0:
             self.is_alive = False
             self.health = 0
 
     # Resets health to base health
-    def resetHealth(self):
+    def reset_health(self):
         self.maxHealth = self.baseHealth
         self.health = self.maxHealth
 
     # Damages the entity
-    def takeDamage(self, damage: float, dmg_type: str, is_AP: bool=False, is_critical: bool=False, AA_stat: Optional[float]=None):
+    def take_damage(self, damage: float, dmg_type: str, is_AP: bool=False, is_critical: bool=False, AA_stat: Optional[float]=None):
         appliedDamage = damage
 
         armour: float = 0
@@ -58,7 +58,7 @@ class HealthEntity(Entity):
         appliedDamage = round(appliedDamage)
         if appliedDamage > 0:
             self.health -= appliedDamage
-            self.checkAlive()
+            self.check_alive()
         else:
             appliedDamage = 0
 
