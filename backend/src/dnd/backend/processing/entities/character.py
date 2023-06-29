@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple
 
 from .stats.make_dataframes import AttackStatDictionaryProvider
 from . import entity as ent
+from .health_entity import HealthEntity
 from .stats.attack_factory import AttackFactory
 from .stats.weapon_factory import WeaponFactory
 from .attack import Attack
@@ -20,7 +21,7 @@ def calcRadDist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
     return dist
 
 
-class Character(ent.HealthEntity):
+class Character(HealthEntity):
     def __init__(self, entityName: str):
         super().__init__(entityName)
         stat_provider = AttackStatDictionaryProvider()
@@ -186,7 +187,7 @@ class Character(ent.HealthEntity):
         return result
 
     # Performs a single attack on another entity
-    def singleAttack(self, attackID: int, creature: ent.HealthEntity):
+    def singleAttack(self, attackID: int, creature: HealthEntity):
         attack: Attack = self.attack_options[attackID]
 
         AA_stat = self.stat['WIT'] if self.has_Trait('Anti-armour_expert') else None

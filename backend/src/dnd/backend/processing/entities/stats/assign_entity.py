@@ -2,7 +2,6 @@ import random as rd
 from typing import List
 import pandas as pd
 
-from ..item import Weapon
 from ..item import Armour
 from . import dice_utils
 
@@ -27,9 +26,9 @@ armour_levels = {
     }
 }
 
+''' Factory for armour, objects, characters and players. '''
+class EntityFactory:
 
-class EntityStats:
-    
     def __init__(self, mapNumber: int=1):
         self.tables = EntityStatDictionaryProvider(mapNumber)
 

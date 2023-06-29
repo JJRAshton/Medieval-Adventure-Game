@@ -1,9 +1,8 @@
-from . import entity as ent
-from . import attack as at
+from .entity import Entity
 from .stats.make_dataframes import weapon_types
 
 
-class Item(ent.Entity):
+class Item(Entity):
 
     def __init__(self, itemName):
         super().__init__(itemName)
@@ -12,17 +11,11 @@ class Item(ent.Entity):
 
     # Checks if the item is a weapon
     def is_Weapon(self):
-        if self.type in weapon_types:
-            return True
-        else:
-            return False
+        return self.type in weapon_types
 
     # Checks if the item is armour
     def is_Armour(self):
-        if self.type in ['Under', 'Over']:
-            return True
-        else:
-            return False
+        return self.type in ['Under', 'Over']
 
 
 class Weapon(Item):
@@ -53,7 +46,9 @@ class Weapon(Item):
         self.is_melee = True
 
 
+''' Don't create directly, use EntityFactory. '''
 class Armour(Item):
+
     def __init__(self, armourName):
         super().__init__(armourName)
         self.type = ''
@@ -68,4 +63,4 @@ class Armour(Item):
 
     # Collects entity base stats
     def getStats(self):
-        ent.Entity.entityStats.getArmourStats(self)
+        Entity.entityStats.getArmourStats(self)

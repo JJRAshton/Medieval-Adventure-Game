@@ -4,12 +4,12 @@ from typing import Dict, List, Tuple
 import pandas as pd
 import os
 
-from .entities.entity import HealthEntity
+from .entities.health_entity import HealthEntity
 from .entities.npc import NPC, Monster
 from .entities.character import Character
 from .entities.player import Player
 
-from . import entities as ent
+from .entities.map_object import Object
 
 
 # Gets the in game distance between two coords for travel
@@ -79,7 +79,7 @@ class Back:
         objectList = pkl.load(open(f'{self.map_path}/objects.pkl', 'rb'))
         for objectID, object_info in enumerate(objectList, start=100):
             name, coords = object_info
-            i_object = ent.Object(name)
+            i_object = Object(name)
             i_object.id = objectID
             self.objectGrid[coords[0]][coords[1]] = i_object
             self.objects.append(i_object)
