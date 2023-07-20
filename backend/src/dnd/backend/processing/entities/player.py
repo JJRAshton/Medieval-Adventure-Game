@@ -1,7 +1,6 @@
 import random as rd
 
 from . import character as ch
-from . import entity as ent
 from . import classes as cl
 
 
@@ -20,42 +19,9 @@ class Player(ch.Character):
         'Ninja': cl.Ninja
         }
 
-    def __init__(self, playerClass=None, playerName=None):
-        if playerName is None:
-            playerName = rd.choice(Player.names)
-        self.p_class = Player.p_classes[playerClass]()
-
-        self.chosen_weapons = []
-
-        self.behaviour_type = 1
-        self.team = 1
-
-        self.base_attacks = ['hit']
-
-        super().__init__(playerName)
-
-        self.getStats()
-
-        self.getClass()
-        self.getEquipment()
-
-        self.resetStats()
-
-        self.refreshStatAfterEquipment()
-
-        self.calcProfB()
-        self.calcHealth()
-
-        self.reset_health()
-
-        self.calcInitiative()
-
-        self.reset_health()
-
-    # Gets the player stats
-    def getStats(self):
-        ent.Entity.entityStats.getPlayerStats(self)
-        self.convAttacks()
+    def __init__(self, player_class, player_name):
+        super().__init__(player_name)
+        self.p_class = player_class
 
     def resetStats(self):
         super().resetStats()
@@ -90,15 +56,15 @@ class Player(ch.Character):
             self.equipSingleWeapon(invIndex, location)
 
     # Equips a one-handed weapon
-    def equipSingleWeapon(self, invIndex, location):
-        weapon = self.inventory[invIndex]
+    def equipSingleWeapon(self, inv_index, location):
+        weapon = self.inventory[inv_index]
 
         self.unequipWeapon('Both')
         self.unequipWeapon(location)
 
         self.equipped_weapons[location] = weapon
 
-        self.inventory.pop(invIndex)
+        self.inventory.pop(inv_index)
 
     # Equips a two-handed weapon
     def equipDoubleWeapon(self, invIndex):
@@ -119,8 +85,8 @@ class Player(ch.Character):
             self.inventory.append(armour)
 
     # Equip a set of armour
-    def equipArmour(self, invIndex):
-        armour = self.inventory[invIndex]
+    def equipArmour(self, inv_index):
+        armour = self.inventory[inv_index]
 
         if not armour.is_Armour:
             return
@@ -129,7 +95,7 @@ class Player(ch.Character):
 
         self.equippedArmour[armour.p_class] = armour
 
-        self.inventory.pop(invIndex)
+        self.inventory.pop(inv_index)
 
     # Resets evasion accounting for bonus melee evasion of some classes
     def resetEvasion(self):

@@ -4,10 +4,11 @@ from typing import Dict, List, Tuple
 import pandas as pd
 import os
 
+from .entities.stats.assign_entity import EntityFactory
+
 from .entities.health_entity import HealthEntity
 from .entities.npc import NPC, Monster
 from .entities.character import Character
-from .entities.player import Player
 
 from .entities.map_object import Object
 
@@ -31,6 +32,8 @@ class Back:
             self.map_path = f'{Back.maps_dir}/map{map_no}'
         else:
             self.map_path = map_no
+
+        self.__entity_factory = EntityFactory(map_no)
         self.player_n = nPlayers
         self.size = (0, 0)
 
@@ -79,7 +82,7 @@ class Back:
         objectList = pkl.load(open(f'{self.map_path}/objects.pkl', 'rb'))
         for objectID, object_info in enumerate(objectList, start=100):
             name, coords = object_info
-            i_object = Object(name)
+            i_object: Object = self.__entity_factory.create_object(name)
             i_object.id = objectID
             self.objectGrid[coords[0]][coords[1]] = i_object
             self.objects.append(i_object)
@@ -106,7 +109,7 @@ class Back:
     # Creates and registers a character and its inventory
     def createCharacter(self, character_type: str, sub_type: str | None=None) -> HealthEntity:
         if character_type == 'Player' and sub_type is None:
-            character: HealthEntity = Player(self.classes.pop(0))
+            character: HealthEntity = self.__entity_factory.create_player(self.classes.pop(0))
         elif character_type == 'Monster' and sub_type is not None:
             character: HealthEntity = Monster(sub_type)
         elif character_type == 'NPC' and sub_type is not None:

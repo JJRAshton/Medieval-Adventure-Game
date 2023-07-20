@@ -2,7 +2,10 @@ import random as rd
 from typing import List
 import pandas as pd
 
+from ..player import Player
 from ..item import Armour
+from ..map_object import Object
+
 from . import dice_utils
 
 from .make_dataframes import EntityStatDictionaryProvider
@@ -30,16 +33,16 @@ armour_levels = {
 class EntityFactory:
 
     def __init__(self, map_number: int=1):
-        self.tables = EntityStatDictionaryProvider(map_number)
+        self.stat_provider = EntityStatDictionaryProvider(map_number)
 
     # Returns a dictionary of stats for the given character
     def __getCharacterDict(self, character_name: str):
-        character_dict = self.tables.get_character_stats_dict(character_name)
+        character_dict = self.stat_provider.get_character_stats_dict(character_name)
         return character_dict
 
     # Returns a dictionary of stats for the given armour
     def __getArmourDict(self, armour_name: str):
-        armourDict = self.tables.get_armour_stats_dict(armour_name)
+        armourDict = self.stat_provider.get_armour_stats_dict(armour_name)
         return armourDict
 
     def getArmourStats(self, armour: Armour):
@@ -53,18 +56,26 @@ class EntityFactory:
         armour.flex = int(arDict['Flex']) / 100
         armour.weight = int(arDict['Movement Penalty'])
 
-    def getObjectStats(self, i_object):
-        obj_dict = self.__getArmourDict(i_object.name)
+    def create_object(self, object_name: str) -> Object:
+        new_object = Object(object_name)
 
-        i_object.armour['piercing'] = int(obj_dict['AC'])
-        i_object.armour['slashing'] = int(obj_dict['AC'])
-        i_object.armour['bludgeoning'] = int(obj_dict['AC'])
-        i_object.baseHealth = int(obj_dict['Health'])
+        # Hmm, this is a bit suspicious
+        obj_dict = self.__getArmourDict(object_name.name)
+
+        new_object.armour['piercing'] = int(obj_dict['AC'])
+        new_object.armour['slashing'] = int(obj_dict['AC'])
+        new_object.armour['bludgeoning'] = int(obj_dict['AC'])
+        new_object.baseHealth = int(obj_dict['Health'])
 
         is_inv = bool(obj_dict['Inventory'])
 
         if is_inv:
-            i_object.inventory = []
+            new_object.inventory = []
+        
+        new_object.reset_health()
+        new_object.resetSize()
+
+        return new_object
 
     # Adds the stats to the given character (not player)
     def getCharacterStats(self, character):  # Doesn't collect all data
@@ -145,7 +156,18 @@ class EntityFactory:
         character.baseReach = character.baseSize
 
     # Adds the stats to the given player
-    def getPlayerStats(self, player):
+    def create_player(self, playerClass, playerName=None) -> Player:
+        if playerName is None:
+            playerName = rd.choice(Player.names)
+        player = Player(Player.p_classes[playerClass](), playerName)
+        
+        player.chosen_weapons = []
+
+        player.behaviour_type = 1
+        player.team = 1
+
+        player.base_attacks = ['hit']
+    
         x, n, top = 3, 8, 48  # roll 8, take best 5 - max of 40
         stat_rolls = []
 
@@ -162,18 +184,44 @@ class EntityFactory:
         stat_rolls.sort(reverse=True)
 
         for stat in player.p_class.stat_order:
-            player.baseStat[stat] = stat_rolls.pop(0)
+            player.base_stat[stat] = stat_rolls.pop(0)
 
-        df = self.tables.__weapons
+        df = self.stat_provider.weapons
+        print(df)
         wep_option_df = pd.DataFrame()
         for wep_type in player.p_class.weapons:
             wepData = df[(df.Type == wep_type) & (df.Tier == 4)]
             wep_option_df = pd.concat([wep_option_df, wepData]) 
 
         choices = wep_option_df.index.tolist()
+
+        print("Choices are :")
+        print(choices)
+        print(player.p_class.weapons)
+
         weapon_str = rd.choice(choices)
         if df.loc[weapon_str].to_dict()['Two-handed']:
-            player.equippedWeapons['Both'] = rd.choice(choices)
+            player.equipped_weapons['Both'] = weapon_str
         else:
-            player.equippedWeapons['Right'] = rd.choice(choices)
+            player.equipped_weapons['Right'] = weapon_str
+
+        player.convAttacks()
+
+        player.getClass()
+        player.getEquipment()
+
+        player.resetStats()
+
+        player.refreshStatAfterEquipment()
+
+        player.calcProfB()
+        player.calcHealth()
+
+        player.reset_health()
+
+        player.calcInitiative()
+
+        player.reset_health()
+
+        return player
     

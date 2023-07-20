@@ -77,11 +77,11 @@ class EntityStatDictionaryProvider:
         self.__characters = data_frame_factory.make_character_stat_table(self.map)
         self.__armour = data_frame_factory.make_armour_stat_table()
         self.__objects = data_frame_factory.make_object_stat_table()
-        self.__weapons = data_frame_factory.make_weapon_stat_table()
+        self.weapons = data_frame_factory.make_weapon_stat_table()
 
     def get_weapon_stats_dict(self, weapon_name: str) -> Dict[str, str]:
         # Make a dictionary of the stats for the entity
-        gotten_stats: Dict[str, str] = self.__weapons.loc[weapon_name].to_dict() # type: ignore
+        gotten_stats: Dict[str, str] = self.weapons.loc[weapon_name].to_dict() # type: ignore
         return gotten_stats
 
     def get_character_stats_dict(self, character_name: str) -> Dict[str, object]:

@@ -1,12 +1,13 @@
 import random as rd
 from typing import Dict, List, Tuple
 
-from .stats.make_dataframes import AttackStatDictionaryProvider
+from .stats.make_dataframes import AttackStatDictionaryProvider, EntityStatDictionaryProvider
 from . import entity as ent
 from .health_entity import HealthEntity
 from .stats.attack_factory import AttackFactory
 from .stats.weapon_factory import WeaponFactory
 from .attack import Attack
+from .item import Weapon
 from . import item as it
 
 
@@ -26,7 +27,7 @@ class Character(HealthEntity):
         super().__init__(entityName)
         stat_provider = AttackStatDictionaryProvider()
         self.__attack_factory = AttackFactory(stat_provider)
-        self.__weapon_factory = WeaponFactory(stat_provider,  self.__attack_factory)
+        self.__weapon_factory = WeaponFactory(EntityStatDictionaryProvider(),  self.__attack_factory)
         self.base_evasion = 0
         self.base_armour = 0
         self.base_movement = 0
@@ -65,7 +66,7 @@ class Character(HealthEntity):
         self.max_movement = 0
         self.max_health = 0
 
-        self.equipped_weapons: Dict[str, str | None] = {
+        self.equipped_weapons: Dict[str, Weapon | None] = {
             'Left': None,
             'Right': None,
             'Both': None
@@ -455,8 +456,9 @@ class Character(HealthEntity):
     def createInventory(self):
         new_list = []
         for item_str in self.inventory:
-            item = self.__weapon_factory.create(item_str)  # Converts to weapon for now
-            new_list.append(item)
+            pass # do nothing for now, I want to stop having a weapon factory here at all
+            # item = self.__weapon_factory.create(item_str)  # Converts to weapon for now
+            # new_list.append(item)
         self.inventory = new_list
 
     # Functions to be redefined with npc and player classes
