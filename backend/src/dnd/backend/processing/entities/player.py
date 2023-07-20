@@ -30,7 +30,7 @@ class Player(ch.Character):
 
     # Gets the player class associated stats
     def getClass(self):
-        self.equippedArmour = self.p_class.startingArmour
+        self.equipped_armour = self.p_class.startingArmour
         self.baseMovement = self.p_class.baseMovement
         self.skill = self.p_class.skill
         if self.has_Trait('Slow'):
@@ -79,9 +79,9 @@ class Player(ch.Character):
 
     # Unequip a set of armour
     def unequipArmour(self, armour_type):
-        armour = self.equippedArmour[armour_type]
+        armour = self.equipped_armour[armour_type]
         if armour is not None:
-            self.equippedArmour[armour_type] = None
+            self.equipped_armour[armour_type] = None
             self.inventory.append(armour)
 
     # Equip a set of armour
@@ -91,9 +91,9 @@ class Player(ch.Character):
         if not armour.is_Armour:
             return
 
-        self.unequipArmour(armour.p_class)
+        self.unequip_armour(armour.p_class)
 
-        self.equippedArmour[armour.p_class] = armour
+        self.equipped_armour[armour.p_class] = armour
 
         self.inventory.pop(inv_index)
 

@@ -226,8 +226,8 @@ class Character(HealthEntity):
             damage = attack.rollDamage(dmg_stat, dmg_mult)
             appliedDamage = 0
             is_AP = attack.from_weapon.is_AP
-            if creature.equippedArmour['Over'] is not None:
-                if creature.equippedArmour['Over'].material == 'mail' and attack.from_weapon.is_fine:
+            if creature.equipped_armour['Over'] is not None:
+                if creature.equipped_armour['Over'].material == 'mail' and attack.from_weapon.is_fine:
                     is_AP = True
             appliedDamage += creature.take_damage(damage[attack.damage_maintype], attack.damage_maintype,
                                                  is_AP, is_critical, AA_stat)

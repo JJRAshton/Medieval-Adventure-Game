@@ -22,7 +22,7 @@ class WeaponFactory:
         attacks_list = []
         for attack_str in weapon.attacks:
             attack = self.__attack_factory.create(attack_str)
-            attack.setWeapon(self)
+            attack.setWeapon(weapon)
             attack.updateDamage()
             attacks_list.append(attack)
         weapon.attacks = attacks_list

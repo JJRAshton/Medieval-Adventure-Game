@@ -59,8 +59,8 @@ class Armour(Item):
         self.coverage = 0
         self.bulk = 0
 
-        self.getStats()
+        # self.getStats()
 
-    # Collects entity base stats
-    def getStats(self):
-        Entity.entityStats.getArmourStats(self)
+    # # Collects entity base stats
+    # def getStats(self):
+    #     Entity.entityStats.getArmourStats(self)

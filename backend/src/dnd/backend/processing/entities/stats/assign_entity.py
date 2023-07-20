@@ -89,7 +89,7 @@ class EntityFactory:
 
         for location in ['Left', 'Right', 'Both']:
             if char_dict[location]:
-                character.equippedWeapons[location] = char_dict[location]
+                character.equipped_weapons[location] = char_dict[location]
                 starting_items.append(char_dict[location])
 
         if char_dict['Base Armour']:
@@ -189,17 +189,12 @@ class EntityFactory:
             player.base_stat[stat] = stat_rolls.pop(0)
 
         df = self.stat_provider.weapons
-        print(df)
         wep_option_df = pd.DataFrame()
         for wep_type in player.p_class.weapons:
             wepData = df[(df.Type == wep_type) & (df.Tier == 4)]
             wep_option_df = pd.concat([wep_option_df, wepData]) 
 
         choices = wep_option_df.index.tolist()
-
-        print("Choices are :")
-        print(choices)
-        print(player.p_class.weapons)
 
         weapon_str = rd.choice(choices)
         if df.loc[weapon_str].to_dict()['Two-handed']:

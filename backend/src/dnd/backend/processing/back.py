@@ -212,8 +212,8 @@ class Back:
     # Drops the characters weapon
     def dropWeapon(self, character: Character) -> None:  # Needs update to new weapon system
         raise NotImplementedError("Dropping weapons not implemented")
-        # weapon = character.equippedWeapons
-        # character.equippedWeapons = None
+        # weapon = character.equipped_weapons
+        # character.equipped_weapons = None
 
         # weapon.coords = character.coords
         # self.itemGrid[weapon.coords[0]][weapon.coords[1]] = weapon
@@ -223,8 +223,8 @@ class Back:
     # Drops the characters armour
     def dropArmour(self, character: Character) -> None:  # Needs update to new armour system
         raise NotImplementedError("Dropping armour not implemented")
-        # armour = character.equippedArmour
-        # character.equippedArmour = None
+        # armour = character.equipped_armour
+        # character.equipped_armour = None
 
         # armour.coords = character.coords
         # self.itemGrid[armour.coords[0]][armour.coords[1]] = armour

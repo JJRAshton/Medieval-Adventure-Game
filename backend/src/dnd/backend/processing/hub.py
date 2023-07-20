@@ -180,19 +180,19 @@ class Hub:
 
             'Armour': {
                 location: {
-                    'Name': character.equippedArmour[location].name if character.equippedArmour[location] is not None else 'N/A'
+                    'Name': character.equipped_armour[location].name if character.equipped_armour[location] is not None else 'N/A'
                 }
-                for location in character.equippedArmour},
+                for location in character.equipped_armour},
 
             'Weapons': {
                 location: {
-                    'Name': character.equippedWeapons[location].name,
+                    'Name': character.equipped_weapons[location].name,
                     'Characteristic':
-                        'Light' if character.equippedWeapons[location].is_light else
-                        'Loading' if character.equippedWeapons[location].is_loading else
+                        'Light' if character.equipped_weapons[location].is_light else
+                        'Loading' if character.equipped_weapons[location].is_loading else
                         'Normal'
                 }
-                for location in character.equippedWeapons if character.equippedWeapons[location] is not None},
+                for location in character.equipped_weapons if character.equipped_weapons[location] is not None},
 
             'Inventory': [item.name for item in character.inventory],
         }

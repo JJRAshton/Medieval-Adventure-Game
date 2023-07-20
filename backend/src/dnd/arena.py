@@ -91,16 +91,16 @@ class Arena:
         print('     Bulk:', character.bulk)
         print('     Max Bulk:', character.p_class.max_bulk)
         print('     Health:', character.maxHealth)
-        if character.equippedWeapons['Left'] or character.equippedWeapons['Right']:
+        if character.equipped_weapons['Left'] or character.equipped_weapons['Right']:
             left_weapon = None
             right_weapon = None
-            if character.equippedWeapons['Left']:
-                left_weapon = character.equippedWeapons['Left'].name
-            if character.equippedWeapons['Right']:
-                right_weapon = character.equippedWeapons['Right'].name
+            if character.equipped_weapons['Left']:
+                left_weapon = character.equipped_weapons['Left'].name
+            if character.equipped_weapons['Right']:
+                right_weapon = character.equipped_weapons['Right'].name
             print('     Weapon:', left_weapon, right_weapon)
-        elif character.equippedWeapons['Both']:
-            print('     Weapon:', character.equippedWeapons['Both'].name)
+        elif character.equipped_weapons['Both']:
+            print('     Weapon:', character.equipped_weapons['Both'].name)
 
     def newBack(self):
         self.backs += 1
