@@ -9,6 +9,7 @@ from ..map_object import Object
 from . import dice_utils
 
 from .make_dataframes import EntityStatDictionaryProvider
+from .characters_loader import CharacterStatDictionaryProvider
 
 
 # Different armour levels for characters
@@ -33,11 +34,12 @@ armour_levels = {
 class EntityFactory:
 
     def __init__(self, map_number: int=1):
-        self.stat_provider = EntityStatDictionaryProvider(map_number)
+        self.stat_provider = EntityStatDictionaryProvider()
+        self.character_stat_provider = CharacterStatDictionaryProvider(map_number)
 
     # Returns a dictionary of stats for the given character
     def __getCharacterDict(self, character_name: str):
-        character_dict = self.stat_provider.get_character_stats_dict(character_name)
+        character_dict = self.character_stat_provider.get_character_stats_dict(character_name)
         return character_dict
 
     # Returns a dictionary of stats for the given armour

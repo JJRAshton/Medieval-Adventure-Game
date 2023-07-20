@@ -15,31 +15,6 @@ weapon_types = ['arena_weapons',
 
 class EntityCSVToDataFrameParser():
 
-    def __parse_csv(self, directory: str):
-        data_frame: pd.DataFrame = pd.read_csv(directory, header=None) # type: ignore
-        data_frame = data_frame.rename(columns=data_frame.iloc[0]).drop(data_frame.index[0]) # type: ignore
-        data_frame.set_index('Name', inplace=True) # type: ignore
-        return data_frame
-
-    def make_character_stat_table(self, map_number_str: str):
-        # assign some useful variables
-
-        # read combat setup
-        df: pd.DataFrame = pd.read_csv(f'{INPUTS_DIR}/maps/map{map_number_str}/entities.csv', keep_default_na=False) # type: ignore
-        monster_list: List[str] = [x for x in df['Monsters'] if x != '']
-        npc_list: List[str] = [x for x in df['NPCs'] if x != '']
-
-        all_char_df = self.__parse_csv(f'{INPUTS_DIR}/characters.csv')
-        all_char_df.dropna(how='all', inplace=True) # type: ignore
-
-        # construct dataframes of characters in this game - reference these tables to initialise things
-        character_table = all_char_df.loc[list(set(monster_list + npc_list))]
-
-        character_table = character_table.fillna('') # type: ignore
-
-        return character_table
-    
-
     def make_weapon_stat_table(self):
         weapon_table = pd.DataFrame()
         for weapon_type in weapon_types:
@@ -69,24 +44,17 @@ class EntityCSVToDataFrameParser():
 
 class EntityStatDictionaryProvider:
 
-    def __init__(self, mapNumber: int):
+    def __init__(self):
         ''' Provides dictionaries containing stats for "Entities" (everything
         except attacks and weapons?) '''
-        self.map = str(mapNumber)
         data_frame_factory = EntityCSVToDataFrameParser()
-        self.__characters = data_frame_factory.make_character_stat_table(self.map)
         self.__armour = data_frame_factory.make_armour_stat_table()
-        self.__objects = data_frame_factory.make_object_stat_table()
+        self.__objects = data_frame_factory.make_object_stat_table() # unused?
         self.weapons = data_frame_factory.make_weapon_stat_table()
 
     def get_weapon_stats_dict(self, weapon_name: str) -> Dict[str, str]:
         # Make a dictionary of the stats for the entity
         gotten_stats: Dict[str, str] = self.weapons.loc[weapon_name].to_dict() # type: ignore
-        return gotten_stats
-
-    def get_character_stats_dict(self, character_name: str) -> Dict[str, object]:
-        # Make a dictionary of the stats for the entity
-        gotten_stats: Dict[str, object] = self.__characters.loc[character_name].to_dict() # type: ignore
         return gotten_stats
 
     def get_armour_stats_dict(self, armour_name: str) -> Dict[str, str]:
