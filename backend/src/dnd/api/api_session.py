@@ -2,6 +2,8 @@ import json
 from typing import Set
 import websockets
 
+from .. import settings
+
 from ..ai.ai_manager import AIManager
 from ..api.api_turn_notification_subscription import APITurnNotificationSubscription
 from ..backend.back_requests import Requests
@@ -12,6 +14,7 @@ class APISession:
     """The main API, this should probably create a dnd game interacting with the backend?
     Joe needs to decide how he wants this to be done """
     def __init__(self, playerPool: Set[User]):
+        print("New game starting...")
         self.playerPool = playerPool # This is a set of api.users.User
         for player in playerPool:
             player.session = self
@@ -29,7 +32,7 @@ class APISession:
         locations = self.backend.locationsRequest()
         characterLocations = [(characterID, locations[characterID]) for characterID in locations]
         for character_info, user in zip(character_info_list, playerPool):
-            websockets.broadcast( # type: ignore
+            websockets.broadcast(
                 {user.socket},
                 self.translator.translate({
                     "responseType": "gameStart",
@@ -41,6 +44,9 @@ class APISession:
 
     # Called by the backend, sends a json message
     def broadcast(self, message):
+        if settings.LOG_LEVEL == settings.LogLevel.ON:
+            print(f"Broadcasting locations: {characterLocations}")
+
         websockets.broadcast({user.socket for user in self.playerPool}, json.dumps(message)) # type: ignore
 
     def sendToUserWithID(self, message, uuid: int):
@@ -51,9 +57,8 @@ class APISession:
                 return
             
     def sessionRequest(self, jsonEvent: str, user: User):
-        # This will probably be the main function, it is
-        # called directly by the user which is maybe a weird code flow?
-        print(jsonEvent)
+        if settings.LOG_LEVEL == settings.LogLevel.ON:
+            print(f"Receiving request: {jsonEvent}")
 
         if not "event" in jsonEvent:
             raise ValueError(f"Request {jsonEvent} does not declare its type")
@@ -74,7 +79,6 @@ class APISession:
                                     
             locations = self.backend.locationsRequest()
             characterLocations = [(characterID, locations[characterID]) for characterID in locations]
-            print(f"Broadcasting locations: {characterLocations}")
             self.broadcast({"responseType": "mapUpdate", "characters": characterLocations})
 
         elif jsonEvent["event"] == "playerInfoRequest":
@@ -116,8 +120,8 @@ class PythonToJSONTranslator:
     def map_to_json(self, loc):
         dictionary={}
         for info in loc:
-            id_number=info[0]
-            coords=info[1]
-            x,y = coords
-            dictionary[f'ID{id_number}']=[str(x), str(y)]
+            id_number = info[0]
+            coords = info[1]
+            x, y = coords
+            dictionary[f'ID{id_number}'] = [str(x), str(y)]
         return dictionary

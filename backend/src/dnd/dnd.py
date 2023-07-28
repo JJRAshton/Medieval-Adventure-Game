@@ -1,7 +1,7 @@
 import asyncio
 import json
-import websockets
 import copy
+import websockets
 
 from typing import Set
 from websockets.legacy.server import WebSocketServerProtocol as WebSocket
@@ -30,11 +30,10 @@ def value_event() -> str:
 
 async def addToLobby(websocket: WebSocket):
     global uuid_tracker
-    print("new connection")
     user = User(websocket, uuid_tracker)
     try:
         # Wrap the websocket in a User
-        print(currentUsers)
+        print(f"New connection, there are new {len(currentUsers)} users in the lobby")
         # Send current state to user
         await websocket.send(value_event())
         uuid_tracker += 1
@@ -43,7 +42,7 @@ async def addToLobby(websocket: WebSocket):
         # Manage state changes
         async for message in websocket:
             event = json.loads(message)
-            if user.session != None:
+            if user.session is not None:
                 user.sessionRequest(event)
             elif event["event"] == "joinGame":
                 playerPool.add(user)
@@ -63,10 +62,10 @@ async def addToLobby(websocket: WebSocket):
         if user in playerPool:
             playerPool.remove(user)
         currentUsers.remove(user)
-        websockets.broadcast({user.socket for user in currentUsers}, users_event()) # type: ignore
+        websockets.broadcast({user.socket for user in currentUsers}, users_event())
 
 async def main():
-    async with websockets.serve(addToLobby, "localhost", 8001): # type: ignore
+    async with websockets.serve(addToLobby, "localhost", 8001):
         await asyncio.Future()
 
 if __name__ == "__main__":
