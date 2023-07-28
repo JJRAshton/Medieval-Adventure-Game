@@ -2,6 +2,8 @@ import random as rd
 from typing import List
 import pandas as pd
 
+from ..npc import NPC
+from ..npc import Monster
 from ..player import Player
 from ..item import Armour
 from ..map_object import Object
@@ -221,4 +223,32 @@ class EntityFactory:
         player.reset_health()
 
         return player
+    
+    def create_npc(self, npc_name: str) -> NPC:
+        npc = NPC(npc_name)
+        npc.getEquipment()
+        npc.convAttacks()
+
+        npc.resetStats()
+        npc.reset_health()
+
+        npc.refreshStatAfterEquipment()
+        npc.calcInitiative()
+
+        return npc
+
+    def create_monster(self, monster_name: str) -> Monster:
+        monster = Monster(monster_name)
+        monster.getEquipment()
+        monster.convAttacks()
+
+        monster.resetStats()
+        monster.reset_health()
+
+        monster.refreshStatAfterEquipment()
+        monster.calcInitiative()
+
+        return monster
+    
+
     

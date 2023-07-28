@@ -1,9 +1,8 @@
 from . import entity as ent
-from . import character as ch
-
+from .character import Character
 
 # A non-playable character
-class NPC(ch.Character):
+class NPC(Character):
     def __init__(self, npcName: str):
         self.target = None
         self.behaviour_type = 2
@@ -14,21 +13,6 @@ class NPC(ch.Character):
         self.starting_items = []
 
         super().__init__(npcName)
-
-        self.getStats()
-
-        self.resetStats()
-        self.reset_health()
-
-        self.refreshStatAfterEquipment()
-
-        self.calcInitiative()
-
-    # Collects entity base stats
-    def getStats(self):
-        ent.Entity.entityStats.getCharacterStats(self)
-        self.getEquipment()
-        self.convAttacks()
 
     # Checks if the character is proficient with the weapon
     def is_Proficient(self, weapon):

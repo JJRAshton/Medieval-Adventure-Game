@@ -111,9 +111,9 @@ class Back:
         if character_type == 'Player' and sub_type is None:
             character: HealthEntity = self.__entity_factory.create_player(self.classes.pop(0))
         elif character_type == 'Monster' and sub_type is not None:
-            character: HealthEntity = Monster(sub_type)
+            character: HealthEntity = self.__entity_factory.create_monster(sub_type)
         elif character_type == 'NPC' and sub_type is not None:
-            character: HealthEntity = NPC(sub_type)
+            character: HealthEntity = self.__entity_factory.create_npc(sub_type)
         else:
             raise ValueError
 

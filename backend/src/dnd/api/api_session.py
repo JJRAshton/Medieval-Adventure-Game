@@ -14,7 +14,8 @@ class APISession:
     """The main API, this should probably create a dnd game interacting with the backend?
     Joe needs to decide how he wants this to be done """
     def __init__(self, playerPool: Set[User]):
-        print("New game starting...")
+        if settings.LOG_LEVEL == settings.LogLevel.OFF:
+            print("New game starting...")
         self.playerPool = playerPool # This is a set of api.users.User
         for player in playerPool:
             player.session = self
@@ -45,7 +46,7 @@ class APISession:
     # Called by the backend, sends a json message
     def broadcast(self, message):
         if settings.LOG_LEVEL == settings.LogLevel.ON:
-            print(f"Broadcasting locations: {characterLocations}")
+            print(f"Broadcasting locations: {message}")
 
         websockets.broadcast({user.socket for user in self.playerPool}, json.dumps(message)) # type: ignore
 
@@ -72,7 +73,6 @@ class APISession:
             for coord in jsonEvent["route"][1:]:
                 if self.backend.moveVerificationRequest(playerID, coord):
                     if not self.backend.moveRequest(playerID, coord):
-                        # If the move goes through, update the player
                         break
                 else:
                     break

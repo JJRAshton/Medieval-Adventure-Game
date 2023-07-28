@@ -83,8 +83,8 @@ class Hub:
             return False
 
     # Generates the map
-    def requestMapStart(self, n_players, map, builtin):
-        self.chart = bk.Back(map, n_players, builtin)
+    def requestMapStart(self, n_players, map, using_builtin_map):
+        self.chart = bk.Back(map, n_players, using_builtin_map)
 
         turn_notifier = TurnNotifier()
         

@@ -1,11 +1,11 @@
 import random as rd
 
-from . import character as ch
+from .character import Character
 from . import classes as cl
 
 
 # A playable character
-class Player(ch.Character):
+class Player(Character):
     names = ['Robert', 'Arthur', 'Grork', 'Fosdron', 'Thulgraena', 'Diffros', 'Ayda', 'Tezug', 'Dor\'goxun', 'Belba']
 
     p_classes = {
