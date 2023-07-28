@@ -34,7 +34,7 @@ class Class:
         self.max_bulk = int(class_dict['Max Bulk'])
         self.skill = int(class_dict['Skill'])
 
-        self.baseMovement = int(class_dict['Base Movement'])
+        self.base_movement = int(class_dict['Base Movement'])
 
         if class_dict['Armour']:
             if ', ' in class_dict['Armour']:

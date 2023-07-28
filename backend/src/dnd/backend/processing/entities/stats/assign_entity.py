@@ -131,17 +131,17 @@ class EntityFactory:
             character.resistances += resistances
 
         character.actionsTotal = int(char_dict['Actions'])
-        character.baseMovement = int(char_dict['Speed'])
+        character.base_movement = int(char_dict['Speed'])
         character.drop_rate = int(char_dict['Drop Rate'])
         character.skill = int(char_dict['Skill']) if char_dict['Skill'] else 0
         character.difficulty = int(char_dict['Difficulty'])
 
-        character.baseStat['STR'] = int(char_dict['STR'])
-        character.baseStat['DEX'] = int(char_dict['DEX'])
-        character.baseStat['CON'] = int(char_dict['CON'])
-        character.baseStat['WIT'] = int(char_dict['WIT'])
+        character.base_stat['STR'] = int(char_dict['STR'])
+        character.base_stat['DEX'] = int(char_dict['DEX'])
+        character.base_stat['CON'] = int(char_dict['CON'])
+        character.base_stat['WIT'] = int(char_dict['WIT'])
 
-        character.baseEvasion = character.baseStat['DEX']
+        character.baseEvasion = character.base_stat['DEX']
         
         character.baseHealth = dice_utils.rollStat(int(char_dict['Difficulty']), character.baseStat['CON'], character.baseStat['CON'])
         if size == 'large':

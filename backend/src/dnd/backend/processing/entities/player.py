@@ -31,7 +31,7 @@ class Player(Character):
     # Gets the player class associated stats
     def getClass(self):
         self.equipped_armour = self.p_class.startingArmour
-        self.baseMovement = self.p_class.baseMovement
+        self.base_movement = self.p_class.base_movement
         self.skill = self.p_class.skill
         if self.has_Trait('Slow'):
             self.actionsTotal = 1

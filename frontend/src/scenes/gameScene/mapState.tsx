@@ -11,7 +11,7 @@ export default class MapState {
         this.mapHeight = mapHeight;
         this.resetMap();
         characters.forEach((chr: Character, id: number) => {
-            this._characterGrid[chr.x][chr.y] = chr;
+            this.set(chr.x, chr.y, chr);
         }, this)
     }
 
