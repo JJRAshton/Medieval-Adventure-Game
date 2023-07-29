@@ -20,8 +20,6 @@ class AttackFactory:
             raise ValueError(f"Attack with name {attack_name} was not recognised")
         return attack
     
-        
-    
     def __assign_weapon_attack_stats(self, attack):
         ''' Create an attack from a weapon '''
         atkDict = self.__attack_stat_provider.get_weapon_attack_stats_dict(attack.name)

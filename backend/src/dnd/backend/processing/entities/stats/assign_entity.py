@@ -143,7 +143,7 @@ class EntityFactory:
 
         character.baseEvasion = character.base_stat['DEX']
         
-        character.baseHealth = dice_utils.rollStat(int(char_dict['Difficulty']), character.base_stat['CON'], character.bas_stat['CON'])
+        character.baseHealth = dice_utils.rollStat(int(char_dict['Difficulty']), character.base_stat['CON'], character.base_stat['CON'])
         if size == 'large':
             character.baseSize = 10
             character.dmg_mult = 2
@@ -226,6 +226,7 @@ class EntityFactory:
     
     def create_npc(self, npc_name: str) -> NPC:
         npc = NPC(npc_name)
+        self.get_character_stats(npc)
         npc.getEquipment()
         npc.convAttacks()
 
@@ -239,6 +240,7 @@ class EntityFactory:
 
     def create_monster(self, monster_name: str) -> Monster:
         monster = Monster(monster_name)
+        self.get_character_stats(monster)
         monster.getEquipment()
         monster.convAttacks()
 

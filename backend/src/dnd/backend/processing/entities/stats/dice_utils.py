@@ -20,15 +20,7 @@ def rollStat(number: int, dice: int, bonus: int):
 
 
 def convertList(list_str: str):
-    while ' ' in list_str:
-        index = list_str.index(' ')
-        list_str = list_str[:index] + list_str[index + 1:]
-    str_list: List[str] = []
-    while ',' in list_str:
-        c_index = list_str.index(',')
-        item = list_str[:c_index]
-        list_str = list_str[c_index + 1:]
-        str_list.append(item)
-    str_list.append(list_str)
-
-    return str_list
+    no_whitespace = list_str.replace(" ", "")
+    if no_whitespace == "":
+        return []
+    return no_whitespace.split(",")
