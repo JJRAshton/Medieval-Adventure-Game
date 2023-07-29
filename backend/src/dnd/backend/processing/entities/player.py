@@ -34,7 +34,7 @@ class Player(Character):
         self.base_movement = self.p_class.base_movement
         self.skill = self.p_class.skill
         if self.has_Trait('Slow'):
-            self.actionsTotal = 1
+            self.actions_total = 1
 
     # Unequips a weapon if one present in given location
     def unequipWeapon(self, location):

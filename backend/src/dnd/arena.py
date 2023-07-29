@@ -39,7 +39,7 @@ class Arena:
         if log:
             print('People:', player1_str, player2_str)
         while player1.health > 0 and player2.health > 0 and count < max_count:
-            for action in range(player1.actionsTotal):
+            for action in range(player1.actions_total):
                 if log:
                     print(f'{player1_str} swings')
                 indicators = player1.attack([0], player2)
@@ -47,7 +47,7 @@ class Arena:
                     print(f'Result: {indicators[0]}')
             if player2.health == 0:
                 break
-            for action in range(player2.actionsTotal):
+            for action in range(player2.actions_total):
                 if log:
                     print(f'{player2_str} swings')
                 indicators = player2.attack([0], player1)
@@ -90,7 +90,7 @@ class Arena:
         print('     Armour:', character.armour)
         print('     Bulk:', character.bulk)
         print('     Max Bulk:', character.p_class.max_bulk)
-        print('     Health:', character.maxHealth)
+        print('     Health:', character.max_health)
         if character.equipped_weapons['Left'] or character.equipped_weapons['Right']:
             left_weapon = None
             right_weapon = None
@@ -114,7 +114,7 @@ class Arena:
             self.avStat[x] += self.players[self.no-1].stat[stat]
 
         for x in range(len(self.players)):
-            self.avHealth[x] += self.players[x].maxHealth
+            self.avHealth[x] += self.players[x].max_health
 
     def returnStat(self, classes):
         stat = [round(self.avStat[x] / self.backs, 2) for x in range(len(self.avStat))]

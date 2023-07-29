@@ -82,7 +82,7 @@ class EntityFactory:
         return new_object
 
     # Adds the stats to the given character (not player)
-    def getCharacterStats(self, character):  # Doesn't collect all data
+    def get_character_stats(self, character):  # Doesn't collect all data
         character_name = character.name
         char_dict = self.__getCharacterDict(character_name)
         starting_items: List[object] = []
@@ -130,7 +130,7 @@ class EntityFactory:
             resistances = dice_utils.convertList(char_dict['Resistances'])
             character.resistances += resistances
 
-        character.actionsTotal = int(char_dict['Actions'])
+        character.actions_total = int(char_dict['Actions'])
         character.base_movement = int(char_dict['Speed'])
         character.drop_rate = int(char_dict['Drop Rate'])
         character.skill = int(char_dict['Skill']) if char_dict['Skill'] else 0
@@ -143,7 +143,7 @@ class EntityFactory:
 
         character.baseEvasion = character.base_stat['DEX']
         
-        character.baseHealth = dice_utils.rollStat(int(char_dict['Difficulty']), character.baseStat['CON'], character.baseStat['CON'])
+        character.baseHealth = dice_utils.rollStat(int(char_dict['Difficulty']), character.base_stat['CON'], character.bas_stat['CON'])
         if size == 'large':
             character.baseSize = 10
             character.dmg_mult = 2

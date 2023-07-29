@@ -165,7 +165,7 @@ class Hub:
             'Range': character.range,
             'Reach': character.reach,
             'Health': character.health,
-            'Max_health': character.maxHealth,
+            'Max_health': character.max_health,
             'Action_number': character.actions,
 
             'Stats': {
