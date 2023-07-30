@@ -7,22 +7,14 @@ import os
 from .entities.stats.assign_entity import EntityFactory
 
 from .entities.health_entity import HealthEntity
-from .entities.npc import NPC, Monster
 from .entities.character import Character
 from .entities.classes import player_class
-
 from .entities.map_object import Object
 
 
 # Gets the in game distance between two coords for travel
 def calcPathDist(coords1: Tuple[int, int], coords2: Tuple[int, int]) -> int:
-
-    xdiff = abs(coords2[0] - coords1[0])
-    ydiff = abs(coords2[1] - coords1[1])
-
-    dist = 5 * (max(xdiff, ydiff))
-
-    return dist
+    return 5 * max(abs(coords2[0] - coords1[0]), abs(coords2[1] - coords1[1]))
 
 
 class Back:
@@ -187,17 +179,6 @@ class Back:
         self.objectGrid[newCoords[0]][newCoords[1]] = entity
         self.objectGrid[prevCoords[0]][prevCoords[1]] = None
 
-    # Moves an item on the grid
-    def moveItem(self, itemID: int, newCoords: Tuple[int, int]):
-        item = self.entities[itemID]
-        prevCoords = item.coords
-        vector = (newCoords[0]-prevCoords[0], newCoords[1]-prevCoords[1])
-
-        item.move(vector)
-
-        self.itemGrid[newCoords[0]][newCoords[1]] = item
-        self.itemGrid[prevCoords[0]][prevCoords[1]] = None
-
     # Drops an item from an inventory
     def dropInv(self, character: Character):
         inv_length = len(character.inventory)
@@ -213,24 +194,10 @@ class Back:
     # Drops the characters weapon
     def dropWeapon(self, character: Character) -> None:  # Needs update to new weapon system
         raise NotImplementedError("Dropping weapons not implemented")
-        # weapon = character.equipped_weapons
-        # character.equipped_weapons = None
-
-        # weapon.coords = character.coords
-        # self.itemGrid[weapon.coords[0]][weapon.coords[1]] = weapon
-
-        # weapon.is_carried = False
 
     # Drops the characters armour
     def dropArmour(self, character: Character) -> None:  # Needs update to new armour system
         raise NotImplementedError("Dropping armour not implemented")
-        # armour = character.equipped_armour
-        # character.equipped_armour = None
-
-        # armour.coords = character.coords
-        # self.itemGrid[armour.coords[0]][armour.coords[1]] = armour
-
-        # armour.is_carried = False
 
     # Moves the character along the given path to the given index
     def pathCharacter(self, charID: int, pathCoords: List[Tuple[int, int]], index: int):  # For now, just moves to the final allowed coord
@@ -244,46 +211,29 @@ class Back:
 
     # Checks if there is an item at the given coords
     def is_item(self, coords: Tuple[int, int]):
-        if self.itemGrid[coords[0]][coords[1]] is None:
-            return False
-        else:
-            return True
+        return self.itemGrid[coords[0]][coords[1]] is not None
 
     # Checks if there is a character at the given coords
     def is_character(self, coords: Tuple[int, int]):
-        if self.characterGrid[coords[0]][coords[1]] is None:
-            return False
-        else:
-            return True
+        return self.characterGrid[coords[0]][coords[1]] is not None
 
     # Checks if there is an object at the given coords
     def is_object(self, coords: Tuple[int, int]):
-        if self.objectGrid[coords[0]][coords[1]] is None:
-            return False
-        else:
-            return True
+        return self.objectGrid[coords[0]][coords[1]] is not None
 
     # Checks if coords are valid to move to
     def is_validCoords(self, newCoords: Tuple[int, int]):
         x, y = newCoords
         size = (len(self.characterGrid[0]), len(self.characterGrid))
 
-        if x > size[0] or x < 0 or y > size[1] or y < 0:
-            return False
-        if self.is_character(newCoords):
-            return False
-        if self.is_object(newCoords):
-            return False
-        return True
+        is_occupied: bool = self.is_character(newCoords) or self.is_object(newCoords)
+        return 0 <= x <= size[0] and 0 <= y <= size[1] and not is_occupied
 
     # Checks if character has the movement to move to coords
     def is_validMovement(self, charID: int, newCoords: Tuple[int, int]):
         x, y = newCoords
         oldx, oldy = self.entities[charID].coords
-        if self.entities[charID].movement < calcPathDist((oldx, oldy), (x, y)):
-            return False
-        else:
-            return True
+        return self.entities[charID].movement >= calcPathDist((oldx, oldy), (x, y))
 
     # Checks if the character can move along the given path
     def is_validPath(self, charID: int, pathCoords: Tuple[int, int]):
@@ -301,21 +251,10 @@ class Back:
 
     # Checks if an attack is valid
     def is_validAttack(self, atkID: int, defID: int):
-
-        atkCoords = self.entities[atkID].coords
-        radius = int(self.entities[atkID].reach/5)
+        atkx, atky = self.entities[atkID].coords
         defx, defy = self.entities[defID].coords
 
+        radius = int(self.entities[atkID].reach/5)
         remaining_atks = self.entities[atkID].actions
 
-        xmin = atkCoords[0] - radius
-        xmax = atkCoords[0] + radius
-        ymin = atkCoords[1] - radius
-        ymax = atkCoords[1] + radius
-
-        if defx < xmin or defx > xmax or defy < ymin or defy > ymax:
-            return False
-        elif remaining_atks == 0:
-            return False
-        else:
-            return True
+        return abs(atkx - defx) <= radius and abs(atky - defy) <= radius and remaining_atks > 0

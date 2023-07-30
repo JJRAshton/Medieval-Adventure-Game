@@ -19,7 +19,6 @@ def is_item(entID: int) -> bool:
     return 200 <= entID < 300
 
 
-# Function comments are in back_requests
 class Hub:
 
     def __init__(self, turn_notification_subscription: TurnNotificationSubscription, ai_manager: TurnNotificationSubscription):

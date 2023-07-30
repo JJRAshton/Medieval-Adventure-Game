@@ -16,7 +16,7 @@ class APISession:
     def __init__(self, playerPool: Set[User]):
         if settings.LOG_LEVEL == settings.LogLevel.OFF:
             print("New game starting...")
-        self.playerPool = playerPool # This is a set of api.users.User
+        self.playerPool = playerPool
         for player in playerPool:
             player.session = self
 
@@ -54,7 +54,6 @@ class APISession:
         for user in self.playerPool:
             if user.uuid == uuid:
                 user.socket.send(message)
-                # Once we've found the user, we're done as the id are unique
                 return
             
     def sessionRequest(self, jsonEvent: str, user: User):
@@ -76,7 +75,7 @@ class APISession:
                         break
                 else:
                     break
-                                    
+
             locations = self.backend.locationsRequest()
             characterLocations = [(characterID, locations[characterID]) for characterID in locations]
             self.broadcast({"responseType": "mapUpdate", "characters": characterLocations})
@@ -90,9 +89,9 @@ class APISession:
                 "playerInfo": self.backend.infoRequest(characterID)
             })
             websockets.broadcast({user.socket}, output) # type: ignore
-            
+
         elif jsonEvent["event"] == "attackRequest":
-            attack=self.backend.attackRequest(jsonEvent["playerID"], jsonEvent["enemyID"])
+            attack = self.backend.attackRequest(jsonEvent["playerID"], jsonEvent["enemyID"])
             output = json.dumps({
                 "responseType": "attackResult",
                 "attackResult": str(attack)
@@ -118,7 +117,7 @@ class PythonToJSONTranslator:
         return json.dumps(jsonDictionary)
  
     def map_to_json(self, loc):
-        dictionary={}
+        dictionary = {}
         for info in loc:
             id_number = info[0]
             coords = info[1]

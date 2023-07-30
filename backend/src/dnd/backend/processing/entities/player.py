@@ -36,7 +36,7 @@ class Player(Character):
     def equipWeapon(self, invIndex, location):
         weapon = self.inventory[invIndex]
 
-        if not weapon.is_Weapon:
+        if not weapon.is_Weapon():
             return
 
         if weapon.is_twoHanded:
