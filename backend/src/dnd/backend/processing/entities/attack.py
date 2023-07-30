@@ -1,5 +1,17 @@
-import random as rd
+from ...utils import dice_utils
 
+class AttackType:
+    
+    def __init__(self, type_name: str):
+        self.__type_name = type_name
+
+    def get_name(self) -> str:
+        return self.__type_name
+
+
+class AttackTypes:
+    RAW = AttackType('raw')
+    WEAPON = AttackType('weapon')
 
 class Attack:
 
@@ -17,17 +29,11 @@ class Attack:
         self.from_weapon = None
 
     def updateDamage(self):
-
         if self.type == 'weapon' and self.from_weapon is not None:
-            dice_no = self.damage[0]
-            self.damage = (dice_no, self.from_weapon.damage_dice)
+            self.damage = (self.damage[0], self.from_weapon.damage_dice)
 
         self.avdmg = self.damage[0] * (self.damage[1] + 1) / 2
-
-        current_percent = 0
-        for dmg_type in self.damage_types:
-            if self.damage_types[dmg_type] > current_percent:
-                self.damage_maintype = dmg_type
+        self.damage_maintype = max(self.damage_types, key=self.damage_types.get)
 
     def setWeapon(self, weapon):
         self.from_weapon = weapon
@@ -36,16 +42,8 @@ class Attack:
     def rollDamage(self, dmg_stat, dmg_mult=1):
         number, dice = self.damage
 
-        # Roll for base damage
-        base = 0
-        for _ in range(number):
-            base += rd.randint(1, dice)
-
         # Increases it according to the damage stat
-        totalDamage = dmg_mult * base * (1 + (dmg_stat - 25) / 100)
+        totalDamage = dmg_mult * dice_utils.roll_dice(number, dice) * (1 + (dmg_stat - 25) / 100)
 
-        damage = {}
-        for damage_type in self.damage_types:
-            damage[damage_type] = totalDamage * self.damage_types[damage_type]
-
-        return damage
+        # self.damage_types scaled by the rolled damage
+        return {damage_type: totalDamage * self.damage_types[damage_type] for damage_type in self.damage_types}

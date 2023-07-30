@@ -9,6 +9,7 @@ from .entities.stats.assign_entity import EntityFactory
 from .entities.health_entity import HealthEntity
 from .entities.npc import NPC, Monster
 from .entities.character import Character
+from .entities.classes import player_class
 
 from .entities.map_object import Object
 
@@ -27,7 +28,7 @@ def calcPathDist(coords1: Tuple[int, int], coords2: Tuple[int, int]) -> int:
 class Back:
     maps_dir = os.path.dirname(__file__) + '/../../../../resources/inputs/maps'
 
-    def __init__(self, map_no: int or str, nPlayers: int, builtin_map: int, classes: List[str] | None=None):
+    def __init__(self, map_no: int or str, nPlayers: int, builtin_map: int, classes: List[str] = []):
         if builtin_map:
             self.map_path = f'{Back.maps_dir}/map{map_no}'
         else:
@@ -58,8 +59,8 @@ class Back:
         self.monsters: List[HealthEntity] = []
         self.npcs: List[HealthEntity] = []  # Non-monsters
 
-        if classes is None:
-            classes = ['Raider', 'Gladiator', 'Guardian', 'Knight', 'Samurai']
+        if not classes:
+            classes = [player_class.RAIDER, player_class.GLADIATOR, player_class.GUARDIAN, player_class.KNIGHT, player_class.SAMURAI]
         self.classes = classes  # For choosing the class from backend - before frontend input
 
         self.maxReach = 5

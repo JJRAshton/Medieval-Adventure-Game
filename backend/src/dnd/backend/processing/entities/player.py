@@ -1,25 +1,14 @@
 import random as rd
 
 from .character import Character
-from . import classes as cl
+from .classes.player_class import PlayerClass
 
 
 # A playable character
 class Player(Character):
     names = ['Robert', 'Arthur', 'Grork', 'Fosdron', 'Thulgraena', 'Diffros', 'Ayda', 'Tezug', 'Dor\'goxun', 'Belba']
 
-    p_classes = {
-        'Raider': cl.Raider,
-        'Gladiator': cl.Gladiator,
-        'Guardian': cl.Guardian,
-        'Knight': cl.Knight,
-        'Samurai': cl.Samurai,
-        'Hunter': cl.Hunter,
-        'Professor': cl.Professor,
-        'Ninja': cl.Ninja
-        }
-
-    def __init__(self, player_class, player_name):
+    def __init__(self, player_class: PlayerClass, player_name: str):
         super().__init__(player_name)
         self.p_class = player_class
 

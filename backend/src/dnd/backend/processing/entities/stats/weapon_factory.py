@@ -1,5 +1,5 @@
 from .make_dataframes import EntityStatDictionaryProvider
-from . import dice_utils
+from ....utils import dice_utils
 from ..item import Weapon
 from .attack_factory import AttackFactory
 

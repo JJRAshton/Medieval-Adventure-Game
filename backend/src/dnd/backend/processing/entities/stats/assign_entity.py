@@ -7,8 +7,9 @@ from ..npc import Monster
 from ..player import Player
 from ..item import Armour
 from ..map_object import Object
+from ..classes import player_class
 
-from . import dice_utils
+from ....utils import dice_utils
 
 from .make_dataframes import EntityStatDictionaryProvider
 from .characters_loader import CharacterStatDictionaryProvider
@@ -143,7 +144,7 @@ class EntityFactory:
 
         character.baseEvasion = character.base_stat['DEX']
         
-        character.baseHealth = dice_utils.rollStat(int(char_dict['Difficulty']), character.base_stat['CON'], character.base_stat['CON'])
+        character.baseHealth = dice_utils.roll_dice(int(char_dict['Difficulty']), character.base_stat['CON'], character.base_stat['CON'])
         if size == 'large':
             character.baseSize = 10
             character.dmg_mult = 2
@@ -160,10 +161,10 @@ class EntityFactory:
         character.baseReach = character.baseSize
 
     # Adds the stats to the given player
-    def create_player(self, playerClass, playerName=None) -> Player:
+    def create_player(self, playerClass: player_class.PlayerClass, playerName=None) -> Player:
         if playerName is None:
             playerName = rd.choice(Player.names)
-        player = Player(Player.p_classes[playerClass](), playerName)
+        player = Player(playerClass, playerName)
         
         player.chosen_weapons = []
 

@@ -1,3 +1,4 @@
+from typing import List
 import pandas as pd
 import os
 
@@ -5,13 +6,13 @@ import os
 inputs_dir = os.path.dirname(__file__) + '/../../../../../../resources/inputs'
 
 
-class Class:
+class PlayerClass:
 
-    def __init__(self):
-        self.name = ''
-        self.stat_order = []
-        self.weapons = []
-        self.traits = []
+    def __init__(self, name: str, stat_order: List[str], weapons: List[str], traits: List[str]):
+        self.name = name
+        self.stat_order = stat_order
+        self.weapons = weapons
+        self.traits = traits
 
         self.max_bulk = 0
         self.health_modifier = 0
@@ -23,6 +24,7 @@ class Class:
             'Under': None,
             'Over': None
         }
+        self.getStats() # This is probably not the best pattern
 
     # Gets the associated stats of the class
     def getStats(self):
@@ -43,3 +45,31 @@ class Class:
                 self.startingArmour['Over'] = over
             else:
                 self.startingArmour['Under'] = class_dict['Armour']
+
+GLADIATOR = PlayerClass(
+    'Gladiator', ['STR', 'DEX', 'CON', 'WIT'],
+    ['arena_weapons', 'heavy_throwables'], ['Keen_eye', 'Savage_critical'])
+GUARDIAN = PlayerClass( # shields
+    'Guardian', ['CON', 'WIT', 'STR', 'DEX'],
+    ['books', 'hammers'], ['Tank', 'Slow'])
+HUNTER = PlayerClass( # bows
+    'Hunter', ['WIT', 'DEX', 'STR', 'CON'],
+    ['special', 'axes'], ['Ranged_evader', 'Melee_evader'])
+KNIGHT = PlayerClass( # polearms, double_edged_swords
+    'Knight', ['STR', 'CON', 'WIT', 'DEX'],
+    ['polearms', 'double_edged_swords', 'spears'],['Armour_experience', 'Anti-armour_expert'])
+NINJA = PlayerClass(
+    'Ninja', ['DEX', 'WIT', 'STR', 'CON'],
+    ['single_edged_swords', 'light_throwables', 'mythical'], ['Melee_evader'])
+PROFESSOR = PlayerClass(
+    'Professor', ['WIT', 'DEX', 'CON', 'STR'],
+    ['staves', 'books', 'mythical'], [])
+RAIDER = PlayerClass(
+    'Raider', ['STR', 'CON', 'DEX', 'WIT'],
+    ['glaives', 'axes', 'heavy_throwables'], ['Charged_hits', 'Strong'])
+SAMURAI = PlayerClass(   # bows
+    'Samurai', ['STR', 'DEX', 'WIT', 'CON'],
+    ['single_edged_swords'], ['Melee_evader', 'Keen_eye']
+) 
+
+ALL = [GLADIATOR, GUARDIAN, HUNTER, KNIGHT, NINJA, PROFESSOR, RAIDER, SAMURAI]
