@@ -31,55 +31,43 @@ class Hub:
 
     # Moves an entity to given coords
     def requestMove(self, entID: int, coords: Tuple[int, int]):
-    
         if is_object(entID):
             self.chart.moveObject(entID, coords)
-            return True
-
         elif is_character(entID):
             self.chart.moveCharacter(entID, coords)
-            return True
-
         else:
             raise ValueError
+        return True
 
     # Checks if a move is valid
     def requestMoveVerification(self, entID, coords):
-
-        if is_character(entID) and self.chart.is_validCoords(coords) and self.chart.is_validMovement(entID, coords):
-            return True
-
-        elif is_object(entID) and self.chart.is_validCoords(coords):
-            return True
-
-        else:
-            return False
+        if self.chart.is_validCoords:
+            return is_object(entID) or is_character(entID) and self.chart.is_validMovement(entID, coords)
+        return False
 
     # Checks if an attack is valid and then attacks if so
     def requestAttack(self, entID1, entID2, attack_list=[0]):
-
-        if self.chart.is_validAttack(entID1, entID2):
-
-            if entID1 < 100:
-                attacker = self.chart.entities[entID1]
-            else:
-                raise ValueError
-
-            defender = self.chart.entities[entID2]
-            
-            indicator = attacker.attack(attack_list, defender)
-            print(indicator)
-            defender.check_alive()
-            if not defender.is_alive:
-                if is_character(entID2):
-                    if defender.behaviour_type >= 2:
-                        self.calcDrop(defender)
-                else:
-                    self.chart.dropInv(defender)
-
-            return True
-        else:
+        if not self.chart.is_validAttack(entID1, entID2):
             return False
+
+        if entID1 < 100:
+            attacker = self.chart.entities[entID1]
+        else:
+            raise ValueError
+
+        defender = self.chart.entities[entID2]
+        
+        indicator = attacker.attack(attack_list, defender)
+        print(indicator)
+        defender.check_alive()
+        if not defender.is_alive:
+            if is_character(entID2):
+                if defender.behaviour_type >= 2:
+                    self.calcDrop(defender)
+            else:
+                self.chart.dropInv(defender)
+
+        return True
 
     # Generates the map
     def requestMapStart(self, n_players, map, using_builtin_map):
@@ -99,13 +87,7 @@ class Hub:
 
     # Returns the players names with their IDs
     def getPlayers(self):
-        players = []
-
-        for player in self.chart.players:
-            player_info = (player.id, player.name)
-            players.append(player_info)
-        
-        return players
+        return [(player.id, player.name) for player in self.chart.players]
 
     # Ends turn and start the next one
     def endTurn(self):
@@ -113,31 +95,15 @@ class Hub:
 
     # Returns the locations of all characters
     def getCharLoc(self):
-        char_locs = {}
-
-        for character in self.chart.characters:
-            char_locs[character.id] = character.coords
-
-        return char_locs
+        return {character.id: character.coords for character in self.chart.characters}
 
     # Returns the locations of all objects
     def getObjLoc(self):
-        obj_locs = {}
-
-        for i_object in self.chart.objects:
-            obj_locs[i_object.id] = i_object.coords
-
-        return obj_locs
+        return {obj.id: obj.coords for obj in self.chart.objects}
 
     # Returns the locations of all items on map
     def getMapItemLoc(self):
-        item_locs = {}
-
-        for item in self.chart.items:
-            if not item.is_carried:
-                item_locs[item.id] = item.coords
-
-        return item_locs
+        return {item.id: item.coords for item in self.chart.items if not item.is_carried}
 
     # Calculates whether a character will drop an item (upon death)
     def calcDrop(self, character):
