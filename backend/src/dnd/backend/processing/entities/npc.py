@@ -7,7 +7,6 @@ class NPC(Character):
         self.target = None
         self.behaviour_type = 2
         self.team = 1
-        self.hitProf = 0
         self.max_bulk = 20
 
         self.starting_items = []

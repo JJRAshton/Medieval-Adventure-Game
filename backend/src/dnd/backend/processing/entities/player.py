@@ -67,7 +67,7 @@ class Player(Character):
         self.inventory.pop(invIndex)
 
     # Unequip a set of armour
-    def unequipArmour(self, armour_type):
+    def unequip_armour(self, armour_type):
         armour = self.equipped_armour[armour_type]
         if armour is not None:
             self.equipped_armour[armour_type] = None
@@ -107,10 +107,6 @@ class Player(Character):
     # Returns if the max bulk has been exceeded
     def is_exceededBulk(self):
         return self.bulk > self.p_class.max_bulk
-
-    # Calculates the entity proficiency bonus
-    def calcProfB(self):
-        self.hitProf = 10
 
     # Calculates health based on CON and class
     def calcHealth(self):

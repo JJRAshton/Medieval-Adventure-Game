@@ -19,7 +19,7 @@ class AttackFactory:
         else:
             raise ValueError(f"Attack with name {attack_name} was not recognised")
         return attack
-    
+
     def __assign_attack_stats(self, attack, attack_type: AttackType):
         ''' Create an attack from a weapon '''
         if attack_type == AttackTypes.WEAPON:

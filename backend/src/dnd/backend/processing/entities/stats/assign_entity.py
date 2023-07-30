@@ -172,20 +172,8 @@ class EntityFactory:
         player.team = 1
 
         player.base_attacks = ['hit']
-    
-        x, n, top = 3, 8, 48  # roll 8, take best 5 - max of 40
-        stat_rolls = []
 
-        for _ in range(4):  # Number of stats to assign
-            one_stat_roll = []
-            for _ in range(n):  # Rolls n dice
-                roll = rd.randint(1, int(top/x))
-                one_stat_roll.append(roll)
-
-            for _ in range(n-x):  # Get rid of the lowest values
-                one_stat_roll.pop(one_stat_roll.index(min(one_stat_roll)))
-
-            stat_rolls.append(sum(one_stat_roll))
+        stat_rolls = self.roll_stats()
         stat_rolls.sort(reverse=True)
 
         for stat in player.p_class.stat_order:
@@ -213,8 +201,7 @@ class EntityFactory:
         player.resetStats()
 
         player.refreshStatAfterEquipment()
-
-        player.calcProfB()
+ 
         player.calcHealth()
 
         player.reset_health()
@@ -224,10 +211,38 @@ class EntityFactory:
         player.reset_health()
 
         return player
-    
+
+    def roll_stats(self):
+        x, n, top = 3, 8, 48  # roll 8, take best 5 - max of 40
+        stat_rolls = []
+
+        for _ in range(4):  # Number of stats to assign
+            one_stat_roll = []
+            for _ in range(n):  # Rolls n dice
+                roll = rd.randint(1, int(top/x))
+                one_stat_roll.append(roll)
+
+            for _ in range(n-x):  # Get rid of the lowest values
+                one_stat_roll.pop(one_stat_roll.index(min(one_stat_roll)))
+
+            stat_rolls.append(sum(one_stat_roll))
+        return stat_rolls
+
     def create_npc(self, npc_name: str) -> NPC:
         npc = NPC(npc_name)
         self.get_character_stats(npc)
+        self.setup_npc(npc)
+
+        return npc
+
+    def create_monster(self, monster_name: str) -> Monster:
+        monster = Monster(monster_name)
+        self.get_character_stats(monster)
+        self.setup_npc(monster)
+
+        return monster
+    
+    def setup_npc(self, npc: NPC):
         npc.getEquipment()
         npc.convAttacks()
 
@@ -236,22 +251,5 @@ class EntityFactory:
 
         npc.refreshStatAfterEquipment()
         npc.calcInitiative()
-
-        return npc
-
-    def create_monster(self, monster_name: str) -> Monster:
-        monster = Monster(monster_name)
-        self.get_character_stats(monster)
-        monster.getEquipment()
-        monster.convAttacks()
-
-        monster.resetStats()
-        monster.reset_health()
-
-        monster.refreshStatAfterEquipment()
-        monster.calcInitiative()
-
-        return monster
-    
 
     

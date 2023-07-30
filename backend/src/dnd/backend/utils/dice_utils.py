@@ -1,6 +1,7 @@
 from typing import Tuple
 import random as rd
 
+
 def convertDice(dice: str) -> Tuple[int, int]:
     n_dice, s_dice = dice.split('d')
     return int(n_dice), int(s_dice)

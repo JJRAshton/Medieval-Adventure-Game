@@ -102,8 +102,8 @@ class Character(HealthEntity):
     # Moves entity by given vector and decreases movement
     def move(self, vector: Tuple[int, int]):
         super().move(vector)
-        count = abs(vector[0])+abs(vector[1])
-        self.movement -= 5*count
+        count = abs(vector[0]) + abs(vector[1])
+        self.movement -= 5 * count
 
     # Initialises the relevant stats to start a new turn
     def initialiseTurn(self):
@@ -141,42 +141,28 @@ class Character(HealthEntity):
 
     # Makes an attack roll returning whether it -1:miss, 0:blocked, 1:hit, 2:critical hit
     def hitContest(self, attack: Attack, hitBonus, opponent):
-
         distance = calc_rad_dist(self.coords, opponent.coords)
         size_diff = self.size - opponent.size
 
-        opponentCritResistance = opponent.stat['DEX'] * ((1 + opponent.coverage) ** 2)
-
-        if 'bludgeoning' == attack.damage_maintype:
-            crit_weighting = opponentCritResistance
-        else:
-            crit_weighting = opponentCritResistance + size_diff
+        crit_weighting = opponent.stat['DEX'] * ((1 + opponent.coverage) ** 2)
+        if 'bludgeoning' != attack.damage_maintype:
+            crit_weighting += size_diff
 
         if self.has_Trait('Keen_eye'):  # Increased crit chance
             crit_weighting = int(crit_weighting * (1 - self.stat['WIT'] / 100))
 
-        if crit_weighting < 0:
-            crit_weighting = 0
+        crit_weighting = max(crit_weighting, 0)
 
         # Picks which opponent evasion to use
-        if attack.from_weapon.is_melee:
-            opponentEvasion = opponent.evasion['Melee']
-        else:
-            opponentEvasion = opponent.evasion['Ranged']
+        opponentEvasion = opponent.evasion['Melee' if attack.from_weapon.is_melee else 'Ranged']
+        opponentRoll = rd.randint(1, max(1, opponentEvasion))
 
-        if opponentEvasion <= 1:
-            opponentRoll = 1
-        else:
-            opponentRoll = rd.randint(1, opponentEvasion)
-
-        if attack.from_weapon.is_ranged and distance == 5:
-            ownRoll = self.statRoll('DEX', -1)  # Disadvantage at close range for ranged weapons
-        else:
-            ownRoll = self.statRoll('DEX')
+        roll_type = -1 if attack.from_weapon.is_ranged and distance == 5 else 0
+        ownRoll = self.statRoll('DEX', roll_type)  # Disadvantage at close range for ranged weapons
 
         ownResult = ownRoll + hitBonus
 
-        if ownResult >= crit_weighting*opponentRoll:
+        if ownResult >= crit_weighting * opponentRoll:
             result = 2
         elif ownResult > opponentRoll:
             result = 1
@@ -193,9 +179,7 @@ class Character(HealthEntity):
 
         AA_stat = self.stat['WIT'] if self.has_Trait('Anti-armour_expert') else None
 
-        if attack.from_weapon is None:
-            hitBonus = self.skill
-        elif self.is_Proficient(attack.from_weapon):
+        if attack.from_weapon is None or self.is_Proficient(attack.from_weapon):
             hitBonus = self.skill
         else:
             hitBonus = 0
@@ -266,13 +250,13 @@ class Character(HealthEntity):
                 self.is_conscious = False
                 self.is_stable = False
             self.health = 0
-            
+
     # Heals the entity
     def heal(self, appliedHealing):
         self.health += appliedHealing
         if self.health > self.max_health:
             self.health = self.max_health
-            
+
     # Resets the stats to the base stats
     def resetStats(self):
         for stat in self.base_stat:
