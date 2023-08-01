@@ -3,6 +3,8 @@ from ....utils import dice_utils
 from ..item import Weapon, Armour
 from .attack_factory import AttackFactory
 
+WEAPON_TRAITS = ['Ranged', 'Loading','Two-handed', 'Arrows', 'Bolts',
+                 'Light', 'Finesse', 'Armour Piercing', 'Fine', 'Magic', 'Melee']
 
 class WeaponFactory:
 
@@ -50,28 +52,7 @@ class WeaponFactory:
 
         weapon.attacks = dice_utils.convertList(wepDict['Attacks'])
 
-        if wepDict['Ranged']:
-            weapon.is_ranged = True
-        if wepDict['Loading']:
-            weapon.is_loading = True
-        if wepDict['Two-handed']:
-            weapon.is_twoHanded = True
-        if wepDict['Arrows']:
-            weapon.is_arrows = True
-        if wepDict['Bolts']:
-            weapon.is_bolts = True
-        if wepDict['Light']:
-            weapon.is_light = True
-        if wepDict['Finesse']:
-            weapon.is_finesse = True
-        if wepDict['Armour Piercing']:
-            weapon.is_AP = True
-        if wepDict['Fine']:
-            weapon.is_fine = True
-        if wepDict['Magic']:
-            weapon.is_magic = True
-        if wepDict['Melee']:
-            weapon.is_melee = False
+        weapon.traits = [trait for trait in WEAPON_TRAITS if wepDict[trait]]
 
         if wepDict['Protection']:
             weapon.protection = int(wepDict['Protection'])

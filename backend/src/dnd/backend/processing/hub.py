@@ -153,8 +153,8 @@ class Hub:
                 location: {
                     'Name': character.equipped_weapons[location].name,
                     'Characteristic':
-                        'Light' if character.equipped_weapons[location].is_light else
-                        'Loading' if character.equipped_weapons[location].is_loading else
+                        'Light' if character.equipped_weapons[location].has_trait('Light') else
+                        'Loading' if character.equipped_weapons[location].has_trait('Loading') else
                         'Normal'
                 }
                 for location in character.equipped_weapons if character.equipped_weapons[location] is not None},

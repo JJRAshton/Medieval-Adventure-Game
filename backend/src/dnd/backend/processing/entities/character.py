@@ -154,10 +154,10 @@ class Character(HealthEntity):
         crit_weighting = max(crit_weighting, 0)
 
         # Picks which opponent evasion to use
-        opponentEvasion = opponent.evasion['Melee' if attack.from_weapon.is_melee else 'Ranged']
+        opponentEvasion = opponent.evasion['Melee' if attack.from_weapon.has_trait('Melee') else 'Ranged']
         opponentRoll = rd.randint(1, max(1, opponentEvasion))
 
-        roll_type = -1 if attack.from_weapon.is_ranged and distance == 5 else 0
+        roll_type = -1 if attack.from_weapon.has_trait('Ranged') and distance == 5 else 0
         ownRoll = self.statRoll('DEX', roll_type)  # Disadvantage at close range for ranged weapons
 
         ownResult = ownRoll + hitBonus
@@ -188,9 +188,9 @@ class Character(HealthEntity):
 
         dmg_stat = self.stat['STR']
         if attack.from_weapon is not None:
-            if attack.from_weapon.is_finesse:
+            if attack.from_weapon.has_trait('Finesse'):
                 dmg_stat *= 1 + (self.stat['DEX'] - 25) / 100
-            if attack.from_weapon.is_magic:
+            if attack.from_weapon.has_trait('Magic'):
                 dmg_stat = self.stat['WIT']
 
         if self.has_Trait('Charged_hits'):
@@ -209,9 +209,9 @@ class Character(HealthEntity):
                 hitStatus = 'Critical: '
             damage = attack.rollDamage(dmg_stat, dmg_mult)
             appliedDamage = 0
-            is_AP = attack.from_weapon.is_AP
+            is_AP = attack.from_weapon.has_trait('Armour Piercing')
             if creature.equipped_armour['Over'] is not None:
-                if creature.equipped_armour['Over'].material == 'mail' and attack.from_weapon.is_fine:
+                if creature.equipped_armour['Over'].material == 'mail' and attack.from_weapon.has_trait('Fine'):
                     is_AP = True
             appliedDamage += creature.take_damage(damage[attack.damage_maintype], attack.damage_maintype,
                                                  is_AP, is_critical, AA_stat)
@@ -277,7 +277,7 @@ class Character(HealthEntity):
             eq_weapon = self.equipped_weapons[hand]
             if eq_weapon is None:
                 continue
-            if eq_weapon.is_melee:
+            if eq_weapon.has_trait('Melee'):
                 if eq_weapon.range > self.reach:
                     self.reach = eq_weapon.range
             if eq_weapon.range > self.range:

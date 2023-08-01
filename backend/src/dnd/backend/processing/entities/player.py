@@ -39,7 +39,7 @@ class Player(Character):
         if not weapon.is_Weapon():
             return
 
-        if weapon.is_twoHanded:
+        if weapon.has_trait('Two-handed'):
             self.equipDoubleWeapon(invIndex)
         else:
             self.equipSingleWeapon(invIndex, location)

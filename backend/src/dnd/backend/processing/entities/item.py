@@ -32,18 +32,10 @@ class Weapon(Item):
         self.protection = 0
         self.defense_type = ''
 
-        self.is_AP = False
-        self.is_ranged = False
-        self.is_loading = False
-        self.is_twoHanded = False
-        self.is_arrows = False
-        self.is_bolts = False
-        self.is_light = False
-        self.is_finesse = False
-        self.is_fine = False
-        self.is_magic = False
+        self.traits = []
 
-        self.is_melee = True
+    def has_trait(self, trait: str):
+        return trait in self.traits
 
 
 ''' Don't create directly, use EntityFactory. '''
