@@ -55,8 +55,6 @@ class Back:
             classes = [player_class.RAIDER, player_class.GLADIATOR, player_class.GUARDIAN, player_class.KNIGHT, player_class.SAMURAI]
         self.classes = classes  # For choosing the class from backend - before frontend input
 
-        self.maxReach = 5
-
         self.loadMap()
         self.addMapNPCs()
 
@@ -116,9 +114,6 @@ class Back:
         character.id = charIDNum
         self.characters.append(character)
         self.entities[charIDNum] = character
-
-        if character.reach > self.maxReach:
-            self.maxReach = character.reach
 
         for hand in character.equipped_weapons:
             if character.equipped_weapons[hand] is not None:
