@@ -14,15 +14,26 @@ class WeaponFactory:
     
     def create(self, weapon_name: str) -> Weapon:
         ''' Creates a weapon '''
-        weapon = Weapon(weapon_name)
-        self.getWeaponStats(weapon)
-        attacks_list = []
-        for attack_str in weapon.attacks:
-            attack = self.__attack_factory.create(attack_str)
+        wep_dict = self.__stat_provider.get_weapon_stats_dict(weapon_name)
+
+        attacks_list = [self.__attack_factory.create(attack_str) for attack_str in dice_utils.convertList(wep_dict['Attacks'])]
+
+        weapon = Weapon(
+            weaponName = weapon_name,
+            damage_dice = int(wep_dict['Damage Dice'][1:]) if wep_dict['Damage Dice'] else 0,
+            attack_range = int(wep_dict['Range']),
+            attacks = attacks_list,
+            protection = int(wep_dict['Protection']) if wep_dict['Protection'] else 0,
+            defense_type = wep_dict['Defense Type'] if wep_dict['Protection'] else '',
+            traits = [trait for trait in WEAPON_TRAITS if wep_dict[trait]]
+        )
+        
+        # This is a bit ugly, and can probably be avoided with a bit more thought
+        weapon.type = wep_dict['Type']
+        for attack in attacks_list:
             attack.setWeapon(weapon)
             attack.updateDamage()
-            attacks_list.append(attack)
-        weapon.attacks = attacks_list
+
         return weapon
     
     def create_armour(self, armour_name) -> Armour:
@@ -40,20 +51,3 @@ class WeaponFactory:
         armour.value = int(arDict['Armour Value'])
         armour.flex = int(arDict['Flex']) / 100
         armour.weight = int(arDict['Movement Penalty'])
-
-
-    def getWeaponStats(self, weapon: Weapon):   # Doesn't collect all data
-        wepDict = self.__stat_provider.get_weapon_stats_dict(weapon.name)
-
-        weapon.type = wepDict['Type']
-        weapon.range = int(wepDict['Range'])
-        if wepDict['Damage Dice']:
-            weapon.damage_dice = int(wepDict['Damage Dice'][1:])
-
-        weapon.attacks = dice_utils.convertList(wepDict['Attacks'])
-
-        weapon.traits = [trait for trait in WEAPON_TRAITS if wepDict[trait]]
-
-        if wepDict['Protection']:
-            weapon.protection = int(wepDict['Protection'])
-            weapon.defense_type = wepDict['Defense Type']

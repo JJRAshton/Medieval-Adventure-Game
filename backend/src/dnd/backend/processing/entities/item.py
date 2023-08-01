@@ -21,18 +21,17 @@ class Item(Entity):
 class Weapon(Item):
 
     ''' Don't construct directly, use WeaponFactory instead '''
-    def __init__(self, weaponName):
+    def __init__(self, weaponName: str, damage_dice, attack_range, attacks, protection, defense_type, traits):
         super().__init__(weaponName)
-        self.damage_dice = 0
-        self.range = 0
-        self.holder_size = 0
+        self.damage_dice = damage_dice
+        self.range = attack_range
 
-        self.attacks = {}
+        self.attacks = attacks
 
-        self.protection = 0
-        self.defense_type = ''
+        self.protection = protection
+        self.defense_type = defense_type
 
-        self.traits = []
+        self.traits = traits
 
     def has_trait(self, trait: str):
         return trait in self.traits
