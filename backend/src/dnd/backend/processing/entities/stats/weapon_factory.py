@@ -1,6 +1,6 @@
 from .make_dataframes import EntityStatDictionaryProvider
 from ....utils import dice_utils
-from ..item import Weapon
+from ..item import Weapon, Armour
 from .attack_factory import AttackFactory
 
 
@@ -9,11 +9,6 @@ class WeaponFactory:
     def __init__(self, stat_provider: EntityStatDictionaryProvider, attack_factory: AttackFactory):
         self.__stat_provider = stat_provider
         self.__attack_factory = attack_factory
-
-
-    def __getWeaponDict(self, weaponName: str):
-        weaponDict = self.__stat_provider.get_weapon_stats_dict(weaponName)
-        return weaponDict
     
     def create(self, weapon_name: str) -> Weapon:
         ''' Creates a weapon '''
@@ -27,9 +22,26 @@ class WeaponFactory:
             attacks_list.append(attack)
         weapon.attacks = attacks_list
         return weapon
+    
+    def create_armour(self, armour_name) -> Armour:
+        armour = Armour(armour_name)
+        self.getArmourStats(armour)
+        return armour
+
+    def getArmourStats(self, armour: Armour):
+        arDict = self.__stat_provider.get_armour_stats_dict(armour.name)
+
+        armour.type = arDict['Type']
+        armour.material = arDict['Material']
+        armour.bulk = int(arDict['Bulk'])
+        armour.coverage = int(arDict['Coverage'])
+        armour.value = int(arDict['Armour Value'])
+        armour.flex = int(arDict['Flex']) / 100
+        armour.weight = int(arDict['Movement Penalty'])
+
 
     def getWeaponStats(self, weapon: Weapon):   # Doesn't collect all data
-        wepDict = self.__getWeaponDict(weapon.name)
+        wepDict = self.__stat_provider.get_weapon_stats_dict(weapon.name)
 
         weapon.type = wepDict['Type']
         weapon.range = int(wepDict['Range'])

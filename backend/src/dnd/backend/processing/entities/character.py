@@ -166,7 +166,7 @@ class Character(HealthEntity):
             result = 2
         elif ownResult > opponentRoll:
             result = 1
-        elif ownResult > opponentRoll - (opponentEvasion - opponent.baseEvasion):
+        elif ownResult > opponentRoll - (opponentEvasion - opponent.base_evasion):
             result = 0
         else:
             result = -1
@@ -352,10 +352,13 @@ class Character(HealthEntity):
         self.armour['piercing'] = int(self.armour['piercing'])
         self.armour['bludgeoning'] = int(self.armour['bludgeoning'])
 
+        print(self.stat['DEX'], total_flex)
         self.stat['DEX'] = self.stat['DEX'] ** total_flex
+        print(self.stat['DEX'])
         if self.is_exceededBulk():
-            self.stat['DEX'] = round(self.stat['DEX'])
-
+            self.stat['DEX'] /= 2
+        
+        self.stat['DEX'] = round(self.stat['DEX'])
         self.max_movement -= min(total_weight, max_movement_reduction)
 
     # Calculates the new evasion after a stat change
@@ -407,7 +410,7 @@ class Character(HealthEntity):
                 self.equipped_weapons[hand] = self.__weapon_factory.create(self.equipped_weapons[hand])
         for armour_type in self.equipped_armour:
             if self.equipped_armour[armour_type] is not None:
-                self.equipped_armour[armour_type] = it.Armour(self.equipped_armour[armour_type])
+                self.equipped_armour[armour_type] = self.__weapon_factory.create_armour(self.equipped_armour[armour_type])
 
         self.createInventory()
 

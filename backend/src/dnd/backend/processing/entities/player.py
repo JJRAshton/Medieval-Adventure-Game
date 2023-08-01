@@ -88,7 +88,7 @@ class Player(Character):
 
     # Resets evasion accounting for bonus melee evasion of some classes
     def resetEvasion(self):
-        base_evasion = self.baseEvasion
+        base_evasion = self.base_evasion
 
         if self.has_Trait('Melee_evader'):
             self.evasion['Melee'] = int(base_evasion * (1 + self.stat['WIT'] / 100))
@@ -114,7 +114,7 @@ class Player(Character):
 
     # Calculates evasion based on DEX class
     def calcEvasion(self):
-        self.baseEvasion = int(self.stat['DEX'] * self.p_class.evasion_modifier)
+        self.base_evasion = int(self.stat['DEX'] * self.p_class.evasion_modifier)
 
     # Checks if the player is proficient with the weapon
     def is_Proficient(self, weapon):

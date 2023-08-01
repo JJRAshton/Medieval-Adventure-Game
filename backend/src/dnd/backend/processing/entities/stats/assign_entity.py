@@ -45,22 +45,6 @@ class EntityFactory:
         character_dict = self.character_stat_provider.get_character_stats_dict(character_name)
         return character_dict
 
-    # Returns a dictionary of stats for the given armour
-    def __getArmourDict(self, armour_name: str):
-        armourDict = self.stat_provider.get_armour_stats_dict(armour_name)
-        return armourDict
-
-    def getArmourStats(self, armour: Armour):
-        arDict = self.__getArmourDict(armour.name)
-
-        armour.type = arDict['Type']
-        armour.material = arDict['Material']
-        armour.bulk = int(arDict['Bulk'])
-        armour.coverage = int(arDict['Coverage'])
-        armour.value = int(arDict['Armour Value'])
-        armour.flex = int(arDict['Flex']) / 100
-        armour.weight = int(arDict['Movement Penalty'])
-
     def create_object(self, object_name: str) -> Object:
         new_object = Object(object_name)
 
@@ -97,7 +81,7 @@ class EntityFactory:
 
         if char_dict['Base Armour']:
             character.baseArmour = char_dict['Base Armour']
-            character.baseCoverage = 1
+            character.base_coverage = 1
         if char_dict['Inventory']:
             inventory = dice_utils.convertList(char_dict['Inventory'])
             character.inventory = inventory
@@ -142,7 +126,7 @@ class EntityFactory:
         character.base_stat['CON'] = int(char_dict['CON'])
         character.base_stat['WIT'] = int(char_dict['WIT'])
 
-        character.baseEvasion = character.base_stat['DEX']
+        character.base_evasion = character.base_stat['DEX']
         
         character.baseHealth = dice_utils.roll_dice(int(char_dict['Difficulty']), character.base_stat['CON'], character.base_stat['CON'])
         if size == 'large':
@@ -158,7 +142,7 @@ class EntityFactory:
             character.baseSize = 5
             character.dmg_mult = 1
 
-        character.baseReach = character.baseSize
+        character.base_reach = character.baseSize
 
     # Adds the stats to the given player
     def create_player(self, playerClass: player_class.PlayerClass, playerName=None) -> Player:
