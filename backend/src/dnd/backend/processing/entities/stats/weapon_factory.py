@@ -37,17 +37,15 @@ class WeaponFactory:
         return weapon
     
     def create_armour(self, armour_name) -> Armour:
-        armour = Armour(armour_name)
-        self.getArmourStats(armour)
+        armour_dict = self.__stat_provider.get_armour_stats_dict(armour_name)
+        armour = Armour(
+            armourName = armour_name,
+            armour_type = armour_dict['Type'],
+            value = int(armour_dict['Armour Value']),
+            flex = int(armour_dict['Flex']) / 100,
+            weight = int(armour_dict['Movement Penalty']),
+            material = armour_dict['Material'],
+            coverage = int(armour_dict['Coverage']),
+            bulk = int(armour_dict['Bulk'])
+        )
         return armour
-
-    def getArmourStats(self, armour: Armour):
-        arDict = self.__stat_provider.get_armour_stats_dict(armour.name)
-
-        armour.type = arDict['Type']
-        armour.material = arDict['Material']
-        armour.bulk = int(arDict['Bulk'])
-        armour.coverage = int(arDict['Coverage'])
-        armour.value = int(arDict['Armour Value'])
-        armour.flex = int(arDict['Flex']) / 100
-        armour.weight = int(arDict['Movement Penalty'])

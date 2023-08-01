@@ -40,12 +40,12 @@ class Weapon(Item):
 ''' Don't create directly, use EntityFactory. '''
 class Armour(Item):
 
-    def __init__(self, armourName):
+    def __init__(self, armourName, armour_type, value, flex, weight, material, coverage, bulk):
         super().__init__(armourName)
-        self.type = ''
-        self.value = 0
-        self.flex: float = 0
-        self.weight = 0
-        self.material = ''
-        self.coverage = 0
-        self.bulk = 0
+        self.type = armour_type
+        self.value = value
+        self.flex: float = flex
+        self.weight = weight
+        self.material = material
+        self.coverage = coverage
+        self.bulk = bulk
