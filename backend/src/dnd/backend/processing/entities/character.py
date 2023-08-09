@@ -23,7 +23,7 @@ def calc_rad_dist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
 
 
 class Character(HealthEntity):
-    def __init__(self, entityName: str):
+    def __init__(self, entityName: str, base_attacks: List[Attack], base_stats):
         super().__init__(entityName)
         stat_provider = AttackStatDictionaryProvider()
         self.__attack_factory = AttackFactory(stat_provider)
@@ -32,18 +32,13 @@ class Character(HealthEntity):
         self.base_armour = 0
         self.base_movement = 0
         self.base_coverage = 0
-        self.base_attacks: List[Attack] = []
+        self.base_attacks: List[Attack] = base_attacks
 
         self.dmg_mult = 1  # For larger creatures to do more damage
 
         self.skill = 0
         
-        self.base_stat = {
-            'STR': 0,
-            'DEX': 0,
-            'CON': 0,
-            'WIT': 0
-            }
+        self.base_stat = base_stats
         self.stat: Dict[str, int] = {}
 
         self.initiative = 0

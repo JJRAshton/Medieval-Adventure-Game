@@ -14,6 +14,7 @@ from ....utils import dice_utils
 from .make_dataframes import EntityStatDictionaryProvider
 from .characters_loader import CharacterStatDictionaryProvider
 
+STATS = ['STR', 'DEX', 'CON', 'WIT']
 
 # Different armour levels for characters
 armour_levels = {
@@ -42,8 +43,7 @@ class EntityFactory:
 
     # Returns a dictionary of stats for the given character
     def __getCharacterDict(self, character_name: str):
-        character_dict = self.character_stat_provider.get_character_stats_dict(character_name)
-        return character_dict
+        return self.character_stat_provider.get_character_stats_dict(character_name)
 
     def create_object(self, object_name: str) -> Object:
         new_object = Object(object_name)
@@ -66,10 +66,8 @@ class EntityFactory:
 
         return new_object
 
-    # Adds the stats to the given character (not player)
-    def get_character_stats(self, character):  # Doesn't collect all data
-        character_name = character.name
-        char_dict = self.__getCharacterDict(character_name)
+    # This should eventually just take a char_dict and provide a character back
+    def get_character_stats(self, character, char_dict):  # Doesn't collect all data
         starting_items: List[object] = []
 
         size = char_dict['Size']
@@ -88,8 +86,6 @@ class EntityFactory:
             starting_items += inventory
         if char_dict['Skill']:
             character.skill = int(char_dict['Skill'])
-
-        character.base_attacks = dice_utils.convertList(char_dict['Attacks'])
 
         character.starting_items = starting_items
 
@@ -121,11 +117,6 @@ class EntityFactory:
         character.skill = int(char_dict['Skill']) if char_dict['Skill'] else 0
         character.difficulty = int(char_dict['Difficulty'])
 
-        character.base_stat['STR'] = int(char_dict['STR'])
-        character.base_stat['DEX'] = int(char_dict['DEX'])
-        character.base_stat['CON'] = int(char_dict['CON'])
-        character.base_stat['WIT'] = int(char_dict['WIT'])
-
         character.base_evasion = character.base_stat['DEX']
         
         character.baseHealth = dice_utils.roll_dice(int(char_dict['Difficulty']), character.base_stat['CON'], character.base_stat['CON'])
@@ -145,27 +136,25 @@ class EntityFactory:
         character.base_reach = character.baseSize
 
     # Adds the stats to the given player
-    def create_player(self, playerClass: player_class.PlayerClass, playerName=None) -> Player:
+    def create_player(self, player_class: player_class.PlayerClass, playerName=None) -> Player:
         if playerName is None:
             playerName = rd.choice(Player.names)
-        player = Player(playerClass, playerName)
+        base_stats = {stat_name: stat for stat_name, stat in zip(player_class.stat_order, sorted(self.roll_stats(), reverse=True))}
+        player = Player(
+            player_class,
+            playerName,
+            base_attacks=['hit'],
+            base_stats=base_stats
+        )
         
         player.chosen_weapons = []
 
         player.behaviour_type = 1
         player.team = 1
 
-        player.base_attacks = ['hit']
-
-        stat_rolls = self.roll_stats()
-        stat_rolls.sort(reverse=True)
-
-        for stat in player.p_class.stat_order:
-            player.base_stat[stat] = stat_rolls.pop(0)
-
         df = self.stat_provider.weapons
         wep_option_df = pd.DataFrame()
-        for wep_type in player.p_class.weapons:
+        for wep_type in player_class.weapons:
             wepData = df[(df.Type == wep_type) & (df.Tier == 4)]
             wep_option_df = pd.concat([wep_option_df, wepData]) 
 
@@ -213,15 +202,25 @@ class EntityFactory:
         return stat_rolls
 
     def create_npc(self, npc_name: str) -> NPC:
-        npc = NPC(npc_name)
-        self.get_character_stats(npc)
+        npc_stats = self.__getCharacterDict(npc_name)
+        npc = NPC(
+            npc_name,
+            base_attacks=dice_utils.convertList(npc_stats['Attacks']),
+            base_stats={stat: int(npc_stats[stat]) for stat in STATS}
+        )
+        self.get_character_stats(npc, npc_stats)
         self.setup_npc(npc)
 
         return npc
 
     def create_monster(self, monster_name: str) -> Monster:
-        monster = Monster(monster_name)
-        self.get_character_stats(monster)
+        monster_stats = self.__getCharacterDict(monster_name)
+        monster = Monster(
+            monster_name,
+            base_attacks=dice_utils.convertList(monster_stats['Attacks']),
+            base_stats={stat: int(monster_stats[stat]) for stat in STATS}
+        )
+        self.get_character_stats(monster, monster_stats)
         self.setup_npc(monster)
 
         return monster

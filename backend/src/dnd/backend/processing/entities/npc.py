@@ -3,7 +3,7 @@ from .character import Character
 
 # A non-playable character
 class NPC(Character):
-    def __init__(self, npcName: str):
+    def __init__(self, npcName: str, base_attacks, base_stats):
         self.target = None
         self.behaviour_type = 2
         self.team = 1
@@ -11,7 +11,11 @@ class NPC(Character):
 
         self.starting_items = []
 
-        super().__init__(npcName)
+        super().__init__(
+            npcName,
+            base_attacks=base_attacks,
+            base_stats=base_stats
+        )
 
     # Checks if the character is proficient with the weapon
     def is_Proficient(self, weapon):
@@ -24,8 +28,12 @@ class NPC(Character):
 
 # A hostile character
 class Monster(NPC):
-    def __init__(self, monsterName: str):
-        super().__init__(monsterName)
+    def __init__(self, monsterName: str, base_attacks, base_stats):
+        super().__init__(
+            monsterName,
+            base_attacks=base_attacks,
+            base_stats=base_stats
+        )
         self.team = 2
 
     # Checks if entity is still alive
