@@ -1,10 +1,7 @@
 import random as rd
 from typing import Dict, List, Tuple
 
-from .stats.make_dataframes import AttackStatDictionaryProvider, EntityStatDictionaryProvider
-from . import entity as ent
 from .health_entity import HealthEntity
-from .stats.attack_factory import AttackFactory
 from .stats.weapon_factory import WeaponFactory
 from .attack import Attack
 from .item import Weapon
@@ -31,8 +28,6 @@ class Character(HealthEntity):
         self.base_movement = 0
         self.base_coverage = 0
         self.base_attacks: List[Attack] = base_attacks
-
-        self.dmg_mult = 1  # For larger creatures to do more damage
 
         self.skill = 0
         

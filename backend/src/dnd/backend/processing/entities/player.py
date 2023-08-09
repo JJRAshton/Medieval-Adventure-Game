@@ -16,19 +16,16 @@ class Player(Character):
             base_stats=base_stats
         )
         self.p_class = player_class
-
-    def resetStats(self):
-        super().resetStats()
-        if self.has_Trait('Strong'):
-            self.stat['STR'] = int(1.2 * self.stat['STR'])
-
-    # Gets the player class associated stats
-    def getClass(self):
         self.equipped_armour = self.p_class.startingArmour
         self.base_movement = self.p_class.base_movement
         self.skill = self.p_class.skill
         if self.has_Trait('Slow'):
             self.actions_total = 1
+
+    def resetStats(self):
+        super().resetStats()
+        if self.has_Trait('Strong'):
+            self.stat['STR'] = int(1.2 * self.stat['STR'])
 
     # Unequips a weapon if one present in given location
     def unequipWeapon(self, location):

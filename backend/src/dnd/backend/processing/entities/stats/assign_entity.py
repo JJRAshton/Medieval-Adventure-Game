@@ -143,11 +143,9 @@ class EntityFactory:
             player_class,
             weapon_factory=self.__weapon_factory,
             player_name=playerName,
-            base_attacks=['hit'],
+            base_attacks=self.__convert_attacks(['hit']),
             base_stats=base_stats
         )
-        
-        player.chosen_weapons = []
 
         player.behaviour_type = 1
         player.team = 1
@@ -166,7 +164,6 @@ class EntityFactory:
         else:
             player.equipped_weapons['Right'] = weapon_str
 
-        player.getClass()
         player.getEquipment()
 
         player.resetStats()
