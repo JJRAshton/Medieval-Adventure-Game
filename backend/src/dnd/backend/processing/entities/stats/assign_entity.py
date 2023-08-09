@@ -125,16 +125,12 @@ class EntityFactory:
         character.baseHealth = dice_utils.roll_dice(int(char_dict['Difficulty']), character.base_stat['CON'], character.base_stat['CON'])
         if size == 'large':
             character.size = 10
-            character.dmg_mult = 2
         elif size == 'huge':
             character.size = 15
-            character.dmg_mult = 4
         elif size == 'gargantuan':
             character.size = 20
-            character.dmg_mult = 8
         else:
             character.size = 5
-            character.dmg_mult = 1
 
         character.base_reach = character.size
 
