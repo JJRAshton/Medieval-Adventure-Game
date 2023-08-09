@@ -62,7 +62,6 @@ class EntityFactory:
             new_object.inventory = []
         
         new_object.reset_health()
-        new_object.resetSize()
 
         return new_object
 
@@ -121,19 +120,19 @@ class EntityFactory:
         
         character.baseHealth = dice_utils.roll_dice(int(char_dict['Difficulty']), character.base_stat['CON'], character.base_stat['CON'])
         if size == 'large':
-            character.baseSize = 10
+            character.size = 10
             character.dmg_mult = 2
         elif size == 'huge':
-            character.baseSize = 15
+            character.size = 15
             character.dmg_mult = 4
         elif size == 'gargantuan':
-            character.baseSize = 20
+            character.size = 20
             character.dmg_mult = 8
         else:
-            character.baseSize = 5
+            character.size = 5
             character.dmg_mult = 1
 
-        character.base_reach = character.baseSize
+        character.base_reach = character.size
 
     # Adds the stats to the given player
     def create_player(self, player_class: player_class.PlayerClass, playerName=None) -> Player:

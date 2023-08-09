@@ -7,7 +7,6 @@ class Entity:
         self.name = entityName
         self.id = 0
 
-        self.baseSize = 5
         self.size = 0
         
         self.coords = (0, 0)
@@ -18,6 +17,4 @@ class Entity:
     # Moves to new coords
     def move(self, vector: Tuple[int, int]):
         self.coords = (self.coords[0]+vector[0], self.coords[1]+vector[1])
-    
-    def resetSize(self):
-        self.size = self.baseSize
+
