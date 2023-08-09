@@ -23,11 +23,9 @@ def calc_rad_dist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
 
 
 class Character(HealthEntity):
-    def __init__(self, entityName: str, base_attacks: List[Attack], base_stats):
+    def __init__(self, entityName: str, weapon_factory: WeaponFactory, base_attacks: List[Attack], base_stats):
         super().__init__(entityName)
-        stat_provider = AttackStatDictionaryProvider()
-        self.__attack_factory = AttackFactory(stat_provider)
-        self.__weapon_factory = WeaponFactory(EntityStatDictionaryProvider(),  self.__attack_factory)
+        self.__weapon_factory: WeaponFactory = weapon_factory
         self.base_evasion = 0
         self.base_armour = 0
         self.base_movement = 0
@@ -408,15 +406,6 @@ class Character(HealthEntity):
                 self.equipped_armour[armour_type] = self.__weapon_factory.create_armour(self.equipped_armour[armour_type])
 
         self.createInventory()
-
-    # Converts the list of base attacks from strings to classes
-    def convAttacks(self):
-        new_list = []
-        for i, attack_str in enumerate(self.base_attacks):
-            attack = self.__attack_factory.create(attack_str)
-            attack.id = i
-            new_list.append(attack)
-        self.base_attacks = new_list
 
     # Gets what attacks are available and adds them to the options list - also ids them
     def getAttackOptions(self):

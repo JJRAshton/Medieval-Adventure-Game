@@ -8,10 +8,12 @@ from ..player import Player
 from ..item import Armour
 from ..map_object import Object
 from ..classes import player_class
-
+from ..attack import Attack
+from .attack_factory import AttackFactory
+from .weapon_factory import WeaponFactory
 from ....utils import dice_utils
 
-from .make_dataframes import EntityStatDictionaryProvider
+from .make_dataframes import EntityStatDictionaryProvider, AttackStatDictionaryProvider
 from .characters_loader import CharacterStatDictionaryProvider
 
 STATS = ['STR', 'DEX', 'CON', 'WIT']
@@ -40,6 +42,8 @@ class EntityFactory:
     def __init__(self, map_number: int=1):
         self.stat_provider = EntityStatDictionaryProvider()
         self.character_stat_provider = CharacterStatDictionaryProvider(map_number)
+        self.__attack_factory = AttackFactory(AttackStatDictionaryProvider())
+        self.__weapon_factory = WeaponFactory(EntityStatDictionaryProvider(), self.__attack_factory)
 
     # Returns a dictionary of stats for the given character
     def __getCharacterDict(self, character_name: str):
@@ -141,7 +145,8 @@ class EntityFactory:
         base_stats = {stat_name: stat for stat_name, stat in zip(player_class.stat_order, sorted(self.roll_stats(), reverse=True))}
         player = Player(
             player_class,
-            playerName,
+            weapon_factory=self.__weapon_factory,
+            player_name=playerName,
             base_attacks=['hit'],
             base_stats=base_stats
         )
@@ -164,8 +169,6 @@ class EntityFactory:
             player.equipped_weapons['Both'] = weapon_str
         else:
             player.equipped_weapons['Right'] = weapon_str
-
-        player.convAttacks()
 
         player.getClass()
         player.getEquipment()
@@ -204,7 +207,8 @@ class EntityFactory:
         npc_stats = self.__getCharacterDict(npc_name)
         npc = NPC(
             npc_name,
-            base_attacks=dice_utils.convertList(npc_stats['Attacks']),
+            weapon_factory=self.__weapon_factory,
+            base_attacks=self.__convert_attacks(dice_utils.convertList(npc_stats['Attacks'])),
             base_stats={stat: int(npc_stats[stat]) for stat in STATS}
         )
         self.get_character_stats(npc, npc_stats)
@@ -216,7 +220,8 @@ class EntityFactory:
         monster_stats = self.__getCharacterDict(monster_name)
         monster = Monster(
             monster_name,
-            base_attacks=dice_utils.convertList(monster_stats['Attacks']),
+            weapon_factory=self.__weapon_factory,
+            base_attacks=self.__convert_attacks(dice_utils.convertList(monster_stats['Attacks'])),
             base_stats={stat: int(monster_stats[stat]) for stat in STATS}
         )
         self.get_character_stats(monster, monster_stats)
@@ -226,12 +231,19 @@ class EntityFactory:
     
     def setup_npc(self, npc: NPC):
         npc.getEquipment()
-        npc.convAttacks()
 
         npc.resetStats()
         npc.reset_health()
 
         npc.refreshStatAfterEquipment()
         npc.calcInitiative()
+
+    def __convert_attacks(self, attack_strings: List[str]) -> List[Attack]:
+        base_attacks = []
+        for i, attack_str in enumerate(attack_strings):
+            attack = self.__attack_factory.create(attack_str)
+            attack.id = i
+            base_attacks.append(attack)
+        return base_attacks
 
     
