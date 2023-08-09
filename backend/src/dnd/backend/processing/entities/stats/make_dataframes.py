@@ -95,11 +95,9 @@ class AttackStatDictionaryProvider:
 
     def get_weapon_attack_stats_dict(self, attack_name: str):
         # Make a dictionary of the stats for the attack
-        gotten_stats = self.weapon_attacks.loc[str(attack_name)].to_dict()
-        return gotten_stats
+        return self.weapon_attacks.loc[str(attack_name)].to_dict()
 
     def get_raw_attack_stats_dict(self, attack_name: str):
         # Make a dictionary of the stats for the attack
-        gotten_stats = self.raw_attacks.loc[str(attack_name)].to_dict()
-        return gotten_stats
+        return self.raw_attacks.loc[str(attack_name)].to_dict()
 

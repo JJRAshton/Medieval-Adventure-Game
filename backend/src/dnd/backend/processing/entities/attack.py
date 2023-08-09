@@ -16,14 +16,14 @@ class AttackTypes:
 class Attack:
 
     ''' An attack, don't construct this directly, use AttackFactory instead '''
-    def __init__(self, atk_name: str):
+    def __init__(self, atk_name: str, attack_type, damage, damage_types, damage_maintype):
         self.name = atk_name
-        self.type = ''  # Raw or Weapon attack
+        self.type = attack_type  # Raw or Weapon attack
 
-        self.damage = (0, 0)
-        self.damage_types = {}  # Contains the types of damage with their percentages
-        self.damage_maintype = ''  # The main type of damage for hit contests
-        self.avdmg = 0
+        self.damage = damage
+        self.damage_types = damage_types  # Contains the types of damage with their percentages
+        self.damage_maintype = damage_maintype  # The main type of damage for hit contests
+        self.avdmg = self.damage[0] * (self.damage[1] + 1) / 2
 
         self.id = 0
         self.from_weapon = None
