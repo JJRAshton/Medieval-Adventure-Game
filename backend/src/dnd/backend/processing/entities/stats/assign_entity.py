@@ -1,5 +1,5 @@
 import random as rd
-from typing import List
+from typing import Dict, List
 import pandas as pd
 
 from ..character import Character
@@ -9,6 +9,7 @@ from ..player import Player
 from ..map_object import Object
 from ..classes import player_class
 from ..attack import Attack
+from ..item import Armour
 from .attack_factory import AttackFactory
 from .weapon_factory import WeaponFactory
 from ....utils import dice_utils
@@ -86,21 +87,6 @@ class EntityFactory:
 
         character.item_profficiencies = [weapon.name for weapon in character.equipped_weapons.values() if weapon]
 
-        # Randomly selects armour according to armour level
-        if char_dict['Armour Level']:
-            level = int(char_dict['Armour Level'])
-
-            if level > 2:
-                for armour_type in armour_levels[level]:
-                    armour_list = armour_levels[level][armour_type]
-                    armour = rd.choice(armour_list)
-                    character.equipped_armour[armour_type] = self.__weapon_factory.create_armour(armour)
-                    if armour == 'padded_jack':
-                        break
-            else:
-                armour_list = armour_levels[level]
-                character.armour['Light'] = self.__weapon_factory.create_armour(rd.choice(armour_list))
-
         if char_dict['Vulnerabilities']:
             vulnerabilities = dice_utils.convertList(char_dict['Vulnerabilities'])
             character.vulnerabilities += vulnerabilities
@@ -149,13 +135,11 @@ class EntityFactory:
             player_name=playerName,
             base_attacks=self.__convert_attacks(['hit']),
             base_stats=base_stats,
-            equipped_weapons=equipped_weapons
+            equipped_weapons=equipped_weapons,
         )
 
         player.behaviour_type = 1
         player.team = 1
-
-        player.getEquipment()
 
         player.resetStats()
 
@@ -196,7 +180,8 @@ class EntityFactory:
             weapon_factory=self.__weapon_factory,
             base_attacks=self.__convert_attacks(dice_utils.convertList(npc_stats['Attacks'])),
             base_stats={stat: int(npc_stats[stat]) for stat in STATS},
-            equipped_weapons=equipped_weapons
+            equipped_weapons=equipped_weapons,
+            equipped_armour=self.__get_npc_armour(npc_stats['Armour Level'])
         )
         self.get_character_stats(npc, npc_stats)
         self.setup_npc(npc)
@@ -214,7 +199,8 @@ class EntityFactory:
             weapon_factory=self.__weapon_factory,
             base_attacks=self.__convert_attacks(dice_utils.convertList(monster_stats['Attacks'])),
             base_stats={stat: int(monster_stats[stat]) for stat in STATS},
-            equipped_weapons=equipped_weapons
+            equipped_weapons=equipped_weapons,
+            equipped_armour=self.__get_npc_armour(monster_stats['Armour Level'])
         )
         self.get_character_stats(monster, monster_stats)
         self.setup_npc(monster)
@@ -222,8 +208,6 @@ class EntityFactory:
         return monster
     
     def setup_npc(self, npc: NPC):
-        npc.getEquipment()
-
         npc.resetStats()
         npc.reset_health()
 
@@ -237,5 +221,23 @@ class EntityFactory:
             attack.id = i
             base_attacks.append(attack)
         return base_attacks
+    
+    def __get_npc_armour(self, armour_string) -> Dict[str, Armour | None]:
+        # Randomly selects armour according to armour level
+        equipped_armour = {'Under': None, 'Over': None}
+        if armour_string:
+            level = int(armour_string)
+
+            if level > 2:
+                for armour_type in armour_levels[level]:
+                    armour_list = armour_levels[level][armour_type]
+                    armour = rd.choice(armour_list)
+                    equipped_armour[armour_type] = self.__weapon_factory.create_armour(armour)
+                    if armour == 'padded_jack':
+                        break
+            else:
+                armour_list = armour_levels[level]
+                equipped_armour['Under'] = self.__weapon_factory.create_armour(rd.choice(armour_list))
+        return equipped_armour
 
     

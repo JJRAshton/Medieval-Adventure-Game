@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple
 from .health_entity import HealthEntity
 from .stats.weapon_factory import WeaponFactory
 from .attack import Attack
-from .item import Weapon
+from .item import Armour, Weapon
 from . import item as it
 
 
@@ -20,7 +20,9 @@ def calc_rad_dist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
 
 
 class Character(HealthEntity):
-    def __init__(self, entityName: str, weapon_factory: WeaponFactory, base_attacks: List[Attack], base_stats, equipped_weapons: Dict[str, Weapon | None]):
+    def __init__(self, entityName: str, weapon_factory: WeaponFactory,
+                 base_attacks: List[Attack], base_stats, equipped_weapons: Dict[str, Weapon | None],
+                 equipped_armour: Dict[str, Armour | None]):
         super().__init__(entityName)
         self.__weapon_factory: WeaponFactory = weapon_factory
         self.base_evasion = 0
@@ -56,11 +58,8 @@ class Character(HealthEntity):
 
 
         self.equipped_weapons: Dict[str, Weapon | None] = equipped_weapons
+        self.equipped_armour = equipped_armour
 
-        self.equipped_armour = {
-            'Under': None,
-            'Over': None
-        }
         self.coverage = 0
         self.bulk = 0
 
@@ -387,12 +386,6 @@ class Character(HealthEntity):
             output = 'Died'
             
         return output
-
-    # Turns the weapon, armour and inventory strings into entities
-    def getEquipment(self):
-        for armour_type in self.equipped_armour:
-            if self.equipped_armour[armour_type] is not None:
-                self.equipped_armour[armour_type] = self.__weapon_factory.create_armour(self.equipped_armour[armour_type])
 
     # Gets what attacks are available and adds them to the options list - also ids them
     def getAttackOptions(self):

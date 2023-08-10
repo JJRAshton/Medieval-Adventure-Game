@@ -1,5 +1,7 @@
 import random as rd
 
+from .stats.weapon_factory import WeaponFactory
+
 from .character import Character
 from .classes.player_class import PlayerClass
 
@@ -8,16 +10,20 @@ from .classes.player_class import PlayerClass
 class Player(Character):
     names = ['Robert', 'Arthur', 'Grork', 'Fosdron', 'Thulgraena', 'Diffros', 'Ayda', 'Tezug', 'Dor\'goxun', 'Belba']
 
-    def __init__(self, player_class: PlayerClass, weapon_factory, player_name: str, base_attacks, base_stats, equipped_weapons):
+    def __init__(self, player_class: PlayerClass, weapon_factory: WeaponFactory, player_name: str, base_attacks, base_stats, equipped_weapons):
+        equipped_armour={
+            armour_location: weapon_factory.create_armour(armour) if armour else None
+                for armour_location, armour in player_class.startingArmour.items()
+        }
         super().__init__(
             player_name,
             weapon_factory=weapon_factory,
             base_attacks=base_attacks,
             base_stats=base_stats,
-            equipped_weapons=equipped_weapons
+            equipped_weapons=equipped_weapons,
+            equipped_armour=equipped_armour
         )
         self.p_class = player_class
-        self.equipped_armour = self.p_class.startingArmour
         self.base_movement = self.p_class.base_movement
         self.skill = self.p_class.skill
         if self.has_Trait('Slow'):
