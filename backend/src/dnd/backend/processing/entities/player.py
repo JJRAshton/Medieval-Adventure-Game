@@ -17,7 +17,6 @@ class Player(Character):
         }
         super().__init__(
             player_name,
-            weapon_factory=weapon_factory,
             base_attacks=base_attacks,
             base_stats=base_stats,
             equipped_weapons=equipped_weapons,

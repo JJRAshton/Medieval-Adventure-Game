@@ -20,11 +20,10 @@ def calc_rad_dist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
 
 
 class Character(HealthEntity):
-    def __init__(self, entityName: str, weapon_factory: WeaponFactory,
+    def __init__(self, entityName: str,
                  base_attacks: List[Attack], base_stats, equipped_weapons: Dict[str, Weapon | None],
                  equipped_armour: Dict[str, Armour | None]):
         super().__init__(entityName)
-        self.__weapon_factory: WeaponFactory = weapon_factory
         self.base_evasion = 0
         self.base_armour = 0
         self.base_movement = 0
