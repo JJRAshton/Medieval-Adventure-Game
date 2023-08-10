@@ -1,5 +1,7 @@
 import random as rd
 
+from .item import Weapon, Armour
+
 from .stats.weapon_factory import WeaponFactory
 
 from .character import Character
@@ -44,7 +46,7 @@ class Player(Character):
     def equipWeapon(self, invIndex, location):
         weapon = self.inventory[invIndex]
 
-        if not weapon.is_Weapon():
+        if not isinstance(weapon, Weapon):
             return
 
         if weapon.has_trait('Two-handed'):
@@ -85,7 +87,7 @@ class Player(Character):
     def equipArmour(self, inv_index):
         armour = self.inventory[inv_index]
 
-        if not armour.is_Armour:
+        if not isinstance(armour, Armour):
             return
 
         self.unequip_armour(armour.p_class)

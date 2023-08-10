@@ -4,6 +4,8 @@ from typing import Dict, List, Tuple
 import pandas as pd
 import os
 
+from .entities.item import Weapon, Armour
+
 from .entities.stats.assign_entity import EntityFactory
 
 from .entities.health_entity import HealthEntity
@@ -130,9 +132,9 @@ class Back:
         for item in character.inventory:
             item.id = itemIDNum
             self.items.append(item)
-            if item.is_Armour():
+            if isinstance(item, Armour):
                 self.armour.append(item)
-            elif item.is_Weapon():
+            elif isinstance(item, Weapon):
                 self.weapons.append(item)
             itemIDNum += 1
 

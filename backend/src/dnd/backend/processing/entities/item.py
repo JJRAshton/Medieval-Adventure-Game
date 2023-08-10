@@ -1,5 +1,4 @@
 from .entity import Entity
-from .stats.make_dataframes import weapon_types
 
 
 class Item(Entity):
@@ -8,14 +7,6 @@ class Item(Entity):
         super().__init__(itemName)
         self.is_carried = True
         self.type = ''
-
-    # Checks if the item is a weapon
-    def is_Weapon(self):
-        return self.type in weapon_types
-
-    # Checks if the item is armour
-    def is_Armour(self):
-        return self.type in ['Under', 'Over']
 
 
 class Weapon(Item):
