@@ -20,7 +20,7 @@ def calc_rad_dist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
 
 
 class Character(HealthEntity):
-    def __init__(self, entityName: str, weapon_factory: WeaponFactory, base_attacks: List[Attack], base_stats):
+    def __init__(self, entityName: str, weapon_factory: WeaponFactory, base_attacks: List[Attack], base_stats, equipped_weapons: Dict[str, Weapon | None]):
         super().__init__(entityName)
         self.__weapon_factory: WeaponFactory = weapon_factory
         self.base_evasion = 0
@@ -54,11 +54,8 @@ class Character(HealthEntity):
         self.max_movement = 0
         self.max_health = 0
 
-        self.equipped_weapons: Dict[str, Weapon | None] = {
-            'Left': None,
-            'Right': None,
-            'Both': None
-        }
+
+        self.equipped_weapons: Dict[str, Weapon | None] = equipped_weapons
 
         self.equipped_armour = {
             'Under': None,
@@ -393,14 +390,9 @@ class Character(HealthEntity):
 
     # Turns the weapon, armour and inventory strings into entities
     def getEquipment(self):
-        for hand in self.equipped_weapons:
-            if self.equipped_weapons[hand] is not None:
-                self.equipped_weapons[hand] = self.__weapon_factory.create(self.equipped_weapons[hand])
         for armour_type in self.equipped_armour:
             if self.equipped_armour[armour_type] is not None:
                 self.equipped_armour[armour_type] = self.__weapon_factory.create_armour(self.equipped_armour[armour_type])
-
-        self.createInventory()
 
     # Gets what attacks are available and adds them to the options list - also ids them
     def getAttackOptions(self):
@@ -417,15 +409,6 @@ class Character(HealthEntity):
 
         if not self.attack_options:
             self.attack_options = self.base_attacks
-
-    # Turns the inventory into class object
-    def createInventory(self):
-        new_list = []
-        for item_str in self.inventory:
-            pass # do nothing for now, I want to stop having a weapon factory here at all
-            # item = self.__weapon_factory.create(item_str)  # Converts to weapon for now
-            # new_list.append(item)
-        self.inventory = new_list
 
     # Functions to be redefined with npc and player classes
     def is_Proficient(self, weapon: it.Weapon):

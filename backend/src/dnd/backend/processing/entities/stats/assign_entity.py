@@ -2,10 +2,10 @@ import random as rd
 from typing import List
 import pandas as pd
 
+from ..character import Character
 from ..npc import NPC
 from ..npc import Monster
 from ..player import Player
-from ..item import Armour
 from ..map_object import Object
 from ..classes import player_class
 from ..attack import Attack
@@ -70,27 +70,21 @@ class EntityFactory:
         return new_object
 
     # This should eventually just take a char_dict and provide a character back
-    def get_character_stats(self, character, char_dict):  # Doesn't collect all data
-        starting_items: List[object] = []
-
+    def get_character_stats(self, character: NPC, char_dict):
         size = char_dict['Size']
 
-        for location in ['Left', 'Right', 'Both']:
-            if char_dict[location]:
-                character.equipped_weapons[location] = char_dict[location]
-                starting_items.append(char_dict[location])
-
         if char_dict['Base Armour']:
-            character.baseArmour = char_dict['Base Armour']
+            character.base_armour = int(char_dict['Base Armour'])
             character.base_coverage = 1
         if char_dict['Inventory']:
             inventory = dice_utils.convertList(char_dict['Inventory'])
-            character.inventory = inventory
-            starting_items += inventory
+            # These need to be converted to items instead of strings but
+            # it would be a pain working out what they should be
+            character.inventory = [] # character.inventory = inventory
         if char_dict['Skill']:
             character.skill = int(char_dict['Skill'])
 
-        character.starting_items = starting_items
+        character.item_profficiencies = [weapon.name for weapon in character.equipped_weapons.values() if weapon]
 
         # Randomly selects armour according to armour level
         if char_dict['Armour Level']:
@@ -100,12 +94,12 @@ class EntityFactory:
                 for armour_type in armour_levels[level]:
                     armour_list = armour_levels[level][armour_type]
                     armour = rd.choice(armour_list)
-                    character.armour[armour_type] = armour
+                    character.equipped_armour[armour_type] = self.__weapon_factory.create_armour(armour)
                     if armour == 'padded_jack':
                         break
             else:
                 armour_list = armour_levels[level]
-                character.armour['Light'] = rd.choice(armour_list)
+                character.armour['Light'] = self.__weapon_factory.create_armour(rd.choice(armour_list))
 
         if char_dict['Vulnerabilities']:
             vulnerabilities = dice_utils.convertList(char_dict['Vulnerabilities'])
@@ -139,30 +133,27 @@ class EntityFactory:
         if playerName is None:
             playerName = rd.choice(Player.names)
         base_stats = {stat_name: stat for stat_name, stat in zip(player_class.stat_order, sorted(self.roll_stats(), reverse=True))}
+        
+        df = self.stat_provider.weapons
+        weapon_str = rd.choice(df[(df.Type.isin(player_class.weapons)) & (df.Tier == 4)].index.tolist())
+        
+        equipped_weapons = {location: None for location in ['Left', 'Right', 'Both']}
+        if df.loc[weapon_str].to_dict()['Two-handed']:
+            equipped_weapons['Both'] = self.__weapon_factory.create(weapon_str)
+        else:
+            equipped_weapons['Right'] = self.__weapon_factory.create(weapon_str)
+        
         player = Player(
             player_class,
             weapon_factory=self.__weapon_factory,
             player_name=playerName,
             base_attacks=self.__convert_attacks(['hit']),
-            base_stats=base_stats
+            base_stats=base_stats,
+            equipped_weapons=equipped_weapons
         )
 
         player.behaviour_type = 1
         player.team = 1
-
-        df = self.stat_provider.weapons
-        wep_option_df = pd.DataFrame()
-        for wep_type in player_class.weapons:
-            wepData = df[(df.Type == wep_type) & (df.Tier == 4)]
-            wep_option_df = pd.concat([wep_option_df, wepData]) 
-
-        choices = wep_option_df.index.tolist()
-
-        weapon_str = rd.choice(choices)
-        if df.loc[weapon_str].to_dict()['Two-handed']:
-            player.equipped_weapons['Both'] = weapon_str
-        else:
-            player.equipped_weapons['Right'] = weapon_str
 
         player.getEquipment()
 
@@ -175,8 +166,6 @@ class EntityFactory:
         player.reset_health()
 
         player.calcInitiative()
-
-        player.reset_health()
 
         return player
 
@@ -198,11 +187,16 @@ class EntityFactory:
 
     def create_npc(self, npc_name: str) -> NPC:
         npc_stats = self.__getCharacterDict(npc_name)
+        equipped_weapons = {location: None for location in ['Left', 'Right', 'Both']}
+        for location in equipped_weapons.keys():
+            if npc_stats[location]:
+                npc_stats.equipped_weapons[location] = self.__weapon_factory.create(npc_stats[location])
         npc = NPC(
             npc_name,
             weapon_factory=self.__weapon_factory,
             base_attacks=self.__convert_attacks(dice_utils.convertList(npc_stats['Attacks'])),
-            base_stats={stat: int(npc_stats[stat]) for stat in STATS}
+            base_stats={stat: int(npc_stats[stat]) for stat in STATS},
+            equipped_weapons=equipped_weapons
         )
         self.get_character_stats(npc, npc_stats)
         self.setup_npc(npc)
@@ -211,11 +205,16 @@ class EntityFactory:
 
     def create_monster(self, monster_name: str) -> Monster:
         monster_stats = self.__getCharacterDict(monster_name)
+        equipped_weapons = {location: None for location in ['Left', 'Right', 'Both']}
+        for location in equipped_weapons.keys():
+            if monster_stats[location]:
+                equipped_weapons[location] = self.__weapon_factory.create(monster_stats[location])
         monster = Monster(
             monster_name,
             weapon_factory=self.__weapon_factory,
             base_attacks=self.__convert_attacks(dice_utils.convertList(monster_stats['Attacks'])),
-            base_stats={stat: int(monster_stats[stat]) for stat in STATS}
+            base_stats={stat: int(monster_stats[stat]) for stat in STATS},
+            equipped_weapons=equipped_weapons
         )
         self.get_character_stats(monster, monster_stats)
         self.setup_npc(monster)

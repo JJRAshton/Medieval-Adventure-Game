@@ -18,28 +18,20 @@ class EntityCSVToDataFrameParser():
     def make_weapon_stat_table(self):
         weapon_table = pd.DataFrame()
         for weapon_type in weapon_types:
-            weapon_type_table = pd.read_csv(f'{INPUTS_DIR}/weapons/{weapon_type}.csv', keep_default_na=False, index_col='Name') # type: ignore
-            types = [weapon_type for _ in range(weapon_type_table.shape[0])]
-            weapon_type_table['Type'] = types
-            weapon_table = pd.concat([weapon_table, weapon_type_table]) # type: ignore
-
-            weapon_table = weapon_table.fillna('') # type: ignore
-
-        return weapon_table
+            weapon_type_table = pd.read_csv(f'{INPUTS_DIR}/weapons/{weapon_type}.csv', keep_default_na=False, index_col='Name')
+            weapon_type_table['Type'] = weapon_type
+            weapon_table = pd.concat([weapon_table, weapon_type_table])
+        return weapon_table.fillna('')
 
 
     def make_armour_stat_table(self):
         # read combat setup
-        armour_table = pd.read_csv(f'{INPUTS_DIR}/armour.csv', keep_default_na=False, index_col='Name') # type: ignore
-
-        return armour_table
+        return pd.read_csv(f'{INPUTS_DIR}/armour.csv', keep_default_na=False, index_col='Name') # type: ignore
 
 
     def make_object_stat_table(self): # Unused?
         # read combat setup
-        armour_table = pd.read_csv(f'{INPUTS_DIR}/objects.csv', keep_default_na=False, index_col='Name') # type: ignore
-
-        return armour_table
+        return pd.read_csv(f'{INPUTS_DIR}/objects.csv', keep_default_na=False, index_col='Name') # type: ignore
 
 
 class EntityStatDictionaryProvider:
@@ -54,13 +46,11 @@ class EntityStatDictionaryProvider:
 
     def get_weapon_stats_dict(self, weapon_name: str) -> Dict[str, str]:
         # Make a dictionary of the stats for the entity
-        gotten_stats: Dict[str, str] = self.weapons.loc[weapon_name].to_dict() # type: ignore
-        return gotten_stats
+        return self.weapons.loc[weapon_name].to_dict() # type: ignore
 
     def get_armour_stats_dict(self, armour_name: str) -> Dict[str, str]:
         # Make a dictionary of the stats for the entity
-        gotten_stats: Dict[str, str] = self.__armour.loc[armour_name].to_dict() # type: ignore
-        return gotten_stats
+        return self.__armour.loc[armour_name].to_dict() # type: ignore
 
 
 class AttackCSVToDataFrameParser:
