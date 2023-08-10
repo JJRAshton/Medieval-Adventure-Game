@@ -1,5 +1,3 @@
-import random as rd
-
 from .item import Weapon, Armour
 
 from .stats.weapon_factory import WeaponFactory

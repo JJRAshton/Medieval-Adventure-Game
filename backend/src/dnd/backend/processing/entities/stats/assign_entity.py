@@ -118,7 +118,7 @@ class EntityFactory:
     def create_player(self, player_class: player_class.PlayerClass, playerName=None) -> Player:
         if playerName is None:
             playerName = rd.choice(Player.names)
-        base_stats = {stat_name: stat for stat_name, stat in zip(player_class.stat_order, sorted(self.roll_stats(), reverse=True))}
+        base_stats = {stat_name: stat for stat_name, stat in zip(player_class.stat_order, sorted(dice_utils.roll_stats(), reverse=True))}
         
         df = self.stat_provider.weapons
         weapon_str = rd.choice(df[(df.Type.isin(player_class.weapons)) & (df.Tier == 4)].index.tolist())

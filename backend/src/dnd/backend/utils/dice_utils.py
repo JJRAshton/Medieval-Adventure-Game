@@ -16,3 +16,19 @@ def convertList(list_str: str):
     if no_whitespace == "":
         return []
     return no_whitespace.split(",")
+
+def roll_stats():
+    x, n, top = 3, 8, 48  # roll 8, take best 5 - max of 40
+    stat_rolls = []
+
+    for _ in range(4):  # Number of stats to assign
+        one_stat_roll = []
+        for _ in range(n):  # Rolls n dice
+            roll = rd.randint(1, int(top/x))
+            one_stat_roll.append(roll)
+
+        for _ in range(n-x):  # Get rid of the lowest values
+            one_stat_roll.pop(one_stat_roll.index(min(one_stat_roll)))
+
+        stat_rolls.append(sum(one_stat_roll))
+    return stat_rolls
