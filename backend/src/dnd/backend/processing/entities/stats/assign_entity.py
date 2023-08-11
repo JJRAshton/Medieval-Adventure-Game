@@ -83,8 +83,6 @@ class EntityFactory:
         if char_dict['Skill']:
             character.skill = int(char_dict['Skill'])
 
-        character.item_profficiencies = [weapon.name for weapon in character.equipped_weapons.values() if weapon]
-
         character.actions_total = int(char_dict['Actions'])
         character.base_movement = int(char_dict['Speed'])
         character.drop_rate = int(char_dict['Drop Rate'])
@@ -150,7 +148,6 @@ class EntityFactory:
                 npc_stats.equipped_weapons[location] = self.__weapon_factory.create(npc_stats[location])
         npc = NPC(
             npc_name,
-            weapon_factory=self.__weapon_factory,
             base_attacks=self.__convert_attacks(dice_utils.convertList(npc_stats['Attacks'])),
             base_stats={stat: int(npc_stats[stat]) for stat in STATS},
             equipped_weapons=equipped_weapons,
@@ -171,7 +168,6 @@ class EntityFactory:
                 equipped_weapons[location] = self.__weapon_factory.create(monster_stats[location])
         monster = Monster(
             monster_name,
-            weapon_factory=self.__weapon_factory,
             base_attacks=self.__convert_attacks(dice_utils.convertList(monster_stats['Attacks'])),
             base_stats={stat: int(monster_stats[stat]) for stat in STATS},
             equipped_weapons=equipped_weapons,

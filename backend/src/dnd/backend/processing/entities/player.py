@@ -25,10 +25,10 @@ class Player(Character):
             resistances=[]
         )
         
+        self.p_class = player_class
         if self.has_Trait('Strong'):
             self.stat['STR'] = int(1.2 * self.stat['STR'])
 
-        self.p_class = player_class
         self.base_movement = self.p_class.base_movement
         self.skill = self.p_class.skill
         if self.has_Trait('Slow'):

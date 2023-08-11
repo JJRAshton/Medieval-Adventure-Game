@@ -9,8 +9,8 @@ class NPC(Character):
         self.team = 1
         self.max_bulk = 20
 
-        self.item_profficiencies = [] # List of names of things this Character is profficient with
-
+        # Only weapon proficiencies for now
+        self.item_proficiencies = [weapon.name for weapon in equipped_weapons.values() if weapon]
         self.vulnerabilities: List[str] = vulnerabilities
         self.resistances: List[str] = resistances
 
@@ -19,12 +19,14 @@ class NPC(Character):
             base_attacks=base_attacks,
             base_stats=base_stats,
             equipped_weapons=equipped_weapons,
-            equipped_armour=equipped_armour
+            equipped_armour=equipped_armour,
+            vulnerabilities=vulnerabilities,
+            resistances=resistances
         )
 
     # Checks if the character is proficient with the weapon
     def is_Proficient(self, weapon):
-        return weapon.name in self.item_profficiencies
+        return weapon.name in self.item_proficiencies
 
     # Sees if the npc max bulk has been exceeded
     def is_exceededBulk(self):
