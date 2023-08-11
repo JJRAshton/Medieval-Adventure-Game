@@ -27,7 +27,7 @@ class Brain1:
 
     def __init__(self, backend: Requests, bot_id: int):
         self.locations = backend.locationsRequest()
-        self.player_ids: List[int] = [x for x in backend.locationsRequest() if backend.infoRequest(x)['Team'] == 1]
+        self.player_ids: List[int] = [x for x in backend.locationsRequest() if backend.infoRequest(x)['Team'] != self.check_team(bot_id, backend)]
         self.my_id: int = bot_id
         self.my_location: Tuple[int, int] = backend.locationsRequest()[bot_id]
         self.my_range: int = backend.infoRequest(bot_id)['Range']
@@ -42,7 +42,6 @@ class Brain1:
 
         return distance
 
-# Not currently used but might in future
     def check_team(self, char_id: int, backend: Requests):
         print(char_id)
         team: int = backend.infoRequest(char_id)['Team']  # 1 is player, 2 is npc

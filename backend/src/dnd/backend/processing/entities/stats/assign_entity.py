@@ -80,8 +80,6 @@ class EntityFactory:
             # These need to be converted to items instead of strings but
             # it would be a pain working out what they should be
             character.inventory = [] # character.inventory = inventory
-        if char_dict['Skill']:
-            character.skill = int(char_dict['Skill'])
 
         character.actions_total = int(char_dict['Actions'])
         character.base_movement = int(char_dict['Speed'])
@@ -145,7 +143,7 @@ class EntityFactory:
         equipped_weapons = {location: None for location in ['Left', 'Right', 'Both']}
         for location in equipped_weapons.keys():
             if npc_stats[location]:
-                npc_stats.equipped_weapons[location] = self.__weapon_factory.create(npc_stats[location])
+                equipped_weapons[location] = self.__weapon_factory.create(npc_stats[location])
         npc = NPC(
             npc_name,
             base_attacks=self.__convert_attacks(dice_utils.convertList(npc_stats['Attacks'])),
