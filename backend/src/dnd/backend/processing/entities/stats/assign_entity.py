@@ -132,8 +132,6 @@ class EntityFactory:
         player.behaviour_type = 1
         player.team = 1
 
-        player.resetStats()
-
         player.refreshStatAfterEquipment()
  
         player.calcHealth()
@@ -187,7 +185,6 @@ class EntityFactory:
         return monster
     
     def setup_npc(self, npc: NPC):
-        npc.resetStats()
         npc.reset_health()
 
         npc.refreshStatAfterEquipment()

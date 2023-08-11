@@ -1,3 +1,4 @@
+import copy
 import random as rd
 from typing import Dict, List, Tuple
 
@@ -32,7 +33,7 @@ class Character(HealthEntity):
         self.skill = 0
         
         self.base_stat = base_stats
-        self.stat: Dict[str, int] = {}
+        self.stat: Dict[str, int] = copy.copy(base_stats)
 
         self.initiative = 0
 
@@ -238,12 +239,7 @@ class Character(HealthEntity):
         self.health += appliedHealing
         if self.health > self.max_health:
             self.health = self.max_health
-
-    # Resets the stats to the base stats
-    def resetStats(self):
-        for stat in self.base_stat:
-            self.stat[stat] = self.base_stat[stat]
-        
+   
     def refreshMovement(self):
         self.movement = self.max_movement
 
