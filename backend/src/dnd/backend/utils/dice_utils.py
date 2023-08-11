@@ -17,6 +17,11 @@ def convertList(list_str: str):
         return []
     return no_whitespace.split(",")
 
+def safe_convert(list_str: str | None):
+    if list_str:
+        return convertList(list_str)
+    return []
+
 def roll_stats():
     x, n, top = 3, 8, 48  # roll 8, take best 5 - max of 40
     stat_rolls = []

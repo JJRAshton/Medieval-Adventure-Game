@@ -2,7 +2,6 @@ import random as rd
 from typing import Dict, List, Tuple
 
 from .health_entity import HealthEntity
-from .stats.weapon_factory import WeaponFactory
 from .attack import Attack
 from .item import Armour, Weapon
 from . import item as it
@@ -22,8 +21,8 @@ def calc_rad_dist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
 class Character(HealthEntity):
     def __init__(self, entityName: str,
                  base_attacks: List[Attack], base_stats, equipped_weapons: Dict[str, Weapon | None],
-                 equipped_armour: Dict[str, Armour | None]):
-        super().__init__(entityName)
+                 equipped_armour: Dict[str, Armour | None], vulnerabilities: List[str], resistances: List[str]):
+        super().__init__(entityName, vulnerabilities=vulnerabilities, resistances=resistances)
         self.base_evasion = 0
         self.base_armour = 0
         self.base_movement = 0

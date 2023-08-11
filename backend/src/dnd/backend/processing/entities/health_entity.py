@@ -4,7 +4,7 @@ from .entity import Entity
 
 
 class HealthEntity(Entity):
-    def __init__(self, entity_name: str):
+    def __init__(self, entity_name: str, vulnerabilities=[], resistances=[]):
         super().__init__(entity_name)
 
         self.baseHealth = 0

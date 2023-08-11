@@ -20,7 +20,9 @@ class Player(Character):
             base_attacks=base_attacks,
             base_stats=base_stats,
             equipped_weapons=equipped_weapons,
-            equipped_armour=equipped_armour
+            equipped_armour=equipped_armour,
+            vulnerabilities=[],
+            resistances=[]
         )
         self.p_class = player_class
         self.base_movement = self.p_class.base_movement

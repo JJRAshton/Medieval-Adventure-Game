@@ -1,8 +1,6 @@
 import random as rd
 from typing import Dict, List
-import pandas as pd
 
-from ..character import Character
 from ..npc import NPC
 from ..npc import Monster
 from ..player import Player
@@ -87,13 +85,6 @@ class EntityFactory:
 
         character.item_profficiencies = [weapon.name for weapon in character.equipped_weapons.values() if weapon]
 
-        if char_dict['Vulnerabilities']:
-            vulnerabilities = dice_utils.convertList(char_dict['Vulnerabilities'])
-            character.vulnerabilities += vulnerabilities
-        if char_dict['Resistances']:
-            resistances = dice_utils.convertList(char_dict['Resistances'])
-            character.resistances += resistances
-
         character.actions_total = int(char_dict['Actions'])
         character.base_movement = int(char_dict['Speed'])
         character.drop_rate = int(char_dict['Drop Rate'])
@@ -101,7 +92,7 @@ class EntityFactory:
         character.difficulty = int(char_dict['Difficulty'])
 
         character.base_evasion = character.base_stat['DEX']
-        
+
         character.baseHealth = dice_utils.roll_dice(int(char_dict['Difficulty']), character.base_stat['CON'], character.base_stat['CON'])
         if size == 'large':
             character.size = 10
@@ -115,9 +106,9 @@ class EntityFactory:
         character.base_reach = character.size
 
     # Adds the stats to the given player
-    def create_player(self, player_class: player_class.PlayerClass, playerName=None) -> Player:
-        if playerName is None:
-            playerName = rd.choice(Player.names)
+    def create_player(self, player_class: player_class.PlayerClass, player_name=None) -> Player:
+        if player_name is None:
+            player_name = rd.choice(Player.names)
         base_stats = {stat_name: stat for stat_name, stat in zip(player_class.stat_order, sorted(dice_utils.roll_stats(), reverse=True))}
         
         df = self.stat_provider.weapons
@@ -128,11 +119,11 @@ class EntityFactory:
             equipped_weapons['Both'] = self.__weapon_factory.create(weapon_str)
         else:
             equipped_weapons['Right'] = self.__weapon_factory.create(weapon_str)
-        
+
         player = Player(
             player_class,
             weapon_factory=self.__weapon_factory,
-            player_name=playerName,
+            player_name=player_name,
             base_attacks=self.__convert_attacks(['hit']),
             base_stats=base_stats,
             equipped_weapons=equipped_weapons,
@@ -153,22 +144,6 @@ class EntityFactory:
 
         return player
 
-    def roll_stats(self):
-        x, n, top = 3, 8, 48  # roll 8, take best 5 - max of 40
-        stat_rolls = []
-
-        for _ in range(4):  # Number of stats to assign
-            one_stat_roll = []
-            for _ in range(n):  # Rolls n dice
-                roll = rd.randint(1, int(top/x))
-                one_stat_roll.append(roll)
-
-            for _ in range(n-x):  # Get rid of the lowest values
-                one_stat_roll.pop(one_stat_roll.index(min(one_stat_roll)))
-
-            stat_rolls.append(sum(one_stat_roll))
-        return stat_rolls
-
     def create_npc(self, npc_name: str) -> NPC:
         npc_stats = self.__getCharacterDict(npc_name)
         equipped_weapons = {location: None for location in ['Left', 'Right', 'Both']}
@@ -181,7 +156,9 @@ class EntityFactory:
             base_attacks=self.__convert_attacks(dice_utils.convertList(npc_stats['Attacks'])),
             base_stats={stat: int(npc_stats[stat]) for stat in STATS},
             equipped_weapons=equipped_weapons,
-            equipped_armour=self.__get_npc_armour(npc_stats['Armour Level'])
+            equipped_armour=self.__get_npc_armour(npc_stats['Armour Level']),
+            vulnerabilities=dice_utils.safe_convert(npc_stats['Vulnerabilities']),
+            resistances=dice_utils.safe_convert(npc_stats['Resistances'])
         )
         self.get_character_stats(npc, npc_stats)
         self.setup_npc(npc)
@@ -200,7 +177,9 @@ class EntityFactory:
             base_attacks=self.__convert_attacks(dice_utils.convertList(monster_stats['Attacks'])),
             base_stats={stat: int(monster_stats[stat]) for stat in STATS},
             equipped_weapons=equipped_weapons,
-            equipped_armour=self.__get_npc_armour(monster_stats['Armour Level'])
+            equipped_armour=self.__get_npc_armour(monster_stats['Armour Level']),
+            vulnerabilities=dice_utils.safe_convert(monster_stats['Vulnerabilities']),
+            resistances=dice_utils.safe_convert(monster_stats['Resistances'])
         )
         self.get_character_stats(monster, monster_stats)
         self.setup_npc(monster)
