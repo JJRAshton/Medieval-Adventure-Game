@@ -150,13 +150,3 @@ if __name__ == '__main__':
     comparison_arena.calcWR()
     # comparison_arena.displayStats(3)
     # comparison_arena.displayStats(5)
-
-
-"""
-
-Stats: [43.88, 37.55, 33.09, 29.37]
-HP: [(<PlayerClass object at 0x11a254c10>, 69.71), (<PlayerClass object at 0x118f23cd0>, 116.75), (<PlayerClass object at 0x1135e7c50>, 49.33), (<PlayerClass object at 0x11842cb90>, 54.98), (<PlayerClass object at 0x113a14750>, 61.25), (<PlayerClass object at 0x11a256650>, 57.91)]
-Points: [(<PlayerClass object at 0x11a254c10>, 1431), (<PlayerClass object at 0x118f23cd0>, 488), (<PlayerClass object at 0x1135e7c50>, 1746), (<PlayerClass object at 0x11842cb90>, 1971), (<PlayerClass object at 0x113a14750>, 2468), (<PlayerClass object at 0x11a256650>, 1896)]
-Wins: [(<PlayerClass object at 0x11a254c10>, 1431), (<PlayerClass object at 0x118f23cd0>, 488), (<PlayerClass object at 0x1135e7c50>, 1746), (<PlayerClass object at 0x11842cb90>, 1971), (<PlayerClass object at 0x113a14750>, 2468), (<PlayerClass object at 0x11a256650>, 1896)]
-WR:  [(<PlayerClass object at 0x11a254c10>, 0.43), (<PlayerClass object at 0x118f23cd0>, 0.15), (<PlayerClass object at 0x1135e7c50>, 0.52), (<PlayerClass object at 0x11842cb90>, 0.58), (<PlayerClass object at 0x113a14750>, 0.76), (<PlayerClass object at 0x11a256650>, 0.56)]
-"""

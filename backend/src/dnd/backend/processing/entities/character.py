@@ -287,8 +287,6 @@ class Character(HealthEntity):
         self.bulk = 0
         self.stat['DEX'] = self.base_stat['DEX']
         for dmg_type in self.armour:
-            if hasattr(self, 'p_class'):
-                print("Bad things happening")
             self.armour[dmg_type] = self.base_armour
         self.max_movement = self.base_movement
         self.coverage = self.base_coverage
