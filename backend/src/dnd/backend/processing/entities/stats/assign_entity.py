@@ -82,7 +82,6 @@ class EntityFactory:
             character.inventory = [] # character.inventory = inventory
 
         character.actions_total = int(char_dict['Actions'])
-        character.base_movement = int(char_dict['Speed'])
         character.drop_rate = int(char_dict['Drop Rate'])
         character.skill = int(char_dict['Skill']) if char_dict['Skill'] else 0
         character.difficulty = int(char_dict['Difficulty'])
@@ -109,7 +108,7 @@ class EntityFactory:
         
         df = self.stat_provider.weapons
         weapon_str = rd.choice(df[(df.Type.isin(player_class.weapons)) & (df.Tier == 4)].index.tolist())
-        
+
         equipped_weapons = {location: None for location in ['Left', 'Right', 'Both']}
         if df.loc[weapon_str].to_dict()['Two-handed']:
             equipped_weapons['Both'] = self.__weapon_factory.create(weapon_str)
@@ -128,14 +127,6 @@ class EntityFactory:
         player.behaviour_type = 1
         player.team = 1
 
-        player.refreshStatAfterEquipment()
- 
-        player.calcHealth()
-
-        player.reset_health()
-
-        player.calcInitiative()
-
         return player
 
     def create_npc(self, npc_name: str) -> NPC:
@@ -151,11 +142,11 @@ class EntityFactory:
             equipped_weapons=equipped_weapons,
             equipped_armour=self.__get_npc_armour(npc_stats['Armour Level']),
             vulnerabilities=dice_utils.safe_convert(npc_stats['Vulnerabilities']),
-            resistances=dice_utils.safe_convert(npc_stats['Resistances'])
+            resistances=dice_utils.safe_convert(npc_stats['Resistances']),
+            base_movement=int(npc_stats['Speed'])
         )
         self.get_character_stats(npc, npc_stats)
-        self.setup_npc(npc)
-
+        npc.setup() # Should be moved into constructor once get_character_stats is removed
         return npc
 
     def create_monster(self, monster_name: str) -> Monster:
@@ -171,18 +162,13 @@ class EntityFactory:
             equipped_weapons=equipped_weapons,
             equipped_armour=self.__get_npc_armour(monster_stats['Armour Level']),
             vulnerabilities=dice_utils.safe_convert(monster_stats['Vulnerabilities']),
-            resistances=dice_utils.safe_convert(monster_stats['Resistances'])
+            resistances=dice_utils.safe_convert(monster_stats['Resistances']),
+            base_movement=int(monster_stats['Speed'])
         )
         self.get_character_stats(monster, monster_stats)
-        self.setup_npc(monster)
-
+        monster.setup() # Should be moved into constructor once get_character_stats is removed
         return monster
-    
-    def setup_npc(self, npc: NPC):
-        npc.reset_health()
 
-        npc.refreshStatAfterEquipment()
-        npc.calcInitiative()
 
     def __convert_attacks(self, attack_strings: List[str]) -> List[Attack]:
         base_attacks = []

@@ -1,8 +1,8 @@
 import random as rd
 import copy
 
-from .backend import processing as pr
-
+from backend.processing.back import Back
+from backend.processing.entities.classes.player_class import GLADIATOR, GUARDIAN, HUNTER, KNIGHT, RAIDER, SAMURAI
 
 class Arena:
     def __init__(self, classes):
@@ -105,7 +105,7 @@ class Arena:
     def newBack(self):
         self.backs += 1
         classes = copy.copy(self.classes)
-        self.arena_back = pr.Back(1, len(classes), 1, classes)
+        self.arena_back = Back(1, len(classes), 1, classes)
         self.r_points = [0 for _ in range(len(self.players))]
 
         self.players = self.arena_back.characters
@@ -142,3 +142,21 @@ class Arena:
         print('Points:', list(zipped_points))
         print('Wins:', list(zipped_wins))
         print('WR: ', list(zipped_wr))
+
+if __name__ == '__main__':
+    # classes = ['Raider', 'Gladiator', 'Guardian', 'Knight', 'Samurai', 'Hunter']  # Professor
+    classes = [GLADIATOR, GUARDIAN, HUNTER, KNIGHT, RAIDER, SAMURAI]
+    comparison_arena = Arena(classes)
+    comparison_arena.calcWR()
+    # comparison_arena.displayStats(3)
+    # comparison_arena.displayStats(5)
+
+
+"""
+
+Stats: [43.88, 37.55, 33.09, 29.37]
+HP: [(<PlayerClass object at 0x11a254c10>, 69.71), (<PlayerClass object at 0x118f23cd0>, 116.75), (<PlayerClass object at 0x1135e7c50>, 49.33), (<PlayerClass object at 0x11842cb90>, 54.98), (<PlayerClass object at 0x113a14750>, 61.25), (<PlayerClass object at 0x11a256650>, 57.91)]
+Points: [(<PlayerClass object at 0x11a254c10>, 1431), (<PlayerClass object at 0x118f23cd0>, 488), (<PlayerClass object at 0x1135e7c50>, 1746), (<PlayerClass object at 0x11842cb90>, 1971), (<PlayerClass object at 0x113a14750>, 2468), (<PlayerClass object at 0x11a256650>, 1896)]
+Wins: [(<PlayerClass object at 0x11a254c10>, 1431), (<PlayerClass object at 0x118f23cd0>, 488), (<PlayerClass object at 0x1135e7c50>, 1746), (<PlayerClass object at 0x11842cb90>, 1971), (<PlayerClass object at 0x113a14750>, 2468), (<PlayerClass object at 0x11a256650>, 1896)]
+WR:  [(<PlayerClass object at 0x11a254c10>, 0.43), (<PlayerClass object at 0x118f23cd0>, 0.15), (<PlayerClass object at 0x1135e7c50>, 0.52), (<PlayerClass object at 0x11842cb90>, 0.58), (<PlayerClass object at 0x113a14750>, 0.76), (<PlayerClass object at 0x11a256650>, 0.56)]
+"""

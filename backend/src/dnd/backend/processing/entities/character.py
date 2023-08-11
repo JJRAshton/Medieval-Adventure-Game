@@ -22,11 +22,12 @@ def calc_rad_dist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
 class Character(HealthEntity):
     def __init__(self, entityName: str,
                  base_attacks: List[Attack], base_stats, equipped_weapons: Dict[str, Weapon | None],
-                 equipped_armour: Dict[str, Armour | None], vulnerabilities: List[str], resistances: List[str]):
+                 equipped_armour: Dict[str, Armour | None], vulnerabilities: List[str], resistances: List[str],
+                 base_movement):
         super().__init__(entityName, vulnerabilities=vulnerabilities, resistances=resistances)
         self.base_evasion = 0
         self.base_armour = 0
-        self.base_movement = 0
+        self.base_movement = base_movement
         self.base_coverage = 0
         self.base_attacks: List[Attack] = base_attacks
 
@@ -38,10 +39,8 @@ class Character(HealthEntity):
         self.initiative = 0
 
         self.actions_total = 2
-        self.reactions_total = 1
 
         self.actions = 2
-        self.reactions = 1
 
         self.movement = 0
 
@@ -68,7 +67,7 @@ class Character(HealthEntity):
 
         self.reach: int = 0
         self.range: int = 0
-        
+
         self.is_conscious: bool = True
         self.is_stable: bool = True
         self.saving_throws = (0, 0)
@@ -91,9 +90,7 @@ class Character(HealthEntity):
     # Initialises the relevant stats to start a new turn
     def initialiseTurn(self):
         self.movement = self.max_movement
-
         self.actions = self.actions_total
-        self.reactions = self.reactions_total
 
     # Calculates the initiative roll
     def calcInitiative(self):
@@ -236,9 +233,7 @@ class Character(HealthEntity):
 
     # Heals the entity
     def heal(self, appliedHealing):
-        self.health += appliedHealing
-        if self.health > self.max_health:
-            self.health = self.max_health
+        self.health = min(self.health + appliedHealing, self.max_health)
    
     def refreshMovement(self):
         self.movement = self.max_movement
@@ -292,6 +287,8 @@ class Character(HealthEntity):
         self.bulk = 0
         self.stat['DEX'] = self.base_stat['DEX']
         for dmg_type in self.armour:
+            if hasattr(self, 'p_class'):
+                print("Bad things happening")
             self.armour[dmg_type] = self.base_armour
         self.max_movement = self.base_movement
         self.coverage = self.base_coverage
@@ -330,9 +327,7 @@ class Character(HealthEntity):
         self.armour['piercing'] = int(self.armour['piercing'])
         self.armour['bludgeoning'] = int(self.armour['bludgeoning'])
 
-        print(self.stat['DEX'], total_flex)
         self.stat['DEX'] = self.stat['DEX'] ** total_flex
-        print(self.stat['DEX'])
         if self.is_exceededBulk():
             self.stat['DEX'] /= 2
         

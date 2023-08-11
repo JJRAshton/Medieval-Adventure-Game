@@ -22,17 +22,22 @@ class Player(Character):
             equipped_weapons=equipped_weapons,
             equipped_armour=equipped_armour,
             vulnerabilities=[],
-            resistances=[]
+            resistances=[],
+            base_movement=player_class.base_movement
         )
         
         self.p_class = player_class
         if self.has_Trait('Strong'):
             self.stat['STR'] = int(1.2 * self.stat['STR'])
 
-        self.base_movement = self.p_class.base_movement
         self.skill = self.p_class.skill
         if self.has_Trait('Slow'):
             self.actions_total = 1
+
+        self.refreshStatAfterEquipment()
+        self.calcHealth()
+        self.reset_health()
+        self.calcInitiative()
 
     # Unequips a weapon if one present in given location
     def unequipWeapon(self, location):
