@@ -15,6 +15,7 @@ class Player(Character):
             armour_location: weapon_factory.create_armour(armour) if armour else None
                 for armour_location, armour in player_class.startingArmour.items()
         }
+        self.p_class = player_class
         super().__init__(
             player_name,
             base_attacks=base_attacks,
@@ -24,19 +25,20 @@ class Player(Character):
             vulnerabilities=[],
             resistances=[],
             base_movement=player_class.base_movement,
-            team=1
+            team=1,
+            behaviour_type=1,
+            size=5,
+            actions_total=1 if self.has_Trait('Slow') else 2,
+            base_armour = 0,
+            inventory=[],
+            max_health=round(base_stats['CON'] * player_class.health_modifier),
+            skill=player_class.skill
         )
-        
-        self.p_class = player_class
+
         if self.has_Trait('Strong'):
             self.stat['STR'] = int(1.2 * self.stat['STR'])
 
-        self.skill = self.p_class.skill
-        if self.has_Trait('Slow'):
-            self.actions_total = 1
-
         self.refreshStatAfterEquipment()
-        self.calcHealth()
         self.reset_health()
         self.calcInitiative()
 
@@ -123,13 +125,9 @@ class Player(Character):
     def is_exceededBulk(self):
         return self.bulk > self.p_class.max_bulk
 
-    # Calculates health based on CON and class
-    def calcHealth(self):
-        self.baseHealth = round(self.stat['CON'] * self.p_class.health_modifier)
-
     # Calculates evasion based on DEX class
     def calcEvasion(self):
-        self.base_evasion = int(self.stat['DEX'] * self.p_class.evasion_modifier)
+        self.base_evasion = int(self.base_stat['DEX'] * self.p_class.evasion_modifier)
 
     # Checks if the player is proficient with the weapon
     def is_Proficient(self, weapon):

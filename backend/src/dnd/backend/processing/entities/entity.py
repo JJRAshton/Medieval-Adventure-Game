@@ -3,11 +3,11 @@ from typing import Tuple
 
 class Entity:
 
-    def __init__(self, entityName: str):
+    def __init__(self, entityName: str, size):
         self.name = entityName
         self.id = 0
 
-        self.size = 0
+        self.size = size
         
         self.coords = (0, 0)
 

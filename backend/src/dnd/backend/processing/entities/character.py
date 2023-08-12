@@ -23,23 +23,25 @@ class Character(HealthEntity):
     def __init__(self, entityName: str,
                  base_attacks: List[Attack], base_stats, equipped_weapons: Dict[str, Weapon | None],
                  equipped_armour: Dict[str, Armour | None], vulnerabilities: List[str], resistances: List[str],
-                 base_movement, team):
-        super().__init__(entityName, vulnerabilities=vulnerabilities, resistances=resistances)
+                 base_movement: int, team: int, behaviour_type: int, size: int, actions_total: int,
+                 base_armour, inventory, max_health, skill):
+        super().__init__(entityName, vulnerabilities=vulnerabilities, resistances=resistances, size=size, max_health=max_health)
         self.team = team
+        self.behaviour_type = behaviour_type # 1 if this is a player, 2 if npc
         self.base_evasion = 0
-        self.base_armour = 0
+        self.base_armour = base_armour
+        self.base_coverage = 1 if base_armour > 0 else 0
         self.base_movement = base_movement
-        self.base_coverage = 0
         self.base_attacks: List[Attack] = base_attacks
 
-        self.skill = 0
+        self.skill = skill
         
         self.base_stat = base_stats
         self.stat: Dict[str, int] = copy.copy(base_stats)
 
         self.initiative = 0
 
-        self.actions_total = 2
+        self.actions_total = actions_total
 
         self.actions = 2
 
@@ -53,8 +55,6 @@ class Character(HealthEntity):
         self.attack_options = []
 
         self.max_movement = 0
-        self.max_health = 0
-
 
         self.equipped_weapons: Dict[str, Weapon | None] = equipped_weapons
         self.equipped_armour = equipped_armour
@@ -62,9 +62,9 @@ class Character(HealthEntity):
         self.coverage = 0
         self.bulk = 0
 
-        self.inventory = []
+        self.inventory = inventory
 
-        self.base_reach: int = 5
+        self.base_reach: int = size
 
         self.reach: int = 0
         self.range: int = 0
@@ -72,7 +72,6 @@ class Character(HealthEntity):
         self.is_conscious: bool = True
         self.is_stable: bool = True
         self.saving_throws = (0, 0)
-        self.drop_rate: float = 0
 
     # Allows for sorting by initiative order in sorted list
     def __lt__(self, other) -> bool:
@@ -225,7 +224,7 @@ class Character(HealthEntity):
     # Checks if entity is still alive
     def check_alive(self):
         if self.health <= 0:
-            if abs(self.health) < self.baseHealth:
+            if abs(self.health) < self.max_health:
                 self.is_alive = False
             else:
                 self.is_conscious = False

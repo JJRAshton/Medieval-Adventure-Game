@@ -34,6 +34,14 @@ armour_levels = {
     }
 }
 
+SIZE_FOR_STRING: Dict[str, int] = {
+    'small': 5,
+    'medium': 5,
+    'large': 10,
+    'huge':15,
+    'gargantuan': 20
+}
+
 ''' Factory for armour, objects, characters and players. '''
 class EntityFactory:
 
@@ -48,15 +56,13 @@ class EntityFactory:
         return self.character_stat_provider.get_character_stats_dict(character_name)
 
     def create_object(self, object_name: str) -> Object:
-        new_object = Object(object_name)
-
         # Hmm, this is a bit suspicious
-        obj_dict = self.__getArmourDict(object_name.name)
+        obj_dict = self.__getArmourDict(object_name)
+        new_object = Object(object_name, int(obj_dict['Health']))
 
         new_object.armour['piercing'] = int(obj_dict['AC'])
         new_object.armour['slashing'] = int(obj_dict['AC'])
         new_object.armour['bludgeoning'] = int(obj_dict['AC'])
-        new_object.baseHealth = int(obj_dict['Health'])
 
         is_inv = bool(obj_dict['Inventory'])
 
@@ -66,38 +72,6 @@ class EntityFactory:
         new_object.reset_health()
 
         return new_object
-
-    # This should eventually just take a char_dict and provide a character back
-    def get_character_stats(self, character: NPC, char_dict):
-        size = char_dict['Size']
-
-        if char_dict['Base Armour']:
-            character.base_armour = int(char_dict['Base Armour'])
-            character.base_coverage = 1
-        if char_dict['Inventory']:
-            inventory = dice_utils.convertList(char_dict['Inventory'])
-            # These need to be converted to items instead of strings but
-            # it would be a pain working out what they should be
-            character.inventory = [] # character.inventory = inventory
-
-        character.actions_total = int(char_dict['Actions'])
-        character.drop_rate = int(char_dict['Drop Rate'])
-        character.skill = int(char_dict['Skill']) if char_dict['Skill'] else 0
-        character.difficulty = int(char_dict['Difficulty'])
-
-        character.base_evasion = character.base_stat['DEX']
-
-        character.baseHealth = dice_utils.roll_dice(int(char_dict['Difficulty']), character.base_stat['CON'], character.base_stat['CON'])
-        if size == 'large':
-            character.size = 10
-        elif size == 'huge':
-            character.size = 15
-        elif size == 'gargantuan':
-            character.size = 20
-        else:
-            character.size = 5
-
-        character.base_reach = character.size
 
     # Adds the stats to the given player
     def create_player(self, player_class: player_class.PlayerClass, player_name=None) -> Player:
@@ -123,8 +97,6 @@ class EntityFactory:
             equipped_weapons=equipped_weapons,
         )
 
-        player.behaviour_type = 1
-
         return player
 
     def create_npc(self, npc_name: str, team=1) -> NPC:
@@ -142,10 +114,15 @@ class EntityFactory:
             vulnerabilities=dice_utils.safe_convert(npc_stats['Vulnerabilities']),
             resistances=dice_utils.safe_convert(npc_stats['Resistances']),
             base_movement=int(npc_stats['Speed']),
-            team=team
+            team=team,
+            size=SIZE_FOR_STRING[npc_stats['Size']],
+            drop_rate=int(npc_stats['Drop Rate']),
+            actions_total=int(npc_stats['Actions']),
+            base_armour=int(npc_stats['Base Armour']),
+            inventory=[], # dice_utils.convertList(char_dict['Inventory']) # The items actually need to be converted, ughh
+            difficulty=int(npc_stats['Difficulty']),
+            skill=int(npc_stats['Skill']) if npc_stats['Skill'] else 0
         )
-        self.get_character_stats(npc, npc_stats)
-        npc.setup() # Should be moved into constructor once get_character_stats is removed
         return npc
 
     def create_monster(self, monster_name: str) -> NPC:

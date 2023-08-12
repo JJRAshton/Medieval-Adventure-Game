@@ -1,19 +1,22 @@
 from typing import List
 from .character import Character
+from ...utils import dice_utils
 
 # A non-playable character, can be friendly or not
 class NPC(Character):
     def __init__(self, npcName: str, base_attacks, base_stats, equipped_weapons,
                  equipped_armour, vulnerabilities, resistances, base_movement,
-                 team):
+                 team, size, drop_rate, actions_total, base_armour, inventory,
+                 difficulty, skill):
         self.target = None
-        self.behaviour_type = 2
         self.max_bulk = 20
 
         # Only weapon proficiencies for now
         self.item_proficiencies = [weapon.name for weapon in equipped_weapons.values() if weapon]
         self.vulnerabilities: List[str] = vulnerabilities
         self.resistances: List[str] = resistances
+        self.drop_rate = drop_rate
+        self.difficulty = difficulty
 
         super().__init__(
             npcName,
@@ -24,10 +27,16 @@ class NPC(Character):
             vulnerabilities=vulnerabilities,
             resistances=resistances,
             base_movement=base_movement,
-            team=team
+            team=team,
+            behaviour_type=2,
+            size=size,
+            actions_total=actions_total,
+            base_armour=base_armour,
+            inventory=inventory,
+            max_health=dice_utils.roll_dice(difficulty, base_stats['CON'], base_stats['CON']),
+            skill=skill
         )
 
-    def setup(self):
         self.reset_health()
         self.refreshStatAfterEquipment()
         self.calcInitiative()

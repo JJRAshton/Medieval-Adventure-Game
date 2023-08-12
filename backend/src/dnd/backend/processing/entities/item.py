@@ -4,7 +4,7 @@ from .entity import Entity
 class Item(Entity):
 
     def __init__(self, itemName):
-        super().__init__(itemName)
+        super().__init__(itemName, size=5)
         self.is_carried = True
         self.type = ''
 

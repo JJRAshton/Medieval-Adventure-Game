@@ -4,11 +4,10 @@ from .entity import Entity
 
 
 class HealthEntity(Entity):
-    def __init__(self, entity_name: str, vulnerabilities=[], resistances=[]):
-        super().__init__(entity_name)
+    def __init__(self, entity_name: str, max_health, vulnerabilities=[], resistances=[], size=5):
+        super().__init__(entity_name, size)
 
-        self.baseHealth = 0
-        self.max_health = 0
+        self.max_health = max_health
         self.health = 0
 
         self.vulnerabilities: List[str] = []
@@ -31,7 +30,6 @@ class HealthEntity(Entity):
 
     # Resets health to base health
     def reset_health(self):
-        self.max_health = self.baseHealth
         self.health = self.max_health
 
     # Damages the entity
