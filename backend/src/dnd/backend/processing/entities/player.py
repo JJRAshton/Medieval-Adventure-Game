@@ -23,7 +23,8 @@ class Player(Character):
             equipped_armour=equipped_armour,
             vulnerabilities=[],
             resistances=[],
-            base_movement=player_class.base_movement
+            base_movement=player_class.base_movement,
+            team=1
         )
         
         self.p_class = player_class

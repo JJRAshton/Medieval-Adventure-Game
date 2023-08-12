@@ -2,7 +2,6 @@ import random as rd
 from typing import Dict, List
 
 from ..npc import NPC
-from ..npc import Monster
 from ..player import Player
 from ..map_object import Object
 from ..classes import player_class
@@ -125,11 +124,10 @@ class EntityFactory:
         )
 
         player.behaviour_type = 1
-        player.team = 1
 
         return player
 
-    def create_npc(self, npc_name: str) -> NPC:
+    def create_npc(self, npc_name: str, team=1) -> NPC:
         npc_stats = self.__getCharacterDict(npc_name)
         equipped_weapons = {location: None for location in ['Left', 'Right', 'Both']}
         for location in equipped_weapons.keys():
@@ -143,32 +141,15 @@ class EntityFactory:
             equipped_armour=self.__get_npc_armour(npc_stats['Armour Level']),
             vulnerabilities=dice_utils.safe_convert(npc_stats['Vulnerabilities']),
             resistances=dice_utils.safe_convert(npc_stats['Resistances']),
-            base_movement=int(npc_stats['Speed'])
+            base_movement=int(npc_stats['Speed']),
+            team=team
         )
         self.get_character_stats(npc, npc_stats)
         npc.setup() # Should be moved into constructor once get_character_stats is removed
         return npc
 
-    def create_monster(self, monster_name: str) -> Monster:
-        monster_stats = self.__getCharacterDict(monster_name)
-        equipped_weapons = {location: None for location in ['Left', 'Right', 'Both']}
-        for location in equipped_weapons.keys():
-            if monster_stats[location]:
-                equipped_weapons[location] = self.__weapon_factory.create(monster_stats[location])
-        monster = Monster(
-            monster_name,
-            base_attacks=self.__convert_attacks(dice_utils.convertList(monster_stats['Attacks'])),
-            base_stats={stat: int(monster_stats[stat]) for stat in STATS},
-            equipped_weapons=equipped_weapons,
-            equipped_armour=self.__get_npc_armour(monster_stats['Armour Level']),
-            vulnerabilities=dice_utils.safe_convert(monster_stats['Vulnerabilities']),
-            resistances=dice_utils.safe_convert(monster_stats['Resistances']),
-            base_movement=int(monster_stats['Speed'])
-        )
-        self.get_character_stats(monster, monster_stats)
-        monster.setup() # Should be moved into constructor once get_character_stats is removed
-        return monster
-
+    def create_monster(self, monster_name: str) -> NPC:
+        return self.create_npc(monster_name, team=2)
 
     def __convert_attacks(self, attack_strings: List[str]) -> List[Attack]:
         base_attacks = []

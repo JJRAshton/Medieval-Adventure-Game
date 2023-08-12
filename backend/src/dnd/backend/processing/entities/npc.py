@@ -1,13 +1,13 @@
 from typing import List
 from .character import Character
 
-# A non-playable character
+# A non-playable character, can be friendly or not
 class NPC(Character):
     def __init__(self, npcName: str, base_attacks, base_stats, equipped_weapons,
-                 equipped_armour, vulnerabilities, resistances, base_movement):
+                 equipped_armour, vulnerabilities, resistances, base_movement,
+                 team):
         self.target = None
         self.behaviour_type = 2
-        self.team = 1
         self.max_bulk = 20
 
         # Only weapon proficiencies for now
@@ -23,7 +23,8 @@ class NPC(Character):
             equipped_armour=equipped_armour,
             vulnerabilities=vulnerabilities,
             resistances=resistances,
-            base_movement=base_movement
+            base_movement=base_movement,
+            team=team
         )
 
     def setup(self):
@@ -38,26 +39,11 @@ class NPC(Character):
     # Sees if the npc max bulk has been exceeded
     def is_exceededBulk(self):
         return self.bulk > self.max_bulk
-
-
-# A hostile character
-class Monster(NPC):
-    def __init__(self, monsterName: str, base_attacks, base_stats, equipped_weapons,
-                 equipped_armour, vulnerabilities, resistances, base_movement):
-        super().__init__(
-            monsterName,
-            base_attacks=base_attacks,
-            base_stats=base_stats,
-            equipped_weapons=equipped_weapons,
-            equipped_armour=equipped_armour,
-            vulnerabilities=vulnerabilities,
-            resistances=resistances,
-            base_movement=base_movement
-        )
-        self.team = 2
-
-    # Checks if entity is still alive
+    
     def check_alive(self):
-        if self.health < 0:
-            self.is_alive = False
-            self.health = 0
+        if self.team == 1:
+            super().check_alive()
+        else:
+            if self.health < 0:
+                self.is_alive = False
+                self.health = 0

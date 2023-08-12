@@ -23,8 +23,9 @@ class Character(HealthEntity):
     def __init__(self, entityName: str,
                  base_attacks: List[Attack], base_stats, equipped_weapons: Dict[str, Weapon | None],
                  equipped_armour: Dict[str, Armour | None], vulnerabilities: List[str], resistances: List[str],
-                 base_movement):
+                 base_movement, team):
         super().__init__(entityName, vulnerabilities=vulnerabilities, resistances=resistances)
+        self.team = team
         self.base_evasion = 0
         self.base_armour = 0
         self.base_movement = base_movement
