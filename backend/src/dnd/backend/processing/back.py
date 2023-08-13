@@ -18,6 +18,10 @@ from .entities.map_object import Object
 def calcPathDist(coords1: Tuple[int, int], coords2: Tuple[int, int]) -> int:
     return 5 * max(abs(coords2[0] - coords1[0]), abs(coords2[1] - coords1[1]))
 
+def load_pkl(file_name):
+    with open(file_name, 'rb') as f:
+        contents = pkl.load(f)
+    return contents
 
 class Back:
     maps_dir = os.path.dirname(__file__) + '/../../../../resources/inputs/maps'
@@ -31,16 +35,17 @@ class Back:
         self.__entity_factory = EntityFactory(map_no)
         self.player_n = nPlayers
 
-        self.terrainGrid = pkl.load(open(f'{self.map_path}/terrain.pkl', 'rb'))
+        self.terrainGrid = load_pkl(f'{self.map_path}/terrain.pkl')
         self.size = (len(self.terrainGrid), len(self.terrainGrid[0]))
 
         self.characterGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
         self.itemGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
 
+
         self.spawn = {
-            'Player': pkl.load(open(f'{self.map_path}/player_spawn.pkl', 'rb')),
-            'Monster': pkl.load(open(f'{self.map_path}/monster_spawn.pkl', 'rb')),
-            'NPC': pkl.load(open(f'{self.map_path}/npc_spawn.pkl', 'rb'))
+            'Player': load_pkl(f'{self.map_path}/player_spawn.pkl'),
+            'Monster': load_pkl(f'{self.map_path}/monster_spawn.pkl'),
+            'NPC': load_pkl(f'{self.map_path}/npc_spawn.pkl')
         }
 
         self.entities: Dict[int, HealthEntity] = {}  # All entities in dictionary with ids as keys
@@ -57,7 +62,8 @@ class Back:
 
         self.objects = []
         self.objectGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
-        objectList = pkl.load(open(f'{self.map_path}/objects.pkl', 'rb'))
+        with open(f'{self.map_path}/objects.pkl', 'rb') as object_file:
+            objectList = pkl.load(object_file)
         for objectID, object_info in enumerate(objectList, start=100):
             name, coords = object_info
             i_object: Object = self.__entity_factory.create_object(name)

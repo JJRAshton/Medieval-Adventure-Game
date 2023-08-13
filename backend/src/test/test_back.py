@@ -1,8 +1,9 @@
-from unittest import TestCase
+import unittest, sys
+
 from dnd.backend.processing.back import Back
 
 
-class TestBack(TestCase):
+class TestBack(unittest.TestCase):
 
     def test_movement(self):
         """ Test movement on back """
@@ -16,3 +17,5 @@ class TestBack(TestCase):
         assert first_chr.coords == (first_chr_coords[0], first_chr_coords[1])
         assert back.characterGrid[first_chr_coords[0]][first_chr_coords[1]].id == first_chr.id
 
+if __name__ == '__main__':
+    unittest.main()
