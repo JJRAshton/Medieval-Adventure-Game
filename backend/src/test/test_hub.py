@@ -19,7 +19,7 @@ class TestHub(unittest.TestCase):
         turn_subscription = TurnSubscription()
         hub = Hub(turn_subscription, turn_subscription)
         hub.requestMapStart(1, 1, True)
-        hub.requestMove(1, (1,1))
+        hub.requestMove('character_1', (1,1))
         assert len(hub.getPlayers()) == 1, hub.getPlayers()
         assert len(hub.chart.characters) == 3, hub.chart.characters
 

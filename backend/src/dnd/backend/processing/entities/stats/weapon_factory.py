@@ -2,15 +2,17 @@ from .make_dataframes import EntityStatDictionaryProvider
 from ....utils import dice_utils
 from ..item import Weapon, Armour
 from .attack_factory import AttackFactory
+from ...id_generator import IDGenerator
 
 WEAPON_TRAITS = ['Ranged', 'Loading','Two-handed', 'Arrows', 'Bolts',
                  'Light', 'Finesse', 'Armour Piercing', 'Fine', 'Magic', 'Melee']
 
 class WeaponFactory:
 
-    def __init__(self, stat_provider: EntityStatDictionaryProvider, attack_factory: AttackFactory):
+    def __init__(self, stat_provider: EntityStatDictionaryProvider, attack_factory: AttackFactory, id_generator: IDGenerator):
         self.__stat_provider = stat_provider
         self.__attack_factory = attack_factory
+        self.__id_generator = id_generator
     
     def create(self, weapon_name: str) -> Weapon:
         ''' Creates a weapon '''
@@ -20,6 +22,7 @@ class WeaponFactory:
 
         weapon = Weapon(
             weaponName = weapon_name,
+            id=self.__id_generator.get_item_id(),
             damage_dice = int(wep_dict['Damage Dice'][1:]) if wep_dict['Damage Dice'] else 0,
             attack_range = int(wep_dict['Range']),
             attacks = attacks_list,
@@ -36,10 +39,11 @@ class WeaponFactory:
 
         return weapon
     
-    def create_armour(self, armour_name) -> Armour:
+    def create_armour(self, armour_name: str) -> Armour:
         armour_dict = self.__stat_provider.get_armour_stats_dict(armour_name)
         armour = Armour(
             armourName = armour_name,
+            id=self.__id_generator.get_item_id(),
             armour_type = armour_dict['Type'],
             value = int(armour_dict['Armour Value']),
             flex = int(armour_dict['Flex']) / 100,

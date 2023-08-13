@@ -10,7 +10,7 @@ from .classes.player_class import PlayerClass
 class Player(Character):
     names = ['Robert', 'Arthur', 'Grork', 'Fosdron', 'Thulgraena', 'Diffros', 'Ayda', 'Tezug', 'Dor\'goxun', 'Belba']
 
-    def __init__(self, player_class: PlayerClass, weapon_factory: WeaponFactory, player_name: str, base_attacks, base_stats, equipped_weapons):
+    def __init__(self, player_class: PlayerClass, weapon_factory: WeaponFactory, player_name: str, id: str, base_attacks, base_stats, equipped_weapons):
         equipped_armour={
             armour_location: weapon_factory.create_armour(armour) if armour else None
                 for armour_location, armour in player_class.startingArmour.items()
@@ -18,6 +18,7 @@ class Player(Character):
         self.p_class = player_class
         super().__init__(
             player_name,
+            id=id,
             base_attacks=base_attacks,
             base_stats=base_stats,
             equipped_weapons=equipped_weapons,

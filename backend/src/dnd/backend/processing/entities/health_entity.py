@@ -4,8 +4,8 @@ from .entity import Entity
 
 
 class HealthEntity(Entity):
-    def __init__(self, entity_name: str, max_health, vulnerabilities=[], resistances=[], size=5):
-        super().__init__(entity_name, size)
+    def __init__(self, entity_name: str, id: str, max_health, vulnerabilities=[], resistances=[], size=5):
+        super().__init__(entity_name, id, size)
 
         self.max_health = max_health
         self.health = 0

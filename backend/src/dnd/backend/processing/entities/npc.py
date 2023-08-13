@@ -4,7 +4,7 @@ from ...utils import dice_utils
 
 # A non-playable character, can be friendly or not
 class NPC(Character):
-    def __init__(self, npcName: str, base_attacks, base_stats, equipped_weapons,
+    def __init__(self, npcName: str, id: str, base_attacks, base_stats, equipped_weapons,
                  equipped_armour, vulnerabilities, resistances, base_movement,
                  team, size, drop_rate, actions_total, base_armour, inventory,
                  difficulty, skill):
@@ -20,6 +20,7 @@ class NPC(Character):
 
         super().__init__(
             npcName,
+            id=id,
             base_attacks=base_attacks,
             base_stats=base_stats,
             equipped_weapons=equipped_weapons,

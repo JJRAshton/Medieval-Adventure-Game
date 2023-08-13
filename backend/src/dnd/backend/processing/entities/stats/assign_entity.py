@@ -10,6 +10,7 @@ from ..item import Armour
 from .attack_factory import AttackFactory
 from .weapon_factory import WeaponFactory
 from ....utils import dice_utils
+from ...id_generator import IDGenerator
 
 from .make_dataframes import EntityStatDictionaryProvider, AttackStatDictionaryProvider
 from .characters_loader import CharacterStatDictionaryProvider
@@ -45,11 +46,12 @@ SIZE_FOR_STRING: Dict[str, int] = {
 ''' Factory for armour, objects, characters and players. '''
 class EntityFactory:
 
-    def __init__(self, map_number: int=1):
+    def __init__(self, id_generator: IDGenerator, map_number: int=1):
         self.stat_provider = EntityStatDictionaryProvider()
         self.character_stat_provider = CharacterStatDictionaryProvider(map_number)
+        self.__id_generator: IDGenerator = id_generator
         self.__attack_factory = AttackFactory(AttackStatDictionaryProvider())
-        self.__weapon_factory = WeaponFactory(EntityStatDictionaryProvider(), self.__attack_factory)
+        self.__weapon_factory = WeaponFactory(EntityStatDictionaryProvider(), self.__attack_factory, id_generator)
 
     # Returns a dictionary of stats for the given character
     def __getCharacterDict(self, character_name: str):
@@ -58,7 +60,7 @@ class EntityFactory:
     def create_object(self, object_name: str) -> Object:
         # Hmm, this is a bit suspicious
         obj_dict = self.__getArmourDict(object_name)
-        new_object = Object(object_name, int(obj_dict['Health']))
+        new_object = Object(object_name, self.__id_generator.get_object_id(), int(obj_dict['Health']))
 
         new_object.armour['piercing'] = int(obj_dict['AC'])
         new_object.armour['slashing'] = int(obj_dict['AC'])
@@ -92,6 +94,7 @@ class EntityFactory:
             player_class,
             weapon_factory=self.__weapon_factory,
             player_name=player_name,
+            id=self.__id_generator.get_character_id(),
             base_attacks=self.__convert_attacks(['hit']),
             base_stats=base_stats,
             equipped_weapons=equipped_weapons,
@@ -107,6 +110,7 @@ class EntityFactory:
                 equipped_weapons[location] = self.__weapon_factory.create(npc_stats[location])
         npc = NPC(
             npc_name,
+            id=self.__id_generator.get_character_id(),
             base_attacks=self.__convert_attacks(dice_utils.convertList(npc_stats['Attacks'])),
             base_stats={stat: int(npc_stats[stat]) for stat in STATS},
             equipped_weapons=equipped_weapons,

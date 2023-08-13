@@ -20,12 +20,12 @@ def calc_rad_dist(coords1: Tuple[int, int], coords2: Tuple[int, int]):
 
 
 class Character(HealthEntity):
-    def __init__(self, entityName: str,
+    def __init__(self, entityName: str, id: str,
                  base_attacks: List[Attack], base_stats, equipped_weapons: Dict[str, Weapon | None],
                  equipped_armour: Dict[str, Armour | None], vulnerabilities: List[str], resistances: List[str],
                  base_movement: int, team: int, behaviour_type: int, size: int, actions_total: int,
                  base_armour, inventory, max_health, skill):
-        super().__init__(entityName, vulnerabilities=vulnerabilities, resistances=resistances, size=size, max_health=max_health)
+        super().__init__(entityName, id, vulnerabilities=vulnerabilities, resistances=resistances, size=size, max_health=max_health)
         self.team = team
         self.behaviour_type = behaviour_type # 1 if this is a player, 2 if npc
         self.base_evasion = 0

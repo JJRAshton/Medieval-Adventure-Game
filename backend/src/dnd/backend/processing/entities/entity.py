@@ -3,9 +3,9 @@ from typing import Tuple
 
 class Entity:
 
-    def __init__(self, entityName: str, size):
+    def __init__(self, entityName: str, id: str, size):
         self.name = entityName
-        self.id = 0
+        self.id: str = id
 
         self.size = size
         

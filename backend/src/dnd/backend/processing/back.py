@@ -12,6 +12,7 @@ from .entities.health_entity import HealthEntity
 from .entities.character import Character
 from .entities.classes import player_class
 from .entities.map_object import Object
+from .id_generator import IDGenerator
 
 
 # Gets the in game distance between two coords for travel
@@ -26,14 +27,15 @@ def load_pkl(file_name):
 class Back:
     maps_dir = os.path.dirname(__file__) + '/../../../../resources/inputs/maps'
 
-    def __init__(self, map_no: int or str, nPlayers: int, builtin_map: int, classes: List[str] = []):
+    def __init__(self, map_no: int or str, nPlayers: int, builtin_map: int, id_generator: IDGenerator,  classes: List[str] = []):
         if builtin_map:
             self.map_path = f'{Back.maps_dir}/map{map_no}'
         else:
             self.map_path = map_no
 
-        self.__entity_factory = EntityFactory(map_no)
+        self.__entity_factory = EntityFactory(id_generator, map_no)
         self.player_n = nPlayers
+        self.id_generator: IDGenerator = id_generator
 
         self.terrainGrid = load_pkl(f'{self.map_path}/terrain.pkl')
         self.size = (len(self.terrainGrid), len(self.terrainGrid[0]))
@@ -41,14 +43,13 @@ class Back:
         self.characterGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
         self.itemGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
 
-
         self.spawn = {
             'Player': load_pkl(f'{self.map_path}/player_spawn.pkl'),
             'Monster': load_pkl(f'{self.map_path}/monster_spawn.pkl'),
             'NPC': load_pkl(f'{self.map_path}/npc_spawn.pkl')
         }
 
-        self.entities: Dict[int, HealthEntity] = {}  # All entities in dictionary with ids as keys
+        self.entities: Dict[str, HealthEntity] = {}  # All entities in dictionary with ids as keys
 
         self.items = []
         self.weapons = []
@@ -64,13 +65,12 @@ class Back:
         self.objectGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
         with open(f'{self.map_path}/objects.pkl', 'rb') as object_file:
             objectList = pkl.load(object_file)
-        for objectID, object_info in enumerate(objectList, start=100):
+        for object_info in objectList:
             name, coords = object_info
             i_object: Object = self.__entity_factory.create_object(name)
-            i_object.id = objectID
             self.objectGrid[coords[0]][coords[1]] = i_object
             self.objects.append(i_object)
-            self.entities[objectID] = i_object
+            self.entities[i_object.id] = i_object
 
         df: pd.DataFrame = pd.read_csv(f'{self.map_path}/entities.csv', keep_default_na=False) # type: ignore
         monster_list: List[str] = [x for x in df['Monsters'] if x != ''] # type: ignore
@@ -92,33 +92,24 @@ class Back:
         else:
             raise ValueError
 
-        charIDNum = len(self.characters)
-        itemIDNum = len(self.items) + 200
-
-        character.id = charIDNum
         self.characters.append(character)
-        self.entities[charIDNum] = character
+        self.entities[character.id] = character
 
         for hand in character.equipped_weapons:
             if character.equipped_weapons[hand] is not None:
-                character.equipped_weapons[hand].id = itemIDNum
+                character.equipped_weapons[hand]
                 self.items.append(character.equipped_weapons[hand])
                 self.weapons.append(character.equipped_weapons[hand])
-                itemIDNum += 1
         for armour_type in character.equipped_armour:
             if character.equipped_armour[armour_type] is not None:
-                character.equipped_armour[armour_type].id = itemIDNum
                 self.items.append(character.equipped_armour[armour_type])
                 self.armour.append(character.equipped_armour[armour_type])
-                itemIDNum += 1
         for item in character.inventory:
-            item.id = itemIDNum
             self.items.append(item)
             if isinstance(item, Armour):
                 self.armour.append(item)
             elif isinstance(item, Weapon):
                 self.weapons.append(item)
-            itemIDNum += 1
 
         rand_index = rd.randint(0, len(self.spawn[character_type])-1)
         spawn_coords = self.spawn[character_type].pop(rand_index)
@@ -130,7 +121,7 @@ class Back:
         return character
 
     # Moves a character on the grid
-    def moveCharacter(self, charID: int, newCoords: Tuple[int, int]):
+    def moveCharacter(self, charID: str, newCoords: Tuple[int, int]):
         character = self.entities[charID]
         prevCoords = character.coords
         vector = (newCoords[0]-prevCoords[0], newCoords[1]-prevCoords[1])
@@ -201,13 +192,13 @@ class Back:
         return 0 <= x <= size[0] and 0 <= y <= size[1] and not is_occupied
 
     # Checks if character has the movement to move to coords
-    def is_validMovement(self, charID: int, newCoords: Tuple[int, int]):
+    def is_validMovement(self, charID: str, newCoords: Tuple[int, int]):
         x, y = newCoords
         oldx, oldy = self.entities[charID].coords
         return self.entities[charID].movement >= calcPathDist((oldx, oldy), (x, y))
 
     # Checks if the character can move along the given path
-    def is_validPath(self, charID: int, pathCoords: Tuple[int, int]):
+    def is_validPath(self, charID: str, pathCoords: Tuple[int, int]):
         character = self.entities[charID]
         remaining_movement = character.movement
 

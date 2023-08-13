@@ -4,19 +4,18 @@ from typing import Tuple
 from . import turn_manager as tn
 from . import back as bk
 from .turn_notifications import TurnNotificationSubscription, TurnNotifier
+from .id_generator import IDGenerator
 
 
 # Checks for what type of entity the id is
-def is_character(entID: int) -> bool:
-    return 0 <= entID < 100
+def is_character(entID: str) -> bool:
+    return isinstance(entID, str) and entID.startswith('character')
 
+def is_object(entID: str) -> bool:
+    return isinstance(entID, str) and entID.startswith('object')
 
-def is_object(entID: int) -> bool:
-    return 100 <= entID < 200
-
-
-def is_item(entID: int) -> bool:
-    return 200 <= entID < 300
+def is_item(entID: str) -> bool:
+    return isinstance(entID, str) and entID.startswith('item')
 
 
 class Hub:
@@ -28,9 +27,10 @@ class Hub:
         self.turn_manager = None
         self.front_end_turn_notification_subscription = turn_notification_subscription
         self.ai_manager = ai_manager
+        self.id_generator = IDGenerator()
 
     # Moves an entity to given coords
-    def requestMove(self, entID: int, coords: Tuple[int, int]):
+    def requestMove(self, entID: str, coords: Tuple[int, int]):
         if is_object(entID):
             self.chart.moveObject(entID, coords)
         elif is_character(entID):
@@ -71,7 +71,7 @@ class Hub:
 
     # Generates the map
     def requestMapStart(self, n_players, map, using_builtin_map):
-        self.chart = bk.Back(map, n_players, using_builtin_map)
+        self.chart = bk.Back(map, n_players, using_builtin_map, self.id_generator)
 
         turn_notifier = TurnNotifier()
         
@@ -114,9 +114,9 @@ class Hub:
             self.chart.dropInv(character)
 
     # Gets information about a character
-    def getInfo(self, charID):
-        if charID >= 100:
-            raise ValueError
+    def getInfo(self, charID: str):
+        if not is_character(charID):
+            raise ValueError("Id {charID} is not valid for a character")
 
         character = self.chart.characters[charID]
         infoDict = {
