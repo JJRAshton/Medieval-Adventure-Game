@@ -1,4 +1,4 @@
-import unittest, sys
+import unittest
 
 from dnd.backend.processing.back import Back
 
