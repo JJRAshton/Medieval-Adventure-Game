@@ -111,12 +111,7 @@ class Hub:
         roll = rd.randint(1, prob)
 
         if roll <= 5:
-            if roll == 1:
-                self.chart.dropWeapon(character)
-            elif roll == 2:
-                self.chart.dropArmour(character)
-            else:
-                self.chart.dropInv(character)
+            self.chart.dropInv(character)
 
     # Gets information about a character
     def getInfo(self, charID):

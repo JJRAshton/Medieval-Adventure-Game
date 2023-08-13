@@ -30,47 +30,32 @@ class Back:
 
         self.__entity_factory = EntityFactory(map_no)
         self.player_n = nPlayers
-        self.size = (0, 0)
 
-        self.terrainGrid = []
-
-        self.characterGrid = []
-        self.objectGrid = []
-        self.itemGrid = []
-
-        self.spawn = {}
-
-        self.entities: Dict[int, HealthEntity] = {}  # All entities in dictionary with ids as keys
-
-        self.objects = []
-
-        self.items = []
-        self.weapons = []
-        self.armour = []
-
-        self.characters: List[HealthEntity] = []
-        self.players: List[HealthEntity] = []
-        self.monsters: List[HealthEntity] = []
-        self.npcs: List[HealthEntity] = []  # Non-monsters
-
-        if not classes:
-            classes = [player_class.RAIDER, player_class.GLADIATOR, player_class.GUARDIAN, player_class.KNIGHT, player_class.SAMURAI]
-        self.classes = classes  # For choosing the class from backend - before frontend input
-
-        self.loadMap()
-        self.addMapNPCs()
-
-        for _ in range(self.player_n):
-            self.players.append(self.createCharacter('Player'))
-
-    # Loads in the map from the map number given
-    def loadMap(self):
         self.terrainGrid = pkl.load(open(f'{self.map_path}/terrain.pkl', 'rb'))
         self.size = (len(self.terrainGrid), len(self.terrainGrid[0]))
 
         self.characterGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
         self.itemGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
 
+        self.spawn = {
+            'Player': pkl.load(open(f'{self.map_path}/player_spawn.pkl', 'rb')),
+            'Monster': pkl.load(open(f'{self.map_path}/monster_spawn.pkl', 'rb')),
+            'NPC': pkl.load(open(f'{self.map_path}/npc_spawn.pkl', 'rb'))
+        }
+
+        self.entities: Dict[int, HealthEntity] = {}  # All entities in dictionary with ids as keys
+
+        self.items = []
+        self.weapons = []
+        self.armour = []
+
+        self.characters: List[HealthEntity] = []
+
+        if not classes:
+            classes = [player_class.RAIDER, player_class.GLADIATOR, player_class.GUARDIAN, player_class.KNIGHT, player_class.SAMURAI]
+        self.classes = classes  # For choosing the class from backend - before frontend input
+
+        self.objects = []
         self.objectGrid = [[None for _ in range(self.size[1])] for _ in range(self.size[0])]
         objectList = pkl.load(open(f'{self.map_path}/objects.pkl', 'rb'))
         for objectID, object_info in enumerate(objectList, start=100):
@@ -81,23 +66,14 @@ class Back:
             self.objects.append(i_object)
             self.entities[objectID] = i_object
 
-        self.spawn = {
-            'Player': pkl.load(open(f'{self.map_path}/player_spawn.pkl', 'rb')),
-            'Monster': pkl.load(open(f'{self.map_path}/monster_spawn.pkl', 'rb')),
-            'NPC': pkl.load(open(f'{self.map_path}/npc_spawn.pkl', 'rb'))
-        }
-
-    # Adds in the map NPCs
-    def addMapNPCs(self):
         df: pd.DataFrame = pd.read_csv(f'{self.map_path}/entities.csv', keep_default_na=False) # type: ignore
         monster_list: List[str] = [x for x in df['Monsters'] if x != ''] # type: ignore
+        self.monsters: List[HealthEntity] = [self.createCharacter('Monster', monster) for monster in monster_list]
+
         npc_list: List[str] = [x for x in df['NPCs'] if x != ''] # type: ignore
+        self.npcs: List[HealthEntity] = [self.createCharacter('NPC', npc) for npc in npc_list]  # Non-monsters
 
-        for monster_str in monster_list:
-            self.monsters.append(self.createCharacter('Monster', monster_str))
-
-        for npc_str in npc_list:
-            self.npcs.append(self.createCharacter('NPC', npc_str))
+        self.players: List[HealthEntity] = [self.createCharacter('Player') for _ in range(self.player_n)]
 
     # Creates and registers a character and its inventory
     def createCharacter(self, character_type: str, sub_type: str | None=None) -> HealthEntity:
@@ -187,14 +163,6 @@ class Back:
             self.itemGrid[item.coords[0]][item.coords[1]] = item
 
             item.is_carried = False
-
-    # Drops the characters weapon
-    def dropWeapon(self, character: Character) -> None:  # Needs update to new weapon system
-        raise NotImplementedError("Dropping weapons not implemented")
-
-    # Drops the characters armour
-    def dropArmour(self, character: Character) -> None:  # Needs update to new armour system
-        raise NotImplementedError("Dropping armour not implemented")
 
     # Moves the character along the given path to the given index
     def pathCharacter(self, charID: int, pathCoords: List[Tuple[int, int]], index: int):  # For now, just moves to the final allowed coord
