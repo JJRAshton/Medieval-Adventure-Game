@@ -129,9 +129,6 @@ class EntityFactory:
         )
         return npc
 
-    def create_monster(self, monster_name: str) -> NPC:
-        return self.create_npc(monster_name, team=2)
-
     def __convert_attacks(self, attack_strings: List[str]) -> List[Attack]:
         base_attacks = []
         for i, attack_str in enumerate(attack_strings):

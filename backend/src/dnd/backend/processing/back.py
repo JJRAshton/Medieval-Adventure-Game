@@ -86,30 +86,22 @@ class Back:
         if character_type == 'Player' and sub_type is None:
             character: HealthEntity = self.__entity_factory.create_player(self.classes.pop(0))
         elif character_type == 'Monster' and sub_type is not None:
-            character: HealthEntity = self.__entity_factory.create_monster(sub_type)
+            character: HealthEntity = self.__entity_factory.create_npc(sub_type, team=2)
         elif character_type == 'NPC' and sub_type is not None:
-            character: HealthEntity = self.__entity_factory.create_npc(sub_type)
+            character: HealthEntity = self.__entity_factory.create_npc(sub_type, team=1)
         else:
             raise ValueError
 
         self.characters.append(character)
         self.entities[character.id] = character
 
-        for hand in character.equipped_weapons:
-            if character.equipped_weapons[hand] is not None:
-                character.equipped_weapons[hand]
-                self.items.append(character.equipped_weapons[hand])
-                self.weapons.append(character.equipped_weapons[hand])
-        for armour_type in character.equipped_armour:
-            if character.equipped_armour[armour_type] is not None:
-                self.items.append(character.equipped_armour[armour_type])
-                self.armour.append(character.equipped_armour[armour_type])
-        for item in character.inventory:
-            self.items.append(item)
-            if isinstance(item, Armour):
-                self.armour.append(item)
-            elif isinstance(item, Weapon):
-                self.weapons.append(item)
+        for item in list(character.equipped_weapons.values()) + list(character.equipped_armour.values()) + character.inventory:
+            if item is not None:
+                self.items.append(item)
+                if isinstance(item, Armour):
+                    self.armour.append(item)
+                elif isinstance(item, Weapon):
+                    self.weapons.append(item)
 
         rand_index = rd.randint(0, len(self.spawn[character_type])-1)
         spawn_coords = self.spawn[character_type].pop(rand_index)
@@ -139,7 +131,7 @@ class Back:
             character.inventory.append(item)
 
     # Moves an object on the grid
-    def moveObject(self, objID: int, newCoords: Tuple[int, int]):
+    def moveObject(self, objID: str, newCoords: Tuple[int, int]):
         entity = self.entities[objID]
         prevCoords = entity.coords
         vector = (newCoords[0]-prevCoords[0], newCoords[1]-prevCoords[1])
