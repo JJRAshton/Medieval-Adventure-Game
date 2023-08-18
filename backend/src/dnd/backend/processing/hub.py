@@ -4,19 +4,7 @@ from typing import Tuple
 from . import turn_manager as tn
 from . import back as bk
 from .turn_notifications import TurnNotificationSubscription, TurnNotifier
-from .id_generator import IDGenerator
-
-
-# Checks for what type of entity the id is
-def is_character(entID: str) -> bool:
-    return isinstance(entID, str) and entID.startswith('character')
-
-def is_object(entID: str) -> bool:
-    return isinstance(entID, str) and entID.startswith('object')
-
-def is_item(entID: str) -> bool:
-    return isinstance(entID, str) and entID.startswith('item')
-
+from .id_generator import IDGenerator, is_character, is_object
 
 class Hub:
 
@@ -50,14 +38,10 @@ class Hub:
         if not self.chart.is_validAttack(entID1, entID2):
             return False
 
-        if entID1 < 100:
-            attacker = self.chart.entities[entID1]
-        else:
-            raise ValueError
-
+        attacker = self.chart.entities[entID1]
         defender = self.chart.entities[entID2]
-        
         indicator = attacker.attack(attack_list, defender)
+
         print(indicator)
         defender.check_alive()
         if not defender.is_alive:

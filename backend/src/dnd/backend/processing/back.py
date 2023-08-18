@@ -12,7 +12,7 @@ from .entities.health_entity import HealthEntity
 from .entities.character import Character
 from .entities.classes import player_class
 from .entities.map_object import Object
-from .id_generator import IDGenerator
+from .id_generator import IDGenerator, is_character
 
 
 # Gets the in game distance between two coords for travel
@@ -204,11 +204,8 @@ class Back:
         return index
 
     # Checks if an attack is valid
-    def is_validAttack(self, atkID: int, defID: int):
-        atkx, atky = self.entities[atkID].coords
-        defx, defy = self.entities[defID].coords
+    def is_validAttack(self, atkID: int, defID: int) -> bool:
+        in_range: bool = calcPathDist(self.entities[atkID].coords, self.entities[defID].coords) <= self.entities[atkID].reach
+        has_attacks: bool = is_character(atkID) and self.entities[atkID].actions > 0
 
-        radius = int(self.entities[atkID].reach/5)
-        remaining_atks = self.entities[atkID].actions
-
-        return abs(atkx - defx) <= radius and abs(atky - defy) <= radius and remaining_atks > 0
+        return in_range and has_attacks

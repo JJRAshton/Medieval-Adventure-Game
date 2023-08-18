@@ -1,3 +1,14 @@
+# Checks for what type of entity the id is
+def is_character(entID: str) -> bool:
+    return isinstance(entID, str) and entID.startswith('character')
+
+def is_object(entID: str) -> bool:
+    return isinstance(entID, str) and entID.startswith('object')
+
+def is_item(entID: str) -> bool:
+    return isinstance(entID, str) and entID.startswith('item')
+
+
 class IDGenerator:
     def __init__(self):
         self.__character_ids: int = 0
