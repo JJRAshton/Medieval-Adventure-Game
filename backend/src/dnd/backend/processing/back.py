@@ -6,7 +6,7 @@ import os
 
 from .entities.item import Weapon, Armour
 
-from .entities.stats.assign_entity import EntityFactory
+from .entities.stats.entity_factory import EntityFactory
 
 from .entities.health_entity import HealthEntity
 from .entities.character import Character
