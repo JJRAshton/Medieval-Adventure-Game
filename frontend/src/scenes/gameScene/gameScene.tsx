@@ -1,85 +1,83 @@
-import Context from "../context";
 import React from "react";
 import Canvas from "./rendering/gameCanvas";
 import Character from "./parsing/character";
 
 import GameUISelectionHandler from "./gameUISelection";
 
-import ContextHandler from "../contextHandler";
 import GameState from "./gameState";
 import InfoPanel from "./rendering/infoPanel";
 
-export class Game extends Context {
+interface GameProps {
+    socket: WebSocket;
+    data: GamePropsData;
+}
 
-    private selectionHandler: GameUISelectionHandler;
-    private characters: Map<number, Character>;
-    private _state: GameState;
-    
-    private _infoPanel: InfoPanel;
-    private _canvas: Canvas;
+interface GamePropsData {
+    characterJson: JSON;
+    mapWidth: number;
+    mapHeight: number;
+    playerID: number;
+}
 
-    constructor(socket: WebSocket, reactRoot: React.FC, mapWidth: number, mapHeight: number, playerID: number, characters: JSON) {
-        super(socket, reactRoot, "game");
-        this.selectionHandler = new GameUISelectionHandler(socket, playerID, this);
-        this.characters = this._parseCharacters(characters);
-        this._state = new GameState(this.getPlayerWithId(playerID), this.characters, mapWidth, mapHeight);
-        this._infoPanel = new InfoPanel(this.selectionHandler, socket, this._state);
-        this._canvas = new Canvas(this.selectionHandler, socket, this._state);
-    }
+const Game: React.FC<GameProps> = ({socket, data}) => {
+    const { characterJson, mapWidth, mapHeight, playerID } = data;
 
-    private _parseCharacters(characters: any): Map<number, Character> {
+    const _parseCharacters = (characters: any) => {
         const characterMap = new Map();
         for (var i = 0; i < characters.length; i++) {
             const character = characters[i];
-            this.socket.send(JSON.stringify({event: "playerInfoRequest", characterID: character[0]}))
+            socket.send(JSON.stringify({event: "playerInfoRequest", characterID: character[0]}))
             const chr = new Character(character[0], character[1][0], character[1][1]);
             characterMap.set(character[0], chr)
         }
         return characterMap
     }
-
-    render(): void {
-        this.reactRoot.render(
-        <div>
-            <h2>
-                <div className="message">{this.getCurrentMessage()}</div>
-            </h2>
-            <div className="game">
-                { this._canvas.render() }
-                { this._infoPanel.render() }
-            </div>
-        </div>);
-    }
-
-    getCurrentMessage(): string {
-        if (this.selectionHandler.onTurn) {
-            return "It's your turn"
+    
+    const _getPlayerWithId = (id: number) => {
+        const character = characters.get(id);
+        if (!character) {
+            throw new Error("Critical error: Did not recognise character with ID: " + id + ".");
         }
-        return "It's someone else's turn"
+        return character;
     }
+
+    const updatePlayers = (charactersInfo: any) => {
+        console.log(charactersInfo);
+        state.mapState.resetMap();
+        for (let id in charactersInfo) {
+            const chr = _getPlayerWithId(parseInt(id));
+            chr.update(charactersInfo[id]);
+            state.mapState.set(chr.x, chr.y, chr);
+        }
+    }
+
+    const selectionHandler = new GameUISelectionHandler(socket, playerID);
+    const characters = _parseCharacters(characterJson);
+    const state: GameState = new GameState(_getPlayerWithId(playerID), characters, mapWidth, mapHeight);
+    const canvas = new Canvas(selectionHandler, socket, state);
 
     // Processing events from server
-    override handleEvent(contextHandler: ContextHandler, event: any): void {
+    const handleEvent = (event: any) => {
         console.log(event);
         switch (event.responseType) {
             case "turnNotification":
                 // These will get sent when the turn changes
-                this.selectionHandler.reset();
+                selectionHandler.reset();
                 
-                this.selectionHandler.onTurn = event.onTurnID === this._state.character.id;
-                this.updatePlayers(event.charactersUpdate);
+                selectionHandler.onTurn = event.onTurnID === state.character.id;
+                updatePlayers(event.charactersUpdate);
                 break;
             case "mapUpdate":
                 // These get sent when someone moves, or when something changes
-                this._state.mapState.resetMap();
+                state.mapState.resetMap();
                 event.characters.forEach((characterInfo: [number, [number, number]]) => {
-                    const chr = this.getPlayerWithId(characterInfo[0]);
+                    const chr = _getPlayerWithId(characterInfo[0]);
                     chr.setPosition(characterInfo[1][0], characterInfo[1][1]);
-                    this._state.mapState.set(chr.x, chr.y, chr);
+                    state.mapState.set(chr.x, chr.y, chr);
                 }, this)
                 break;
             case "playerInfo":
-                this.getPlayerWithId(event.characterID).construct(event.playerInfo, event.characterID === this._state.character.id, this.selectionHandler);
+                _getPlayerWithId(event.characterID).construct(event.playerInfo, event.characterID === state.character.id, selectionHandler);
                 break;
             case "attackResult":
                 break;
@@ -88,26 +86,19 @@ export class Game extends Context {
         }
     }
 
-    private updatePlayers(charactersInfo: any): void {
-        console.log(charactersInfo);
-        this._state.mapState.resetMap();
-        for (let id in charactersInfo) {
-            const chr = this.getPlayerWithId(parseInt(id));
-            chr.update(charactersInfo[id]);
-            this._state.mapState.set(chr.x, chr.y, chr);
-        }
-    }
-
-    /**
-     * Throws an error if the id is not recognised
-     * @param id of the player
-     * @returns the player
-     */
-    private getPlayerWithId(id: number): Character {
-        const character = this.characters.get(id);
-        if (!character) {
-            throw new Error("Critical error: Did not recognise character with ID: " + id + ".");
-        }
-        return character;
-    }
+    return (
+        <div>
+            <h2>
+                <div className="message">{selectionHandler.onTurn ? "It's your turn" : "It's someone else's turn"}</div>
+            </h2>
+            <div className="game">
+                { canvas.render() }
+                <InfoPanel selectionHandler={selectionHandler} socket={socket} gameState={state} />
+            </div>
+        </div>
+    );
 }
+
+export default Game;
+
+export { GamePropsData };

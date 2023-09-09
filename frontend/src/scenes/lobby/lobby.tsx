@@ -1,14 +1,16 @@
 import { useState } from "react";
 import CharacterCustomistationComponent, { CharacterClassOption } from "./classSelection";
+import { GamePropsData } from "../gameScene/gameScene";
 
 var React = require("react");
 
 
 interface LobbyProps {
     socket: WebSocket;
+    setCurrentScene;
 }
 
-const Lobby: React.FC<LobbyProps> = ({ socket }) => {
+const Lobby: React.FC<LobbyProps> = ({ socket, setCurrentScene }) => {
 
     const [playerInLobby, setPlayersInLobby] = useState<number>(0);
     const [playerReady, setPlayersReady] = useState<number>(0);
@@ -30,16 +32,15 @@ const Lobby: React.FC<LobbyProps> = ({ socket }) => {
                 // Maybe we still need some sort of context manager, because it's going to be
                 // tricky to switch component otherwise?
                 console.log("starting game");
-                const mapStatus = event.mapStatus;
-                const playerID = event.playerID;
-                const characters = event.characters;
-                // contextHandler.context = new Game(
-                //     socket,
-                //     this.reactRoot,
-                //     mapStatus.mapWidth,
-                //     mapStatus.mapHeight,
-                //     playerID,
-                //     characters);
+                console.log(event)
+                const gameProps: GamePropsData = {
+                    characterJson: event.characters,
+                    mapWidth: event.mapStatus.mapWidth,
+                    mapHeight: event.mapStatus.mapHeight,
+                    playerID: event.playerID
+                }
+                console.log(gameProps);
+                setCurrentScene({inLobby: false, data: gameProps})
                 break;
             case "users":
                 setPlayersInLobby(event.inLobby);

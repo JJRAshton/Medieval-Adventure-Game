@@ -11,7 +11,6 @@ export interface GameUISelection {
 
 export default class GameUISelectionHandler {
     private _socket: any;
-    private _context: any;
     private _playerID: any;
 
     public onTurn: boolean;
@@ -24,10 +23,9 @@ export default class GameUISelectionHandler {
     /**
      * This is a really overengineered way of a user making a single selection at a time
      */
-    constructor(socket: WebSocket, playerID: number, context: Context) {
+    constructor(socket: WebSocket, playerID: number) {
         this._socket = socket;
         this.onTurn = false;
-        this._context = context;
         this._playerID = playerID;
         this.selection = null; // Null when no selection has been made
         this._informationPanelSelection = null;
@@ -35,7 +33,7 @@ export default class GameUISelectionHandler {
 
     reset(): void {
         this.selection = null;
-        this._context.render();
+        // this._context.render();
     }
 
     setMovement(movement: Movement): void {
@@ -52,7 +50,7 @@ export default class GameUISelectionHandler {
             else {
                 this.selection = new Attack(options);
             }
-            this._context.render();
+            // this._context.render();
         }
     }
 
@@ -65,7 +63,7 @@ export default class GameUISelectionHandler {
         if (this.selection instanceof Attack) {
             // Do nothing for mouse moves if were doing an attack for now
         }
-        this._context.render();
+        // this._context.render();
     }
 
     confirmAttack(): void {
@@ -93,7 +91,7 @@ export default class GameUISelectionHandler {
      */
     public setInformationPanel(character: Character) {
         this._informationPanelSelection = character;
-        this._context.render();
+        // this._context.render();
     }
 
     public getInformationPanelSelection(): Character | null {
