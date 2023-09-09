@@ -55,7 +55,7 @@ class Back:
         self.weapons = []
         self.armour = []
 
-        self.characters: List[HealthEntity] = []
+        self.characters: Dict[str, HealthEntity] = {}
 
         if not classes:
             classes = [player_class.RAIDER, player_class.GLADIATOR, player_class.GUARDIAN, player_class.KNIGHT, player_class.SAMURAI]
@@ -92,7 +92,7 @@ class Back:
         else:
             raise ValueError
 
-        self.characters.append(character)
+        self.characters[character.id] = character
         self.entities[character.id] = character
 
         for item in list(character.equipped_weapons.values()) + list(character.equipped_armour.values()) + character.inventory:

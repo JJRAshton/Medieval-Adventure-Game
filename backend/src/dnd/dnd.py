@@ -38,6 +38,7 @@ async def addToLobby(websocket: WebSocket):
         await websocket.send(value_event())
         uuid_tracker += 1
         broadcast(users_event())
+        print(users_event())
 
         # Manage state changes
         async for message in websocket:
