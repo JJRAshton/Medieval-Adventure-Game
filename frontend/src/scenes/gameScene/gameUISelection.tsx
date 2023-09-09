@@ -11,7 +11,7 @@ export interface GameUISelection {
 
 export default class GameUISelectionHandler {
     private _socket: any;
-    private _playerID: any;
+    private _playerID: string;
 
     public onTurn: boolean;
     public selection: GameUISelection | null;
@@ -23,7 +23,7 @@ export default class GameUISelectionHandler {
     /**
      * This is a really overengineered way of a user making a single selection at a time
      */
-    constructor(socket: WebSocket, playerID: number) {
+    constructor(socket: WebSocket, playerID: string) {
         this._socket = socket;
         this.onTurn = false;
         this._playerID = playerID;

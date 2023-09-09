@@ -32,14 +32,12 @@ const Lobby: React.FC<LobbyProps> = ({ socket, setCurrentScene }) => {
                 // Maybe we still need some sort of context manager, because it's going to be
                 // tricky to switch component otherwise?
                 console.log("starting game");
-                console.log(event)
                 const gameProps: GamePropsData = {
                     characterJson: event.characters,
                     mapWidth: event.mapStatus.mapWidth,
                     mapHeight: event.mapStatus.mapHeight,
                     playerID: event.playerID
                 }
-                console.log(gameProps);
                 setCurrentScene({inLobby: false, data: gameProps})
                 break;
             case "users":

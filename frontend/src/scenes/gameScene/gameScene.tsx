@@ -16,7 +16,7 @@ interface GamePropsData {
     characterJson: JSON;
     mapWidth: number;
     mapHeight: number;
-    playerID: number;
+    playerID: string;
 }
 
 const Game: React.FC<GameProps> = ({socket, data}) => {
@@ -33,7 +33,7 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
         return characterMap
     }
     
-    const _getPlayerWithId = (id: number) => {
+    const _getPlayerWithId = (id: string) => {
         const character = characters.get(id);
         if (!character) {
             throw new Error("Critical error: Did not recognise character with ID: " + id + ".");
@@ -45,7 +45,7 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
         console.log(charactersInfo);
         state.mapState.resetMap();
         for (let id in charactersInfo) {
-            const chr = _getPlayerWithId(parseInt(id));
+            const chr = _getPlayerWithId(id);
             chr.update(charactersInfo[id]);
             state.mapState.set(chr.x, chr.y, chr);
         }
@@ -57,7 +57,9 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
     const canvas = new Canvas(selectionHandler, socket, state);
 
     // Processing events from server
-    const handleEvent = (event: any) => {
+    socket.onmessage = ({data}) => {
+        const event = JSON.parse(data);
+
         console.log(event);
         switch (event.responseType) {
             case "turnNotification":

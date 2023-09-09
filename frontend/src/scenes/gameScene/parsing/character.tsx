@@ -21,7 +21,7 @@ type CharacterInfo =  {
 
 export default class Character {
     public infoReceived: boolean;
-    public id: number;
+    public id: string;
     public x: number;
     public y: number;
     public health: any;
@@ -43,7 +43,7 @@ export default class Character {
     public image: HTMLImageElement;
     public imageLoaded: boolean;
     
-    constructor(id: number, x: number, y: number) {
+    constructor(id: string, x: number, y: number) {
         this.infoReceived = false; // Keeps track of whether the full player info for this character has been received
         this.id = id;
         this.x = x;
