@@ -7,6 +7,9 @@ interface HealthBarProps {
 }
 
 const HealthBar: React.FC<HealthBarProps> = ({ character }) => {
+    if (!character) {
+        return <div className="healthBar">Character was undefined</div>
+    }
 
     return <div className="healthBar" style={{
             position: "relative",

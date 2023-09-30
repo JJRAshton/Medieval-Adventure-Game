@@ -6,11 +6,11 @@ export default class MapState {
     public mapWidth: number;
     private _characterGrid: Array<Array<Character>>;
 
-    constructor(mapWidth: number, mapHeight: number, characters: Map<number, Character>) {
+    constructor(mapWidth: number, mapHeight: number, characters: Map<string, Character>) {
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.resetMap();
-        characters.forEach((chr: Character, id: number) => {
+        characters.forEach((chr: Character, id: string) => {
             this.set(chr.x, chr.y, chr);
         }, this)
     }

@@ -20,7 +20,4 @@ const App: React.FC<{websocket: WebSocket}> = ({ websocket }) => {
     );
   }
 
-function debugServerMessages(data: JSON) {
-    console.log("MESSAGE: ", console.log(data));
-}
 export default App;

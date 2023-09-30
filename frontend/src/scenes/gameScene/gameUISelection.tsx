@@ -1,5 +1,4 @@
 import Attack, { AttackOptions } from "./attack/attack";
-import Context from "../context";
 import Movement from "./rendering/movement";
 
 import { TILE_WIDTH } from "./constants";
@@ -33,7 +32,6 @@ export default class GameUISelectionHandler {
 
     reset(): void {
         this.selection = null;
-        // this._context.render();
     }
 
     setMovement(movement: Movement): void {
@@ -50,7 +48,6 @@ export default class GameUISelectionHandler {
             else {
                 this.selection = new Attack(options);
             }
-            // this._context.render();
         }
     }
 
@@ -63,7 +60,6 @@ export default class GameUISelectionHandler {
         if (this.selection instanceof Attack) {
             // Do nothing for mouse moves if were doing an attack for now
         }
-        // this._context.render();
     }
 
     confirmAttack(): void {
@@ -91,7 +87,6 @@ export default class GameUISelectionHandler {
      */
     public setInformationPanel(character: Character) {
         this._informationPanelSelection = character;
-        // this._context.render();
     }
 
     public getInformationPanelSelection(): Character | null {

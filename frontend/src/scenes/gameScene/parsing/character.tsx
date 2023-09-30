@@ -19,15 +19,18 @@ type CharacterInfo =  {
     Team: any; 
 }
 
+let checkAttackable = (attacker: Character, target: Character) => {
+    return (attacker.team !== target.team)
+        && Math.max(Math.abs(attacker.x - target.x), Math.abs(attacker.y - target.y)) <= attacker.range;
+}
+
 export default class Character {
     public infoReceived: boolean;
     public id: string;
     public x: number;
     public y: number;
     public health: any;
-    
-    private statsStyle: { fontSize: number; listStyle: string; justifyContent: string; textAlign: string; };
-    
+        
     private static infoParser = new PlayerInfoParser();
 
     public weapons: Array<Weapon> | null;
@@ -48,12 +51,6 @@ export default class Character {
         this.id = id;
         this.x = x;
         this.y = y;
-        this.statsStyle = {
-            fontSize: 20,
-            listStyle: "none",
-            justifyContent: "center",
-            textAlign: "center"
-        }
     }
 
     setPosition(x: number, y: number) {
@@ -88,6 +85,8 @@ export default class Character {
         this._loadImage(isPlayer);
         
         this.infoReceived = true;
+
+        return this;
     }
 
     private _loadImage(isPlayer: boolean) {
@@ -110,9 +109,6 @@ export default class Character {
             console.log("An error occured loading image: " + error);
         }
     }
-
-    public checkAttackable(character: Character): boolean {
-        return (this.team !== character.team)
-            && Math.max(Math.abs(this.x - character.x), Math.abs(this.y - character.y)) <= this.range;
-        }
 }
+
+export { checkAttackable }

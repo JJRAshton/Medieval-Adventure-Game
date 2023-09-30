@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Canvas from "./rendering/gameCanvas";
 import Character from "./parsing/character";
 
 import GameUISelectionHandler from "./gameUISelection";
 
-import GameState from "./gameState";
 import InfoPanel from "./rendering/infoPanel";
+import MapState from "./MapState";
 
 interface GameProps {
     socket: WebSocket;
@@ -19,6 +19,7 @@ interface GamePropsData {
     playerID: string;
 }
 
+
 const Game: React.FC<GameProps> = ({socket, data}) => {
     const { characterJson, mapWidth, mapHeight, playerID } = data;
 
@@ -26,7 +27,6 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
         const characterMap = new Map();
         for (var i = 0; i < characters.length; i++) {
             const character = characters[i];
-            socket.send(JSON.stringify({event: "playerInfoRequest", characterID: character[0]}))
             const chr = new Character(character[0], character[1][0], character[1][1]);
             characterMap.set(character[0], chr)
         }
@@ -43,18 +43,29 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
 
     const updatePlayers = (charactersInfo: any) => {
         console.log(charactersInfo);
-        state.mapState.resetMap();
+        mapState.resetMap();
         for (let id in charactersInfo) {
             const chr = _getPlayerWithId(id);
             chr.update(charactersInfo[id]);
-            state.mapState.set(chr.x, chr.y, chr);
+            mapState.set(chr.x, chr.y, chr);
         }
     }
 
     const selectionHandler = new GameUISelectionHandler(socket, playerID);
-    const characters = _parseCharacters(characterJson);
-    const state: GameState = new GameState(_getPlayerWithId(playerID), characters, mapWidth, mapHeight);
-    const canvas = new Canvas(selectionHandler, socket, state);
+
+    const [characters, setCharacters] = useState<Map<string, Character>>(_parseCharacters(characterJson));
+    const [character, setCharacter] = useState<Character>(_getPlayerWithId(playerID));
+
+    useEffect(() => {
+        characters.forEach((character, id) => {
+            if (!character.infoReceived) {
+                socket.send(JSON.stringify({event: "playerInfoRequest", characterID: id}))
+            }
+        });
+    }, [characters]);
+
+    // const state: GameState = new GameState(_getPlayerWithId(playerID), characters, mapWidth, mapHeight);
+    const mapState: MapState = new MapState(mapWidth, mapHeight, characters)
 
     // Processing events from server
     socket.onmessage = ({data}) => {
@@ -66,22 +77,26 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
                 // These will get sent when the turn changes
                 selectionHandler.reset();
                 
-                selectionHandler.onTurn = event.onTurnID === state.character.id;
+                selectionHandler.onTurn = event.onTurnID === character.id;
                 updatePlayers(event.charactersUpdate);
                 break;
             case "mapUpdate":
                 // These get sent when someone moves, or when something changes
-                state.mapState.resetMap();
-                event.characters.forEach((characterInfo: [number, [number, number]]) => {
+                mapState.resetMap();
+                event.characters.forEach((characterInfo: [string, [number, number]]) => {
                     const chr = _getPlayerWithId(characterInfo[0]);
                     chr.setPosition(characterInfo[1][0], characterInfo[1][1]);
-                    state.mapState.set(chr.x, chr.y, chr);
+                    mapState.set(chr.x, chr.y, chr);
                 }, this)
                 break;
             case "playerInfo":
-                _getPlayerWithId(event.characterID).construct(event.playerInfo, event.characterID === state.character.id, selectionHandler);
+                if (character && event.characterID === character.id) {
+                    setCharacter({ ..._getPlayerWithId(event.characterID).construct(event.playerInfo, true, selectionHandler)});
+                }
+                _getPlayerWithId(event.characterID).construct(event.playerInfo, event.characterID === character.id, selectionHandler);
                 break;
             case "attackResult":
+                // Are we intentionally doing nothing with this?
                 break;
             default:
                 console.log("Unrecognised even with type " + event.responseType)
@@ -94,8 +109,8 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
                 <div className="message">{selectionHandler.onTurn ? "It's your turn" : "It's someone else's turn"}</div>
             </h2>
             <div className="game">
-                { canvas.render() }
-                <InfoPanel selectionHandler={selectionHandler} socket={socket} gameState={state} />
+                <Canvas mapState={mapState} selectionHandler={selectionHandler} characters={characters} character={character} socket={socket} />
+                <InfoPanel selectionHandler={selectionHandler} socket={socket} character={character} characters={characters} mapState={mapState} />
             </div>
         </div>
     );

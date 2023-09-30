@@ -10,7 +10,7 @@ interface AttackOptionInterfaceProps {
 
 const AttackOptionInterface: React.FC<AttackOptionInterfaceProps> = ({ player, minDistToTarget, currentSelectionOrNull }) => {
 
-    if (player.infoReceived) {
+    if (player && player.infoReceived) {
         let children: Array<JSX.Element> = [];
         player.attacks.forEach((attack) => {
             children.push(attack.renderAttackOptionElement(attack.range >= minDistToTarget, attack === currentSelectionOrNull))
