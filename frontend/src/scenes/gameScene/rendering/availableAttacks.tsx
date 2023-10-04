@@ -6,14 +6,15 @@ interface AttackOptionInterfaceProps {
     player: Character;
     minDistToTarget: number;
     currentSelectionOrNull: AttackOption | null;
+    onTurn: boolean;
 }
 
-const AttackOptionInterface: React.FC<AttackOptionInterfaceProps> = ({ player, minDistToTarget, currentSelectionOrNull }) => {
+const AttackOptionInterface: React.FC<AttackOptionInterfaceProps> = ({ player, minDistToTarget, currentSelectionOrNull, onTurn }) => {
 
     if (player && player.infoReceived) {
         let children: Array<JSX.Element> = [];
         player.attacks.forEach((attack) => {
-            children.push(attack.renderAttackOptionElement(attack.range >= minDistToTarget, attack === currentSelectionOrNull))
+            children.push(attack.renderAttackOptionElement(attack.range >= minDistToTarget, attack === currentSelectionOrNull, onTurn))
         });
         return <ul className="attack"
             style={{

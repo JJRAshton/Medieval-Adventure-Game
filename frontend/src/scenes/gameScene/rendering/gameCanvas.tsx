@@ -30,38 +30,31 @@ type CanvasProps = {
     characters: Map<string, Character>;
     character: Character;
     socket: WebSocket;
+    onTurn: boolean;
+    setInfoPanelSelection;
 }
 
 const Canvas = (props: CanvasProps) => {
   
-    const { mapState, selectionHandler, characters, character, socket, ...rest } = props;
+    const { mapState, selectionHandler, characters, character, socket, onTurn, setInfoPanelSelection } = props;
     const canvasRef: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
-  
+
     const [mouseX, setMouseX] = useState<number>(0);
     const [mouseY, setMouseY] = useState<number>(0);
 
-    const [canvasOffset, setCanvasOffset] = useState<any>([0, 0]);
-
-    const translateMouseCoords = (posX: number, posY: number) => {
-        return [posX - canvasOffset[0], posY - canvasOffset[1]];
-    }
-
-    const handleMouseMove = (event: MouseEvent) => {
-        const [newX, newY] = translateMouseCoords(event.pageX, event.pageY);
+    const handleMouseMove = (event) => {
+        const rect = event.target.getBoundingClientRect();
+        let [newX, newY] = [event.pageX - rect.left, event.pageY - rect.top];
         setMouseX(newX);
         setMouseY(newY);
-    
-        selectionHandler.handleMouseMove(mouseX, mouseY, mapState.mapWidth, mapState.mapHeight);
+        selectionHandler.handleMouseMove(newX, newY, mapState.mapWidth, mapState.mapHeight);
     }
 
-    const setStyle = () => {
-        return {cursor: "pointer"}
-    }
-
-    const handleClick = (event: MouseEvent) => {
-        let [clickX, clickY] = translateMouseCoords(event.pageX, event.pageY);
-        const [mapX, mapY]: [number, number] = [Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH)];
-        const [x_rel, y_rel]: [number, number] = [mouseX - mapX * TILE_WIDTH, mouseY - mapY * TILE_WIDTH];
+    let handleClick = (event) => {
+        const rect = event.target.getBoundingClientRect();
+        let [clickX, clickY] = [event.pageX - rect.left, event.pageY - rect.top];
+        const [mapX, mapY]: [number, number] = [Math.floor(clickX / TILE_WIDTH), Math.floor(clickY / TILE_WIDTH)];
+        const [x_rel, y_rel]: [number, number] = [clickX - mapX * TILE_WIDTH, clickY - mapY * TILE_WIDTH];
         const hover: Character | null = mapState.get(mapX, mapY);
         // Handling movement
         if (selectionHandler.selection instanceof Movement) {
@@ -69,10 +62,10 @@ const Canvas = (props: CanvasProps) => {
             selectionHandler.reset();
         }
         else if (hover instanceof Character && onOpenSelection(x_rel, y_rel)) {
-            selectionHandler.setInformationPanel(hover)
+            setInfoPanelSelection(hover)
         }
         else {
-            if (selectionHandler.onTurn) {
+            if (onTurn) {
                 if (onCharacter(clickX, clickY, character)) {
                     selectionHandler.setMovement(new Movement(character.x, character.y));
                 }
@@ -82,17 +75,16 @@ const Canvas = (props: CanvasProps) => {
                         if (checkAttackable(character, player) && onCharacter(clickX, clickY, player)) {
                             selectionHandler.setAttackOptions({target: player})
                         }
-                    }, this)
+                    })
                 }
             }
         }
-  
     }
 
     const onOpenSelection = (x_rel: number, y_rel: number) => {
         return x_rel > TILE_WIDTH * 0.6 && y_rel > TILE_WIDTH * 0.6;
     }
-    
+
     const drawHealthBar = (character: Character, ctx: CanvasRenderingContext2D) => {
         ctx.fillStyle = "red";
         ctx.fillRect(character.x * TILE_WIDTH + 2, character.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH / 8);
@@ -101,8 +93,8 @@ const Canvas = (props: CanvasProps) => {
         ctx.fillStyle = "black";
         ctx.strokeRect(character.x * TILE_WIDTH + 2, character.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH / 8);
     }
-    
-    const drawCanvas = (ctx: CanvasRenderingContext2D | null, mapState: MapState, selectionHandler: GameUISelectionHandler, characters: Map<string, Character>, mouseX: number, mouseY: number) => {
+
+    const drawCanvas = (ctx: CanvasRenderingContext2D | null) => {
         //ctx.clearRect(0, 0, this.mapWidth * TILE_WIDTH, this.mapHeight * TILE_WIDTH);
         if (!ctx) {
             console.log("Canvas context was null");
@@ -127,12 +119,11 @@ const Canvas = (props: CanvasProps) => {
         characters.forEach((character) => {
             if (character.imageLoaded) {
                 ctx.drawImage(character.image, character.x * TILE_WIDTH, character.y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
-                if (selectionHandler.onTurn && checkAttackable(character, character)) {
+                if (onTurn && checkAttackable(character, character)) {
                     if (selectionHandler.selection instanceof Attack 
                             && selectionHandler.selection.target
                             && selectionHandler.selection.target.id === character.id) {
                         ctx.drawImage(ATTACK_IMAGE, character.x * TILE_WIDTH + 2, character.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH - 4);
-                        // this._drawHealthBar(character, ctx)
                     }
                     else {
                         ctx.drawImage(ATTACK_IMAGE, character.x * TILE_WIDTH, character.y * TILE_WIDTH, TILE_WIDTH / 2, TILE_WIDTH / 2);
@@ -168,29 +159,25 @@ const Canvas = (props: CanvasProps) => {
         if (canvas === null) {
             throw new Error("Critical error: Canvas ref was null");
         }
-    
+
         canvas.width = TILE_WIDTH * mapState.mapWidth;
         canvas.height = TILE_WIDTH * mapState.mapHeight;
-        setCanvasOffset([canvas.offsetLeft + canvas.clientLeft, canvas.offsetTop + canvas.clientTop]);
-    
-        canvas.addEventListener("click", handleClick, false);
-        canvas.addEventListener("mousemove", handleMouseMove, false);
 
         const context = canvas.getContext('2d');
         let animationFrameId: number;
-        
+
         const render = () => {
-            drawCanvas(context, mapState, selectionHandler, characters, mouseX, mouseY);
+            drawCanvas(context);
             animationFrameId = window.requestAnimationFrame(render);
         }
         render();
-        
+
         return () => {
             window.cancelAnimationFrame(animationFrameId);
         }
-    }, []);
+    }, [mouseX, mouseY, onTurn]);
     
-    return <canvas ref={canvasRef} width="100" height="400" style={setStyle()} {...rest}/>
+    return <canvas ref={canvasRef} onMouseMove={handleMouseMove} onClick={handleClick} width="100" height="400" style={{cursor: "pointer"}} />
 }
 
 export default Canvas;

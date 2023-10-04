@@ -12,22 +12,17 @@ export default class GameUISelectionHandler {
     private _socket: any;
     private _playerID: string;
 
-    public onTurn: boolean;
     public selection: GameUISelection | null;
     public mouseX: number;
     public mouseY: number;
-
-    private _informationPanelSelection: Character | null;
 
     /**
      * This is a really overengineered way of a user making a single selection at a time
      */
     constructor(socket: WebSocket, playerID: string) {
         this._socket = socket;
-        this.onTurn = false;
         this._playerID = playerID;
         this.selection = null; // Null when no selection has been made
-        this._informationPanelSelection = null;
     }
 
     reset(): void {
@@ -35,19 +30,15 @@ export default class GameUISelectionHandler {
     }
 
     setMovement(movement: Movement): void {
-        if (this.onTurn) {
-            this.selection = movement;
-        }
+        this.selection = movement;
     }
 
     setAttackOptions(options: AttackOptions): void {
-        if (this.onTurn) {
-            if (this.selection instanceof Attack) {
-                this.selection.setOptions(options)
-            }
-            else {
-                this.selection = new Attack(options);
-            }
+        if (this.selection instanceof Attack) {
+            this.selection.setOptions(options)
+        }
+        else {
+            this.selection = new Attack(options);
         }
     }
 
@@ -77,19 +68,5 @@ export default class GameUISelectionHandler {
                 enemyID: this.selection.target.id}));
             this.selection = null;
         }
-    }
-
-    /**
-     * Currently only implemented to display a character information, potentially may want to reuse
-     * to show other information eg weapon/armour info
-     * 
-     * @param character whose information to display
-     */
-    public setInformationPanel(character: Character) {
-        this._informationPanelSelection = character;
-    }
-
-    public getInformationPanelSelection(): Character | null {
-        return this._informationPanelSelection;
     }
 }

@@ -5,13 +5,12 @@ import HealthBar from "./healthBar";
 
 
 interface SelectionInfoProps {
-    selectionHandler: GameUISelectionHandler;
+    infoPanelSelection: Character | null;
 }
 
-const SelectionInfo: React.FC<SelectionInfoProps> = ({ selectionHandler }) => {
+const SelectionInfo: React.FC<SelectionInfoProps> = ({ infoPanelSelection }) => {
 
-    let player: Character | null = selectionHandler.getInformationPanelSelection();
-    if (player === null) {
+    if (infoPanelSelection === null) {
         // Only render if a selection has been made for now
         return <div>No player selected</div>
     }
@@ -27,13 +26,13 @@ const SelectionInfo: React.FC<SelectionInfoProps> = ({ selectionHandler }) => {
                     </tr>
                     <tr>
                         <td>Side</td>
-                        <td>{(player.team === 1) ? "Friendly " : "Enemy"}</td>
+                        <td>{(infoPanelSelection.team === 1) ? "Friendly " : "Enemy"}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div className="stats">
-            <HealthBar character={player}  />
+            <HealthBar character={infoPanelSelection}  />
         </div>
     </div>)
 }

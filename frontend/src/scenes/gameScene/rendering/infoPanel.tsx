@@ -14,9 +14,11 @@ interface InfoPanelProps {
     mapState: MapState;
     character: Character;
     characters: Map<string, Character>;
+    onTurn: boolean;
+    infoPanelSelection: Character | null;
 }
 
-const InfoPanel: React.FC<InfoPanelProps> = ({ selectionHandler, socket, mapState, character, characters }) => {
+const InfoPanel: React.FC<InfoPanelProps> = ({ selectionHandler, socket, mapState, character, characters, onTurn, infoPanelSelection }) => {
 
     // Used to display attack options. Has two modes, either returns min dist to any enemy (if
     // no target is selected), or min dist against the current attack target.
@@ -29,7 +31,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ selectionHandler, socket, mapStat
         }
         let minDist = 100 // Big number
         characters.forEach(target => {
-            if (checkAttackable(character, target) && selectionHandler.onTurn) {
+            if (checkAttackable(character, target) && onTurn) {
                 minDist = Math.min(minDist, Math.max(Math.abs(character.x - target.x), Math.abs(character.y - target.y)));
             }
         })
@@ -55,16 +57,18 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ selectionHandler, socket, mapStat
 
     return (
          <div className="info">
-            <div className="infoComponent" style={{width: "100%"}}><HealthBar character={character} /></div>
+            <div className="infoComponent" style={{width: "100%"}}>
+                <HealthBar character={character} />
+            </div>
             <div className="infoComponent">
                 <StatInfo player={character} />
             </div>
             <div className="attackList">
                 <div>Attacks available</div>
-                <AttackOptionInterface player={character} minDistToTarget={_getMinDistToTarget()} currentSelectionOrNull={_getCurrentSelectionOrNull()} />
+                <AttackOptionInterface player={character} minDistToTarget={_getMinDistToTarget()} currentSelectionOrNull={_getCurrentSelectionOrNull()} onTurn={onTurn} />
             </div>
             <div className="infoCompenent">
-                <SelectionInfo selectionHandler={selectionHandler} />
+                <SelectionInfo infoPanelSelection={infoPanelSelection} />
             </div>
             <div className="infoComponent">
                 <div className="button" onClick={() => selectionHandler.confirmAttack()}>Confirm</div>

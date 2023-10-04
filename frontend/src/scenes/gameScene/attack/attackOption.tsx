@@ -22,8 +22,8 @@ export default class AttackOption {
         this.selectionHandler = selectionHandler;
     }
 
-    selectAttackOption(inRange: boolean): void {
-        if (inRange) {
+    selectAttackOption(inRange: boolean, onTurn: boolean): void {
+        if (inRange && onTurn) {
             this.selectionHandler.setAttackOptions({attackType: this})
         }
     }
@@ -54,10 +54,10 @@ export default class AttackOption {
         }
     }
 
-    renderAttackOptionElement(inRange: boolean, selected: boolean): JSX.Element {
+    renderAttackOptionElement(inRange: boolean, selected: boolean, onTurn: boolean): JSX.Element {
         return <li
             style={this.getStyle(inRange, selected)}
             key={this.name+"_"+this.weapon.name}
-            onClick={() => {this.selectAttackOption(inRange)}}><div style={{margin: "auto"}}>{this.name}</div><div><img src={this.weapon.imageSource} width={"32px"} height={"32px"}></img></div></li>
+            onClick={() => {this.selectAttackOption(inRange, onTurn)}}><div style={{margin: "auto"}}>{this.name}</div><div><img src={this.weapon.imageSource} width={"32px"} height={"32px"}></img></div></li>
     }
 }

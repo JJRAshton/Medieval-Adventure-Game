@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Canvas from "./rendering/gameCanvas";
 import Character from "./parsing/character";
 
-import GameUISelectionHandler from "./gameUISelection";
+import GameUISelectionHandler, { GameUISelection } from "./gameUISelection";
 
 import InfoPanel from "./rendering/infoPanel";
 import MapState from "./MapState";
@@ -55,6 +55,9 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
 
     const [characters, setCharacters] = useState<Map<string, Character>>(_parseCharacters(characterJson));
     const [character, setCharacter] = useState<Character>(_getPlayerWithId(playerID));
+    const [onTurn, setOnTurn] = useState<boolean>(false);
+    const [selection, setSelection] = useState<GameUISelection | null>(null);
+    const [infoPanelSelection, setInfoPanelSelection] = useState<Character | null>(null);
 
     useEffect(() => {
         characters.forEach((character, id) => {
@@ -77,7 +80,7 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
                 // These will get sent when the turn changes
                 selectionHandler.reset();
                 
-                selectionHandler.onTurn = event.onTurnID === character.id;
+                setOnTurn(event.onTurnID === character.id);
                 updatePlayers(event.charactersUpdate);
                 break;
             case "mapUpdate":
@@ -106,11 +109,11 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
     return (
         <div>
             <h2>
-                <div className="message">{selectionHandler.onTurn ? "It's your turn" : "It's someone else's turn"}</div>
+                <div className="message">{onTurn ? "It's your turn" : "It's someone else's turn"}</div>
             </h2>
             <div className="game">
-                <Canvas mapState={mapState} selectionHandler={selectionHandler} characters={characters} character={character} socket={socket} />
-                <InfoPanel selectionHandler={selectionHandler} socket={socket} character={character} characters={characters} mapState={mapState} />
+                <Canvas mapState={mapState} selectionHandler={selectionHandler} characters={characters} character={character} socket={socket} onTurn={onTurn} setInfoPanelSelection={setInfoPanelSelection} />
+                <InfoPanel selectionHandler={selectionHandler} socket={socket} character={character} characters={characters} mapState={mapState} onTurn={onTurn} infoPanelSelection={infoPanelSelection} />
             </div>
         </div>
     );
