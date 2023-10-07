@@ -5,49 +5,53 @@ interface CharacterClassOption {
 }
 
 interface CharacterCustomistationProps {
-    characterClassSelection: CharacterClassOption[];
-    weaponSelection;
+    classOptions: Record<string, string[]>;
+    readied: boolean;
+    characterName: string,
+    setCharacterName,
+    playerClass: string,
+    setPlayerClass,
+    weapon: string,
+    setWeapon
 }
 
-const CharacterCustomistationComponent: React.FC<CharacterCustomistationProps> = ({ characterClassSelection, weaponSelection }) => {
-    const [selectedOption, setSelectedOption] = useState<string>('');
-    const [selectedWeapon, setSelectedWeapon] = useState<string>('');
-    const [characterName, setCharacterName] = useState<string>('');
+const CharacterCustomistationComponent: React.FC<CharacterCustomistationProps> = (props: CharacterCustomistationProps) => {
+    const { classOptions, readied, characterName, setCharacterName, playerClass, setPlayerClass, weapon, setWeapon } = props
 
     const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
         setCharacterName(event.target.value);
     };
 
     const handleSelectedCharacterClassChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        setSelectedOption(event.target.value);
-        setSelectedWeapon('')
+        setPlayerClass(event.target.value);
+        setWeapon('')
 
     };
 
     const handleWeaponSelectionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        setSelectedWeapon(event.target.value);
+        setWeapon(event.target.value);
     };
 
     return (
         <form>
-            <h2>Choose your character</h2>
+            <h2>{readied ? "Waiting for other players" : "Customise your character"}</h2>
             <div>
                 <label>Enter a character name:</label>
-                <input type="text"value={characterName} onChange={handleNameChange}placeholder="Enter character name:"/>
+                <input disabled={readied} type="text"value={characterName} onChange={handleNameChange}placeholder="Enter character name:"/>
             </div>
             <div>
                 <label>Choose your class:</label>
-                <select value={selectedOption} onChange={handleSelectedCharacterClassChange}>
+                <select disabled={readied} value={playerClass} onChange={handleSelectedCharacterClassChange}>
                     <option value="">Select a character class</option>
-                    {characterClassSelection.map(characterClass => (
-                    <option key={characterClass.value} value={characterClass.value}>{characterClass.value}</option>))}
+                    {Object.keys(classOptions).map(characterClass => (
+                    <option key={characterClass} value={characterClass}>{characterClass}</option>))}
                 </select>
             </div>
             <div>
                 <label>Choose a weapon:</label>
-                <select value={selectedWeapon} onChange={handleWeaponSelectionChange}>
+                <select disabled={readied} value={weapon} onChange={handleWeaponSelectionChange}>
                     <option value="">Select a weapon</option>
-                    {weaponSelection[selectedOption]?.map((weaponOption) => (
+                    {classOptions[playerClass]?.map((weaponOption) => (
                     <option key={weaponOption} value={weaponOption}>{weaponOption}</option>))}
                 </select>
             </div>

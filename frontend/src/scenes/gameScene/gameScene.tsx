@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Canvas from "./rendering/gameCanvas";
+import Canvas from "./components/gameCanvas";
 import Character, { CHARACTER_INFO_PARSER, constructCharacter, createCharacterInitial, setPosition, updateCharacter } from "./parsing/character";
 
 import { GameUISelection } from "./gameUISelection";
 
-import InfoPanel from "./rendering/infoPanel";
+import InfoPanel from "./components/infoPanel";
 import AttackOption from "./attack/attackOption";
 
 interface GameProps {

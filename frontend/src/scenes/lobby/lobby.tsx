@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CharacterCustomistationComponent, { CharacterClassOption } from "./classSelection";
 import { GamePropsData } from "../gameScene/gameScene";
 
@@ -14,15 +14,28 @@ const Lobby: React.FC<LobbyProps> = ({ socket, setCurrentScene }) => {
 
     const [playerInLobby, setPlayersInLobby] = useState<number>(0);
     const [playerReady, setPlayersReady] = useState<number>(0);
+    const [readied, setReadied] = useState<boolean>(false); // Whether the play has clicked join or is still customising
 
-    const characterClassOptions: CharacterClassOption[] = [{value: "class1"}, {value: "class2"}];
-    const weaponOptions = {
-        "class1": ["Weapon for class 1"],
-        "class2": ["Weapon for class 2"]
-    };
+    const [playerClass, setPlayerClass] = useState<string>('');
+    const [weapon, setWeapon] = useState<string>('');
+    const [characterName, setCharacterName] = useState<string>('');
+
+    const [classOptions, setClassOptions] = useState<Record<string, string[]>>({
+        class1: ["Weapon for class 1"],
+        class2: ["Weapon for class 2"]
+    });
     
-    const transmit = (eventType: string) => {
-        socket.send(JSON.stringify({ event: eventType }));
+    const transmitJoin = () => {
+        socket.send(JSON.stringify({ 
+            event: "joinGame" ,
+            characterName: characterName,
+            playerClass: playerClass,
+            weapon: weapon
+        }));
+    }
+
+    const transmitLeave = () => {
+        socket.send(JSON.stringify({ event: "leaveGame" }));
     }
 
     socket.onmessage = ({ data }) => {
@@ -44,17 +57,39 @@ const Lobby: React.FC<LobbyProps> = ({ socket, setCurrentScene }) => {
                 setPlayersInLobby(event.inLobby);
                 setPlayersReady(event.ready);
                 break;
+
+            case "classAndWeaponOpions":
+                setClassOptions(event.options)
+                break;
             default:
         }
     }
 
+    useEffect(() => {
+        socket.send(JSON.stringify({ event: "basicClassRequest" }));
+    }, [])
+
     return (
         <div>
-            <CharacterCustomistationComponent characterClassSelection={characterClassOptions} weaponSelection={weaponOptions} />
+            <CharacterCustomistationComponent
+                classOptions={classOptions}
+                readied={readied}
+                characterName={characterName}
+                setCharacterName={setCharacterName}
+                playerClass={playerClass}
+                setPlayerClass={setPlayerClass}
+                weapon={weapon}
+                setWeapon={setWeapon} />
             <div className="buttons">
-                <div className="leaveGame button" onClick={() => transmit("leaveGame")}>Leave</div>
-                <div className="value">You're ID is: {}</div>
-                <div className="joinGame button" onClick={() => transmit("joinGame")}>Join</div>
+                <div className="leaveGame button" onClick={() => {
+                    transmitLeave();
+                    setReadied(false);
+                }}>Leave</div>
+                <div className="value">Your ID is: {}</div>
+                <div className="joinGame button" onClick={() => {
+                    transmitJoin();
+                    setReadied(true);
+                }}>Join</div>
             </div>
             <div className="state">
                 <span className="users">{playerInLobby} online, {playerReady} players are ready</span>
