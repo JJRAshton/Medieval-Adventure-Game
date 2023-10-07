@@ -1,20 +1,32 @@
 import React from "react";
-import AttackOption from "../attack/attackOption";
-import Character from "../parsing/character";
+import AttackOption, { AttackOptionInterfaceEntry } from "../attack/attackOption";
+import Character, { checkAttackable } from "../parsing/character";
+import Attack from "../attack/attack";
 
 interface AttackOptionInterfaceProps {
     player: Character;
-    minDistToTarget: number;
     currentSelectionOrNull: AttackOption | null;
     onTurn: boolean;
+    currentAttackOptions: AttackOption[];
+    selection;
+    setSelection;
+    character: Character;
+    characters: Record<string, Character>;
 }
 
-const AttackOptionInterface: React.FC<AttackOptionInterfaceProps> = ({ player, minDistToTarget, currentSelectionOrNull, onTurn }) => {
+const AttackOptionInterface: React.FC<AttackOptionInterfaceProps> = ({ player, currentSelectionOrNull, onTurn, currentAttackOptions, selection, setSelection, character, characters }) => {
 
     if (player && player.infoReceived) {
         let children: Array<JSX.Element> = [];
-        player.attacks.forEach((attack) => {
-            children.push(attack.renderAttackOptionElement(attack.range >= minDistToTarget, attack === currentSelectionOrNull, onTurn))
+        currentAttackOptions.forEach((attack) => {
+            children.push(<AttackOptionInterfaceEntry
+                attackOption={attack}
+                selection={selection}
+                setSelection={setSelection}
+                attackSelected={attack === currentSelectionOrNull}
+                onTurn={onTurn}
+                character={character}
+                characters={characters} />)
         });
         return <ul className="attack"
             style={{

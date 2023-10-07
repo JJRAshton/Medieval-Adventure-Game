@@ -3,7 +3,6 @@ import React from "react";
 import PlayerInfoParser from "./playerInfoParser";
 import Weapon from "../attack/weapon";
 import AttackOption from "../attack/attackOption";
-import GameUISelectionHandler from "../gameUISelection";
 
 type CharacterInfo =  {
     Weapons: JSON;
@@ -28,7 +27,6 @@ type Character  = {
     y: number;
     health: number;
     weapons: Array<Weapon> | null;
-    attacks: Array<AttackOption>;
     stats: Record<string, number>;
     armour: null;
     inventory: null;
@@ -45,7 +43,6 @@ const NULL_CHARACTER: Character = {
     y: 0,
     health: 0,
     weapons: null,
-    attacks: [],
     stats: {},
     armour: null,
     inventory: null,
@@ -109,18 +106,18 @@ const isCharacter = (character: any): boolean => {
 
 const CHARACTER_INFO_PARSER = new PlayerInfoParser();
 
-const constructCharacter = (character: Character, characterInfo: CharacterInfo, isPlayer: boolean, selectionHandler: GameUISelectionHandler) => {
+const constructCharacter = (character: Character, characterInfo: CharacterInfo, isPlayer: boolean) => {
     return {
         ...character,
         weapons: CHARACTER_INFO_PARSER.parseWeapons(characterInfo.Weapons), // Not yet implemented
-        attacks: CHARACTER_INFO_PARSER.parseAttacks(characterInfo.Attacks, selectionHandler),
+        // attacks: CHARACTER_INFO_PARSER.parseAttacks(characterInfo.Attacks, selection, setSelection),
         stats: CHARACTER_INFO_PARSER.parseStats(characterInfo.Stats),
         armour: CHARACTER_INFO_PARSER.parseArmour(null), // Not yet implemented
         inventory: CHARACTER_INFO_PARSER.parseInventory(null), // Not yet implemented
 
         health: characterInfo.Health,
         maxHealth: characterInfo.Max_health,
-        range: Math.floor(characterInfo.Range / 5), // This seems like a random thing to expose given that it should be attainable from the attacks/weapons as well?
+        range: Math.floor(characterInfo.Range / 5),
         movesLeft: Math.floor(characterInfo.Remaining_movement / 5),
         team: characterInfo.Team,
 
@@ -132,5 +129,5 @@ const getCharacterAtLocation = (x: number, y: number, characters: Record<string,
     return Object.values(characters).find(character => character.x === x && character.y === y)
 }
 
-export { createCharacterInitial, isCharacter, updateCharacter, setPosition, constructCharacter, checkAttackable, getCharacterAtLocation }
+export { createCharacterInitial, isCharacter, updateCharacter, setPosition, constructCharacter, checkAttackable, getCharacterAtLocation, CHARACTER_INFO_PARSER }
 export default Character;

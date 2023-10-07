@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Canvas from "./rendering/gameCanvas";
-import Character, { constructCharacter, createCharacterInitial, setPosition, updateCharacter } from "./parsing/character";
+import Character, { CHARACTER_INFO_PARSER, constructCharacter, createCharacterInitial, setPosition, updateCharacter } from "./parsing/character";
 
-import GameUISelectionHandler, { GameUISelection } from "./gameUISelection";
+import { GameUISelection } from "./gameUISelection";
 
 import InfoPanel from "./rendering/infoPanel";
+import AttackOption from "./attack/attackOption";
 
 interface GameProps {
     socket: WebSocket;
@@ -47,13 +48,12 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
         setCharacters(characters);
     }
 
-    const selectionHandler = new GameUISelectionHandler(socket, playerID);
-
     const [characters, setCharacters] = useState<Record<string, Character>>(_parseCharacters(characterJson));
     const [character, setCharacter] = useState<Character>(_getPlayerWithId(playerID));
     const [onTurn, setOnTurn] = useState<boolean>(false);
     const [selection, setSelection] = useState<GameUISelection | null>(null);
     const [infoPanelSelection, setInfoPanelSelection] = useState<Character | null>(null);
+    const [currentAttackOptions, setCurrentAttackOptions] = useState<AttackOption[]>([]);
 
     useEffect(() => {
         Object.entries(characters).forEach(([id, character]) => {
@@ -73,7 +73,7 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
         switch (event.responseType) {
             case "turnNotification":
                 // These will get sent when the turn changes
-                selectionHandler.reset();
+                setSelection(null);
                 
                 setOnTurn(event.onTurnID === character.id);
                 updatePlayers(event.charactersUpdate);
@@ -82,12 +82,19 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
                 // These get sent when someone moves, or when something changes
                 const newCharacters = {...characters};
                 event.characters.forEach((characterInfo: [string, [number, number]]) => {
-                    newCharacters[characterInfo[0]] = setPosition(characters[characterInfo[0]], characterInfo[1][0], characterInfo[1][1]);                    
+                    const id = characterInfo[0]
+                    newCharacters[id] = setPosition(characters[id], characterInfo[1][0], characterInfo[1][1]);
+                    if (id === character.id) {
+                        setCharacter(newCharacters[id]);
+                    }                
                 })
                 setCharacters(newCharacters)
                 break;
             case "playerInfo":
-                const newCharacter = constructCharacter(_getPlayerWithId(event.characterID), event.playerInfo, true, selectionHandler);
+                const newCharacter = constructCharacter(_getPlayerWithId(event.characterID), event.playerInfo, true);
+                if (character.id === event.characterID) {
+                    setCurrentAttackOptions(CHARACTER_INFO_PARSER.parseAttacks(event.playerInfo.Attacks, selection, setSelection));
+                }
                 if (character && event.characterID === character.id) {
                     setCharacter(newCharacter);
                 }
@@ -109,8 +116,8 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
                 <div className="message">{onTurn ? "It's your turn" : "It's someone else's turn"}</div>
             </h2>
             <div className="game">
-                <Canvas mapSize={mapSize} selectionHandler={selectionHandler} characters={characters} character={character} socket={socket} onTurn={onTurn} setInfoPanelSelection={setInfoPanelSelection} infoPanelSelection={infoPanelSelection} />
-                <InfoPanel selectionHandler={selectionHandler} socket={socket} character={character} characters={characters} onTurn={onTurn} infoPanelSelection={infoPanelSelection} />
+                <Canvas mapSize={mapSize} characters={characters} character={character} socket={socket} onTurn={onTurn} setInfoPanelSelection={setInfoPanelSelection} infoPanelSelection={infoPanelSelection} selection={selection} setSelection={setSelection} />
+                <InfoPanel socket={socket} character={character} characters={characters} onTurn={onTurn} infoPanelSelection={infoPanelSelection} selection={selection} setSelection={setSelection} currentAttackOptions={currentAttackOptions} />
             </div>
         </div>
     );

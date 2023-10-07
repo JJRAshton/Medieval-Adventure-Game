@@ -1,6 +1,5 @@
 import AttackOption from "../attack/attackOption";
 import Weapon from "../attack/weapon";
-import GameUISelectionHandler from "../gameUISelection";
 
 export default class PlayerInfoParser {
 
@@ -8,10 +7,10 @@ export default class PlayerInfoParser {
         return null;
     }
 
-    parseAttacks(attackInfo, selectionHandler: GameUISelectionHandler): AttackOption[] {
+    parseAttacks(attackInfo, selection, setSelection): AttackOption[] {
         let attacks = new Array();
         for (let attack of attackInfo) {
-            attacks.push(new AttackOption(new Weapon(attack.Weapon, Math.floor(attack.Range / 5)), attack.Name, selectionHandler));
+            attacks.push(new AttackOption(new Weapon(attack.Weapon, Math.floor(attack.Range / 5)), attack.Name));
         }
         return attacks;
     }

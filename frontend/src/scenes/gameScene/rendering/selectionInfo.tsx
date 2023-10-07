@@ -1,5 +1,4 @@
 import React from "react";
-import GameUISelectionHandler from "../gameUISelection";
 import Character from "../parsing/character";
 import HealthBar from "./healthBar";
 
