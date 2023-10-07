@@ -6,19 +6,17 @@ import SelectionInfo from "./selectionInfo";
 import StatInfo from "./statInfo";
 import HealthBar from "./healthBar";
 import Character, { checkAttackable } from "../parsing/character";
-import MapState from "../MapState";
 
 interface InfoPanelProps {
     selectionHandler: GameUISelectionHandler;
     socket: WebSocket;
-    mapState: MapState;
     character: Character;
-    characters: Map<string, Character>;
+    characters: Record<string, Character>;
     onTurn: boolean;
     infoPanelSelection: Character | null;
 }
 
-const InfoPanel: React.FC<InfoPanelProps> = ({ selectionHandler, socket, mapState, character, characters, onTurn, infoPanelSelection }) => {
+const InfoPanel: React.FC<InfoPanelProps> = ({ selectionHandler, socket, character, characters, onTurn, infoPanelSelection }) => {
 
     // Used to display attack options. Has two modes, either returns min dist to any enemy (if
     // no target is selected), or min dist against the current attack target.
@@ -30,7 +28,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ selectionHandler, socket, mapStat
             }
         }
         let minDist = 100 // Big number
-        characters.forEach(target => {
+        Object.entries(characters).forEach(([id, target]) => {
             if (checkAttackable(character, target) && onTurn) {
                 minDist = Math.min(minDist, Math.max(Math.abs(character.x - target.x), Math.abs(character.y - target.y)));
             }

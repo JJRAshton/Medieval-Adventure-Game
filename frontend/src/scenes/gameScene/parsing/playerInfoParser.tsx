@@ -25,12 +25,12 @@ export default class PlayerInfoParser {
     }
 
     parseStats(statInfo) {
-        let statMap = new Map();
-        statMap.set("Constitution", statInfo.CON);
-        statMap.set("Dexterity", statInfo.DEX);
-        statMap.set("Strength", statInfo.STR);
-        statMap.set("Wit", statInfo.WIT);
-        return statMap;
+        return {
+            "Constitution": statInfo.CON,
+            "Dexterity": statInfo.DEX,
+            "Strength": statInfo.STR,
+            "Wit": statInfo.WIT
+        }
     }
 
 }

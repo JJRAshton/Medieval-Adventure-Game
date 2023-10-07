@@ -8,11 +8,14 @@ import loadInfoDisabldeSrc from "../../../images/loadInfoButtonDisabled.png";
 import loadInfoSrc from "../../../images/loadInfoButton.png";
 import loadInfoSelectedSrc from "../../../images/loadInfoButtonSelected.png";
 
+import orc from "../../../images/orc.png";
+import me from "../../../images/me.png";
+import notMe from "../../../images/notMe.png";
+
 import Attack from "../attack/attack";
 import GameUISelectionHandler from '../gameUISelection';
 import Movement from './movement';
-import Character, { checkAttackable } from '../parsing/character';
-import MapState from '../MapState';
+import Character, { checkAttackable, getCharacterAtLocation, isCharacter } from '../parsing/character';
 
 const ATTACK_IMAGE = new Image();
 ATTACK_IMAGE.src = attackImageSrc;
@@ -24,19 +27,28 @@ LOAD_INFO_DISABLED.src = loadInfoDisabldeSrc;
 LOAD_INFO.src = loadInfoSrc;
 LOAD_INFO_SELECTED.src = loadInfoSelectedSrc;
 
+const ORC_IMAGE = new Image();
+const ME_IMAGE = new Image();
+const NOT_ME_IMAGE = new Image();
+
+ORC_IMAGE.src = orc;
+ME_IMAGE.src = me;
+NOT_ME_IMAGE.src = notMe;
+
 type CanvasProps = {
-    mapState: MapState;
+    mapSize: any;
     selectionHandler: GameUISelectionHandler;
-    characters: Map<string, Character>;
+    characters: Record<string, Character>;
     character: Character;
     socket: WebSocket;
     onTurn: boolean;
+    infoPanelSelection: Character | null;
     setInfoPanelSelection;
 }
 
 const Canvas = (props: CanvasProps) => {
   
-    const { mapState, selectionHandler, characters, character, socket, onTurn, setInfoPanelSelection } = props;
+    const { mapSize, selectionHandler, characters, character, socket, onTurn, infoPanelSelection, setInfoPanelSelection } = props;
     const canvasRef: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
 
     const [mouseX, setMouseX] = useState<number>(0);
@@ -47,7 +59,7 @@ const Canvas = (props: CanvasProps) => {
         let [newX, newY] = [event.pageX - rect.left, event.pageY - rect.top];
         setMouseX(newX);
         setMouseY(newY);
-        selectionHandler.handleMouseMove(newX, newY, mapState.mapWidth, mapState.mapHeight);
+        selectionHandler.handleMouseMove(newX, newY, mapSize.mapWidth, mapSize.mapHeight);
     }
 
     let handleClick = (event) => {
@@ -55,13 +67,13 @@ const Canvas = (props: CanvasProps) => {
         let [clickX, clickY] = [event.pageX - rect.left, event.pageY - rect.top];
         const [mapX, mapY]: [number, number] = [Math.floor(clickX / TILE_WIDTH), Math.floor(clickY / TILE_WIDTH)];
         const [x_rel, y_rel]: [number, number] = [clickX - mapX * TILE_WIDTH, clickY - mapY * TILE_WIDTH];
-        const hover: Character | null = mapState.get(mapX, mapY);
+        const hover: Character | undefined = getCharacterAtLocation(mapX, mapY, characters);
         // Handling movement
         if (selectionHandler.selection instanceof Movement) {
             socket.send(JSON.stringify(selectionHandler.selection.getMoveRequest(character.id)));
             selectionHandler.reset();
         }
-        else if (hover instanceof Character && onOpenSelection(x_rel, y_rel)) {
+        else if (isCharacter(hover) && onOpenSelection(x_rel, y_rel)) {
             setInfoPanelSelection(hover)
         }
         else {
@@ -70,8 +82,7 @@ const Canvas = (props: CanvasProps) => {
                     selectionHandler.setMovement(new Movement(character.x, character.y));
                 }
                 else {
-                    characters.forEach(player => {
-                        // Inefficient way of finding players, they should probably be stored in 2d array
+                    Object.values(characters).forEach(player => {
                         if (checkAttackable(character, player) && onCharacter(clickX, clickY, player)) {
                             selectionHandler.setAttackOptions({target: player})
                         }
@@ -101,7 +112,7 @@ const Canvas = (props: CanvasProps) => {
             return;
         }
         ctx.fillStyle = 'rgb(109, 153, 87)';
-        ctx.fillRect(0, 0, mapState.mapWidth * TILE_WIDTH, mapState.mapHeight * TILE_WIDTH);
+        ctx.fillRect(0, 0, mapSize.mapWidth * TILE_WIDTH, mapSize.mapHeight * TILE_WIDTH);
     
         // Draw the move path if its not null
         if (selectionHandler.selection instanceof Movement) {
@@ -109,45 +120,49 @@ const Canvas = (props: CanvasProps) => {
         }
     
         // Draw the grid
-        for (var i = 0; i < mapState.mapWidth; i++) {
-            for (var j = 0; j < mapState.mapWidth; j++) {
+        for (var i = 0; i < mapSize.mapWidth; i++) {
+            for (var j = 0; j < mapSize.mapWidth; j++) {
                 ctx.strokeRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
             }
         }
     
         // Draw the characters
-        characters.forEach((character) => {
-            if (character.imageLoaded) {
-                ctx.drawImage(character.image, character.x * TILE_WIDTH, character.y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
-                if (onTurn && checkAttackable(character, character)) {
-                    if (selectionHandler.selection instanceof Attack 
-                            && selectionHandler.selection.target
-                            && selectionHandler.selection.target.id === character.id) {
-                        ctx.drawImage(ATTACK_IMAGE, character.x * TILE_WIDTH + 2, character.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH - 4);
-                    }
-                    else {
-                        ctx.drawImage(ATTACK_IMAGE, character.x * TILE_WIDTH, character.y * TILE_WIDTH, TILE_WIDTH / 2, TILE_WIDTH / 2);
-                    }
+        Object.values(characters).forEach((aCharacter) => {
+            let relevantImage: HTMLImageElement;
+            if (aCharacter.team === character.team) {
+                relevantImage = aCharacter.id === character.id ? ME_IMAGE : NOT_ME_IMAGE;
+            }
+            else {
+                relevantImage = ORC_IMAGE;
+            }
+            ctx.drawImage(relevantImage, aCharacter.x * TILE_WIDTH, aCharacter.y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+            if (onTurn && checkAttackable(aCharacter, aCharacter)) {
+                if (selectionHandler.selection instanceof Attack 
+                        && selectionHandler.selection.target
+                        && selectionHandler.selection.target.id === aCharacter.id) {
+                    ctx.drawImage(ATTACK_IMAGE, aCharacter.x * TILE_WIDTH + 2, aCharacter.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH - 4);
+                }
+                else {
+                    ctx.drawImage(ATTACK_IMAGE, aCharacter.x * TILE_WIDTH, aCharacter.y * TILE_WIDTH, TILE_WIDTH / 2, TILE_WIDTH / 2);
                 }
             }
-        }, this);
+        });
     
         const [mapX, mapY]: [number, number] = [Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH)];
         const [x_rel, y_rel]: [number, number] = [mouseX - mapX * TILE_WIDTH, mouseY - mapY * TILE_WIDTH];
-        const hover: Character | null = mapState.get(mapX, mapY);
+        const hover: Character | undefined = getCharacterAtLocation(mapX, mapY, characters);
         // Draw health bar on hovered character if necessary
-        if (hover instanceof Character) {
+        if (hover && isCharacter(hover)) {
             drawHealthBar(hover, ctx);
             let img: HTMLImageElement = onOpenSelection(x_rel, y_rel) ? LOAD_INFO : LOAD_INFO_DISABLED;
             ctx.drawImage(img, (mapX + 0.6) * TILE_WIDTH, (mapY + 0.6) * TILE_WIDTH, TILE_WIDTH * 0.4, TILE_WIDTH * 0.4);
         }
-        let informationSelection = selectionHandler.getInformationPanelSelection() ;
-        if (informationSelection instanceof Character) {
-            ctx.drawImage(LOAD_INFO_SELECTED, (informationSelection.x + 0.6) * TILE_WIDTH, (informationSelection.y + 0.6) * TILE_WIDTH, TILE_WIDTH * 0.4, TILE_WIDTH * 0.4);
+        if (infoPanelSelection !== null && isCharacter(infoPanelSelection)) {
+            ctx.drawImage(LOAD_INFO_SELECTED, (infoPanelSelection.x + 0.6) * TILE_WIDTH, (infoPanelSelection.y + 0.6) * TILE_WIDTH, TILE_WIDTH * 0.4, TILE_WIDTH * 0.4);
         }
     
         // Draw outer boundary
-        ctx.strokeRect(1, 1, mapState.mapWidth * TILE_WIDTH - 2, mapState.mapHeight * TILE_WIDTH - 2);
+        ctx.strokeRect(1, 1, mapSize.mapWidth * TILE_WIDTH - 2, mapSize.mapHeight * TILE_WIDTH - 2);
         ctx.beginPath();
     
         ctx.fill()
@@ -160,8 +175,8 @@ const Canvas = (props: CanvasProps) => {
             throw new Error("Critical error: Canvas ref was null");
         }
 
-        canvas.width = TILE_WIDTH * mapState.mapWidth;
-        canvas.height = TILE_WIDTH * mapState.mapHeight;
+        canvas.width = TILE_WIDTH * mapSize.mapWidth;
+        canvas.height = TILE_WIDTH * mapSize.mapHeight;
 
         const context = canvas.getContext('2d');
         let animationFrameId: number;
@@ -175,7 +190,7 @@ const Canvas = (props: CanvasProps) => {
         return () => {
             window.cancelAnimationFrame(animationFrameId);
         }
-    }, [mouseX, mouseY, onTurn]);
+    }, [mouseX, mouseY, onTurn, characters]);
     
     return <canvas ref={canvasRef} onMouseMove={handleMouseMove} onClick={handleClick} width="100" height="400" style={{cursor: "pointer"}} />
 }

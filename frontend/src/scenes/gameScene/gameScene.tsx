@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Canvas from "./rendering/gameCanvas";
-import Character from "./parsing/character";
+import Character, { constructCharacter, createCharacterInitial, setPosition, updateCharacter } from "./parsing/character";
 
 import GameUISelectionHandler, { GameUISelection } from "./gameUISelection";
 
 import InfoPanel from "./rendering/infoPanel";
-import MapState from "./MapState";
 
 interface GameProps {
     socket: WebSocket;
@@ -19,56 +18,52 @@ interface GamePropsData {
     playerID: string;
 }
 
-
 const Game: React.FC<GameProps> = ({socket, data}) => {
     const { characterJson, mapWidth, mapHeight, playerID } = data;
 
-    const _parseCharacters = (characters: any) => {
-        const characterMap = new Map();
-        for (var i = 0; i < characters.length; i++) {
-            const character = characters[i];
-            const chr = new Character(character[0], character[1][0], character[1][1]);
-            characterMap.set(character[0], chr)
-        }
-        return characterMap
+    const _parseCharacters = (characters: JSON) => {
+        let newCharacters = {}
+        Object.values(characters).forEach((initialCharacterJSON: JSON) => {
+            const id = initialCharacterJSON[0];
+            newCharacters[id] = createCharacterInitial(initialCharacterJSON);
+        });
+        return newCharacters;
     }
-    
+
     const _getPlayerWithId = (id: string) => {
-        const character = characters.get(id);
+        const character = characters[id];
         if (!character) {
+            console.log(characters)
             throw new Error("Critical error: Did not recognise character with ID: " + id + ".");
         }
         return character;
     }
 
-    const updatePlayers = (charactersInfo: any) => {
-        console.log(charactersInfo);
-        mapState.resetMap();
+    const updatePlayers = (charactersInfo) => {
         for (let id in charactersInfo) {
             const chr = _getPlayerWithId(id);
-            chr.update(charactersInfo[id]);
-            mapState.set(chr.x, chr.y, chr);
+            characters[id] = updateCharacter(chr, charactersInfo[id].Health, charactersInfo[id].coords);
         }
+        setCharacters(characters);
     }
 
     const selectionHandler = new GameUISelectionHandler(socket, playerID);
 
-    const [characters, setCharacters] = useState<Map<string, Character>>(_parseCharacters(characterJson));
+    const [characters, setCharacters] = useState<Record<string, Character>>(_parseCharacters(characterJson));
     const [character, setCharacter] = useState<Character>(_getPlayerWithId(playerID));
     const [onTurn, setOnTurn] = useState<boolean>(false);
     const [selection, setSelection] = useState<GameUISelection | null>(null);
     const [infoPanelSelection, setInfoPanelSelection] = useState<Character | null>(null);
 
     useEffect(() => {
-        characters.forEach((character, id) => {
+        Object.entries(characters).forEach(([id, character]) => {
             if (!character.infoReceived) {
                 socket.send(JSON.stringify({event: "playerInfoRequest", characterID: id}))
             }
         });
     }, [characters]);
 
-    // const state: GameState = new GameState(_getPlayerWithId(playerID), characters, mapWidth, mapHeight);
-    const mapState: MapState = new MapState(mapWidth, mapHeight, characters)
+    const mapSize = {mapWidth,  mapHeight}
 
     // Processing events from server
     socket.onmessage = ({data}) => {
@@ -85,18 +80,20 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
                 break;
             case "mapUpdate":
                 // These get sent when someone moves, or when something changes
-                mapState.resetMap();
+                const newCharacters = {...characters};
                 event.characters.forEach((characterInfo: [string, [number, number]]) => {
-                    const chr = _getPlayerWithId(characterInfo[0]);
-                    chr.setPosition(characterInfo[1][0], characterInfo[1][1]);
-                    mapState.set(chr.x, chr.y, chr);
-                }, this)
+                    newCharacters[characterInfo[0]] = setPosition(characters[characterInfo[0]], characterInfo[1][0], characterInfo[1][1]);                    
+                })
+                setCharacters(newCharacters)
                 break;
             case "playerInfo":
+                const newCharacter = constructCharacter(_getPlayerWithId(event.characterID), event.playerInfo, true, selectionHandler);
                 if (character && event.characterID === character.id) {
-                    setCharacter({ ..._getPlayerWithId(event.characterID).construct(event.playerInfo, true, selectionHandler)});
+                    setCharacter(newCharacter);
                 }
-                _getPlayerWithId(event.characterID).construct(event.playerInfo, event.characterID === character.id, selectionHandler);
+                const characterForPlayerInfoUpdate = {...characters};
+                characterForPlayerInfoUpdate[event.characterID] = newCharacter;
+                setCharacters(characterForPlayerInfoUpdate);
                 break;
             case "attackResult":
                 // Are we intentionally doing nothing with this?
@@ -112,8 +109,8 @@ const Game: React.FC<GameProps> = ({socket, data}) => {
                 <div className="message">{onTurn ? "It's your turn" : "It's someone else's turn"}</div>
             </h2>
             <div className="game">
-                <Canvas mapState={mapState} selectionHandler={selectionHandler} characters={characters} character={character} socket={socket} onTurn={onTurn} setInfoPanelSelection={setInfoPanelSelection} />
-                <InfoPanel selectionHandler={selectionHandler} socket={socket} character={character} characters={characters} mapState={mapState} onTurn={onTurn} infoPanelSelection={infoPanelSelection} />
+                <Canvas mapSize={mapSize} selectionHandler={selectionHandler} characters={characters} character={character} socket={socket} onTurn={onTurn} setInfoPanelSelection={setInfoPanelSelection} infoPanelSelection={infoPanelSelection} />
+                <InfoPanel selectionHandler={selectionHandler} socket={socket} character={character} characters={characters} onTurn={onTurn} infoPanelSelection={infoPanelSelection} />
             </div>
         </div>
     );
