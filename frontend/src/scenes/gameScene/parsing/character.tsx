@@ -1,9 +1,5 @@
 import React from "react";
 
-import orc from "../../../images/orc.png";
-import me from "../../../images/me.png";
-import notMe from "../../../images/notMe.png";
-
 import PlayerInfoParser from "./playerInfoParser";
 import Weapon from "../attack/weapon";
 import AttackOption from "../attack/attackOption";
@@ -19,100 +15,119 @@ type CharacterInfo =  {
     Team: any; 
 }
 
-export default class Character {
-    public infoReceived: boolean;
-    public id: number;
-    public x: number;
-    public y: number;
-    public health: any;
-    
-    private statsStyle: { fontSize: number; listStyle: string; justifyContent: string; textAlign: string; };
-    
-    private static infoParser = new PlayerInfoParser();
-
-    public weapons: Array<Weapon> | null;
-    public attacks: Array<AttackOption>;
-    public stats: Map<string, number>;
-    public armour: null;
-    public inventory: null;
-    public maxHealth: number;
-    public range: number;
-    public movesLeft: number;
-    public team: number;
-
-    public image: HTMLImageElement;
-    public imageLoaded: boolean;
-    
-    constructor(id: number, x: number, y: number) {
-        this.infoReceived = false; // Keeps track of whether the full player info for this character has been received
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.statsStyle = {
-            fontSize: 20,
-            listStyle: "none",
-            justifyContent: "center",
-            textAlign: "center"
-        }
-    }
-
-    setPosition(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-
-    update(updateInfo: { Health: any; coords: number[]; }) {
-        this.health = updateInfo.Health;
-        this.x = updateInfo.coords[0];
-        this.y = updateInfo.coords[1];
-    }
-
-    /**
-     * Called when a full player info is received from the server
-     */
-    construct(characterInfo: CharacterInfo, isPlayer: any, selectionHandler: any) {
-        console.log(characterInfo);
-
-        this.weapons = Character.infoParser.parseWeapons(characterInfo.Weapons); // Not yet implemented
-        this.attacks = Character.infoParser.parseAttacks(characterInfo.Attacks, selectionHandler);
-        this.stats = Character.infoParser.parseStats(characterInfo.Stats);
-        this.armour = Character.infoParser.parseArmour(null); // Not yet implemented
-        this.inventory = Character.infoParser.parseInventory(null); // Not yet implemented
-
-        this.health = characterInfo.Health;
-        this.maxHealth = characterInfo.Max_health;
-        this.range = Math.floor(characterInfo.Range / 5); // This seems like a random thing to expose given that it should be attainable from the attacks/weapons as well?
-        this.movesLeft = Math.floor(characterInfo.Remaining_movement / 5);
-        this.team = characterInfo.Team;
-
-        this._loadImage(isPlayer);
-        
-        this.infoReceived = true;
-    }
-
-    private _loadImage(isPlayer: boolean) {
-        this.image = new Image()
-        this.imageLoaded = false;
-        this.image.onload = this._loadImage.bind(this);
-        this.image.onload = () => {
-            this.imageLoaded = true;
-        }
-        if (isPlayer) {
-            this.image.src = me;
-        }
-        else if (this.team === 1) {
-            this.image.src = notMe;
-        }
-        else {
-            this.image.src = orc;
-        }
-        this.image.onerror = (error) => {
-            console.log("An error occured loading image: " + error);
-        }
-    }
-
-    public checkAttackable(character: Character): boolean {
-        return (this.team !== character.team)
-            && Math.max(Math.abs(this.x - character.x), Math.abs(this.y - character.y)) <= this.range;
-        }
+let checkAttackable = (attacker: Character, target: Character) => {
+    return (attacker.team !== target.team)
+        && Math.max(Math.abs(attacker.x - target.x), Math.abs(attacker.y - target.y)) <= attacker.range;
 }
+
+type Character  = {
+    infoReceived: boolean;
+    id: string;
+    x: number;
+    y: number;
+    health: number;
+    weapons: Array<Weapon> | null;
+    stats: Record<string, number>;
+    armour: null;
+    inventory: null;
+    maxHealth: number;
+    range: number;
+    movesLeft: number;
+    team: number;
+}
+
+const NULL_CHARACTER: Character = {
+    infoReceived: false,
+    id: "null_id",
+    x: 0,
+    y: 0,
+    health: 0,
+    weapons: null,
+    stats: {},
+    armour: null,
+    inventory: null,
+    maxHealth: 0,
+    range: 0,
+    movesLeft: 0,
+    team: 0,
+}
+
+const createCharacterInitial = (initialCharacterJSON): Character => {
+    const x = initialCharacterJSON[1][0];
+    const y = initialCharacterJSON[1][1];
+    if (x !== 0 && !x || y !== 0 && !y) {
+        console.log("Setting invalid position in createCharacterInitial: ")
+        console.log([x, y])
+    }
+    return {
+        ...NULL_CHARACTER,
+        id: initialCharacterJSON[0],
+        x: initialCharacterJSON[1][0],
+        y: initialCharacterJSON[1][1]
+    }
+}
+
+const setPosition = (character: Character, x: number, y: number): Character => {
+    if (x !== 0 && !x || y !== 0 && !y) {
+        console.log("Setting invalid position in setPosition: ")
+        console.log([x, y])
+    }
+    return {
+        ...character, 
+        x: x,
+        y: y
+    }
+}
+
+const updateCharacter = (character: Character, health: number, coords) => {
+    const x = coords[0];
+    const y = coords[1];
+    if (x !== 0 && !x || y !== 0 && !y) {
+        console.log("Setting invalid position in updateCharacters: ")
+        console.log([x, y])
+    }
+    return {
+        ...character,
+        health,
+        x: coords[0],
+        y: coords[1]
+    }
+}
+
+/**
+ * A rubbish and hopefully temporary way of telling if something is a character.
+ */
+const isCharacter = (character: any): boolean => {
+    return character
+        && "x" in character 
+        && "y" in character
+        && "id" in character
+}
+
+const CHARACTER_INFO_PARSER = new PlayerInfoParser();
+
+const constructCharacter = (character: Character, characterInfo: CharacterInfo, isPlayer: boolean) => {
+    return {
+        ...character,
+        weapons: CHARACTER_INFO_PARSER.parseWeapons(characterInfo.Weapons), // Not yet implemented
+        // attacks: CHARACTER_INFO_PARSER.parseAttacks(characterInfo.Attacks, selection, setSelection),
+        stats: CHARACTER_INFO_PARSER.parseStats(characterInfo.Stats),
+        armour: CHARACTER_INFO_PARSER.parseArmour(null), // Not yet implemented
+        inventory: CHARACTER_INFO_PARSER.parseInventory(null), // Not yet implemented
+
+        health: characterInfo.Health,
+        maxHealth: characterInfo.Max_health,
+        range: Math.floor(characterInfo.Range / 5),
+        movesLeft: Math.floor(characterInfo.Remaining_movement / 5),
+        team: characterInfo.Team,
+
+        infoReceived: true
+    }
+}
+
+const getCharacterAtLocation = (x: number, y: number, characters: Record<string, Character>): Character | undefined => {
+    return Object.values(characters).find(character => character.x === x && character.y === y)
+}
+
+export { createCharacterInitial, isCharacter, updateCharacter, setPosition, constructCharacter, checkAttackable, getCharacterAtLocation, CHARACTER_INFO_PARSER }
+export default Character;

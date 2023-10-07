@@ -1,113 +1,128 @@
-import Context from "../context";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Canvas from "./rendering/gameCanvas";
-import Character from "./parsing/character";
+import Character, { CHARACTER_INFO_PARSER, constructCharacter, createCharacterInitial, setPosition, updateCharacter } from "./parsing/character";
 
-import GameUISelectionHandler from "./gameUISelection";
+import { GameUISelection } from "./gameUISelection";
 
-import ContextHandler from "../contextHandler";
-import GameState from "./gameState";
 import InfoPanel from "./rendering/infoPanel";
+import AttackOption from "./attack/attackOption";
 
-export class Game extends Context {
+interface GameProps {
+    socket: WebSocket;
+    data: GamePropsData;
+}
 
-    private selectionHandler: GameUISelectionHandler;
-    private characters: Map<number, Character>;
-    private _state: GameState;
-    
-    private _infoPanel: InfoPanel;
-    private _canvas: Canvas;
+interface GamePropsData {
+    characterJson: JSON;
+    mapWidth: number;
+    mapHeight: number;
+    playerID: string;
+}
 
-    constructor(socket: WebSocket, reactRoot: React.FC, mapWidth: number, mapHeight: number, playerID: number, characters: JSON) {
-        super(socket, reactRoot, "game");
-        this.selectionHandler = new GameUISelectionHandler(socket, playerID, this);
-        this.characters = this._parseCharacters(characters);
-        this._state = new GameState(this.getPlayerWithId(playerID), this.characters, mapWidth, mapHeight);
-        this._infoPanel = new InfoPanel(this.selectionHandler, socket, this._state);
-        this._canvas = new Canvas(this.selectionHandler, socket, this._state);
+const Game: React.FC<GameProps> = ({socket, data}) => {
+    const { characterJson, mapWidth, mapHeight, playerID } = data;
+
+    const _parseCharacters = (characters: JSON) => {
+        let newCharacters = {}
+        Object.values(characters).forEach((initialCharacterJSON: JSON) => {
+            const id = initialCharacterJSON[0];
+            newCharacters[id] = createCharacterInitial(initialCharacterJSON);
+        });
+        return newCharacters;
     }
 
-    private _parseCharacters(characters: any): Map<number, Character> {
-        const characterMap = new Map();
-        for (var i = 0; i < characters.length; i++) {
-            const character = characters[i];
-            this.socket.send(JSON.stringify({event: "playerInfoRequest", characterID: character[0]}))
-            const chr = new Character(character[0], character[1][0], character[1][1]);
-            characterMap.set(character[0], chr)
+    const _getPlayerWithId = (id: string) => {
+        const character = characters[id];
+        if (!character) {
+            console.log(characters)
+            throw new Error("Critical error: Did not recognise character with ID: " + id + ".");
         }
-        return characterMap
+        return character;
     }
 
-    render(): void {
-        this.reactRoot.render(
-        <div>
-            <h2>
-                <div className="message">{this.getCurrentMessage()}</div>
-            </h2>
-            <div className="game">
-                { this._canvas.render() }
-                { this._infoPanel.render() }
-            </div>
-        </div>);
-    }
-
-    getCurrentMessage(): string {
-        if (this.selectionHandler.onTurn) {
-            return "It's your turn"
+    const updatePlayers = (charactersInfo) => {
+        for (let id in charactersInfo) {
+            const chr = _getPlayerWithId(id);
+            characters[id] = updateCharacter(chr, charactersInfo[id].Health, charactersInfo[id].coords);
         }
-        return "It's someone else's turn"
+        setCharacters(characters);
     }
+
+    const [characters, setCharacters] = useState<Record<string, Character>>(_parseCharacters(characterJson));
+    const [character, setCharacter] = useState<Character>(_getPlayerWithId(playerID));
+    const [onTurn, setOnTurn] = useState<boolean>(false);
+    const [selection, setSelection] = useState<GameUISelection | null>(null);
+    const [infoPanelSelection, setInfoPanelSelection] = useState<Character | null>(null);
+    const [currentAttackOptions, setCurrentAttackOptions] = useState<AttackOption[]>([]);
+
+    useEffect(() => {
+        Object.entries(characters).forEach(([id, character]) => {
+            if (!character.infoReceived) {
+                socket.send(JSON.stringify({event: "playerInfoRequest", characterID: id}))
+            }
+        });
+    }, [characters]);
+
+    const mapSize = {mapWidth,  mapHeight}
 
     // Processing events from server
-    override handleEvent(contextHandler: ContextHandler, event: any): void {
+    socket.onmessage = ({data}) => {
+        const event = JSON.parse(data);
+
         console.log(event);
         switch (event.responseType) {
             case "turnNotification":
                 // These will get sent when the turn changes
-                this.selectionHandler.reset();
+                setSelection(null);
                 
-                this.selectionHandler.onTurn = event.onTurnID === this._state.character.id;
-                this.updatePlayers(event.charactersUpdate);
+                setOnTurn(event.onTurnID === character.id);
+                updatePlayers(event.charactersUpdate);
                 break;
             case "mapUpdate":
                 // These get sent when someone moves, or when something changes
-                this._state.mapState.resetMap();
-                event.characters.forEach((characterInfo: [number, [number, number]]) => {
-                    const chr = this.getPlayerWithId(characterInfo[0]);
-                    chr.setPosition(characterInfo[1][0], characterInfo[1][1]);
-                    this._state.mapState.set(chr.x, chr.y, chr);
-                }, this)
+                const newCharacters = {...characters};
+                event.characters.forEach((characterInfo: [string, [number, number]]) => {
+                    const id = characterInfo[0]
+                    newCharacters[id] = setPosition(characters[id], characterInfo[1][0], characterInfo[1][1]);
+                    if (id === character.id) {
+                        setCharacter(newCharacters[id]);
+                    }                
+                })
+                setCharacters(newCharacters)
                 break;
             case "playerInfo":
-                this.getPlayerWithId(event.characterID).construct(event.playerInfo, event.characterID === this._state.character.id, this.selectionHandler);
+                const newCharacter = constructCharacter(_getPlayerWithId(event.characterID), event.playerInfo, true);
+                if (character.id === event.characterID) {
+                    setCurrentAttackOptions(CHARACTER_INFO_PARSER.parseAttacks(event.playerInfo.Attacks, selection, setSelection));
+                }
+                if (character && event.characterID === character.id) {
+                    setCharacter(newCharacter);
+                }
+                const characterForPlayerInfoUpdate = {...characters};
+                characterForPlayerInfoUpdate[event.characterID] = newCharacter;
+                setCharacters(characterForPlayerInfoUpdate);
                 break;
             case "attackResult":
+                // Are we intentionally doing nothing with this?
                 break;
             default:
                 console.log("Unrecognised even with type " + event.responseType)
         }
     }
 
-    private updatePlayers(charactersInfo: any): void {
-        console.log(charactersInfo);
-        this._state.mapState.resetMap();
-        for (let id in charactersInfo) {
-            const chr = this.getPlayerWithId(parseInt(id));
-            chr.update(charactersInfo[id]);
-            this._state.mapState.set(chr.x, chr.y, chr);
-        }
-    }
-
-    /**
-     * Throws an error if the id is not recognised
-     * @param id of the player
-     * @returns the player
-     */
-    private getPlayerWithId(id: number): Character {
-        const character = this.characters.get(id);
-        if (!character) {
-            throw new Error("Critical error: Did not recognise character with ID: " + id + ".");
-        }
-        return character;
-    }
+    return (
+        <div>
+            <h2>
+                <div className="message">{onTurn ? "It's your turn" : "It's someone else's turn"}</div>
+            </h2>
+            <div className="game">
+                <Canvas mapSize={mapSize} characters={characters} character={character} socket={socket} onTurn={onTurn} setInfoPanelSelection={setInfoPanelSelection} infoPanelSelection={infoPanelSelection} selection={selection} setSelection={setSelection} />
+                <InfoPanel socket={socket} character={character} characters={characters} onTurn={onTurn} infoPanelSelection={infoPanelSelection} selection={selection} setSelection={setSelection} currentAttackOptions={currentAttackOptions} />
+            </div>
+        </div>
+    );
 }
+
+export default Game;
+
+export { GamePropsData };

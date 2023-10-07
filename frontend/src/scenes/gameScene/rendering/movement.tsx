@@ -46,7 +46,7 @@ export default class Movement implements GameUISelection {
         return false;
     }
 
-    getMoveRequest(playerID: number) {
+    getMoveRequest(playerID: string) {
         return {event: "moveRequest", playerID, route: this.moveStack};
     }
 }

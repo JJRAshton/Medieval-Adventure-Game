@@ -21,7 +21,7 @@ class TurnManager:
     # Starts the games turns
     def start(self):
         # Probably this could all go into the init
-        for character in self.back.characters:
+        for character in self.back.characters.values():
             self.initOrder.add(character)
 
         if len(self.initOrder) == 0:

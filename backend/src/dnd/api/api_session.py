@@ -64,7 +64,7 @@ class APISession:
             raise ValueError(f"Request {jsonEvent} does not declare its type")
         if jsonEvent["event"] == "moveRequest":
             try:
-                playerID = int(jsonEvent["playerID"])
+                playerID = jsonEvent["playerID"]
             except Exception:
                 raise ValueError("Could not convert player ID")
             if len(jsonEvent["route"]) < 2:

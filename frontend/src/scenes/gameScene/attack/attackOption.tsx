@@ -1,6 +1,7 @@
 import React from "react";
-import GameUISelectionHandler from "../gameUISelection";
 import Weapon from "./weapon";
+import Attack from "./attack";
+import Character, { checkAttackable } from "../parsing/character";
 
 const NOT_AVAILABLE_COLOUR = "#dbbb7c";
 const DEFAULT = "#d1941c";
@@ -10,25 +11,49 @@ const NOT_AVAILABLE_COLOUR_FONT = "#777";
 const AVAILABLE_COLOUR_FONT = "#000";
 
 export default class AttackOption {
-    private weapon: Weapon;
+    public weapon: Weapon;
     public name: String;
     public range: number;
-    private selectionHandler: GameUISelectionHandler;
 
-    constructor(weapon: Weapon, name: String, selectionHandler: GameUISelectionHandler) {
+    constructor(weapon: Weapon, name: String) {
         this.weapon = weapon;
         this.name = name;
         this.range = this.weapon.range;
-        this.selectionHandler = selectionHandler;
     }
+}
 
-    selectAttackOption(inRange: boolean): void {
-        if (inRange) {
-            this.selectionHandler.setAttackOptions({attackType: this})
+type AttackOptionInterfaceEntryProps = {
+    attackOption: AttackOption;
+    attackSelected: boolean;
+    onTurn: boolean;
+    selection;
+    setSelection;
+    character: Character;
+    characters: Record<string, Character>;
+}
+
+const AttackOptionInterfaceEntry = (props: AttackOptionInterfaceEntryProps) => {
+    const { attackOption, attackSelected, onTurn, selection, setSelection, character, characters } = props;
+
+    // Used to display attack options. Has two modes, either returns min dist to any enemy (if
+    // no target is selected), or min dist against the current attack target.
+    const getMinDistToTarget = () => {
+        if (selection instanceof Attack) {
+            if (selection.target !== null) {
+                const target = selection.target;
+                return Math.max(Math.abs(character.x - target.x), Math.abs(character.y - target.y));
+            }
         }
+        let minDist = 100 // Big number
+        Object.entries(characters).forEach(([id, target]) => {
+            if (checkAttackable(character, target) && onTurn) {
+                minDist = Math.min(minDist, Math.max(Math.abs(character.x - target.x), Math.abs(character.y - target.y)));
+            }
+        })
+        return minDist;
     }
 
-    getStyle(available: boolean, selected: boolean) {
+    const getStyle = (available: boolean, selected: boolean) => {
         let background = NOT_AVAILABLE_COLOUR;
         let color = NOT_AVAILABLE_COLOUR_FONT;
     
@@ -54,10 +79,21 @@ export default class AttackOption {
         }
     }
 
-    renderAttackOptionElement(inRange: boolean, selected: boolean): JSX.Element {
-        return <li
-            style={this.getStyle(inRange, selected)}
-            key={this.name+"_"+this.weapon.name}
-            onClick={() => {this.selectAttackOption(inRange)}}><div style={{margin: "auto"}}>{this.name}</div><div><img src={this.weapon.imageSource} width={"32px"} height={"32px"}></img></div></li>
-    }
+    const inRange = attackOption.range >= getMinDistToTarget();
+
+    return <li
+            style={getStyle(inRange, attackSelected)}
+            key={attackOption.name + "_" + attackOption.weapon.name}
+            onClick={() => {
+                if (inRange && onTurn) {
+                    if (selection instanceof Attack) {
+                        setSelection(new Attack({target: selection.target, attackType: attackOption})); // TODO: fix this hack
+                    }
+                    else {
+                        setSelection(new Attack({attackType: attackOption}));
+                    }
+                }
+            }}><div style={{margin: "auto"}}>{attackOption.name}</div><div><img src={attackOption.weapon.imageSource} width={"32px"} height={"32px"}></img></div></li>
 }
+
+export { AttackOptionInterfaceEntry }

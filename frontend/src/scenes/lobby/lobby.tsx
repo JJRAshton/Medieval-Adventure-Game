@@ -1,70 +1,68 @@
-import Context from "../context";
-import ContextHandler from "../contextHandler";
-import { Game } from "../gameScene/gameScene";
+import { useState } from "react";
 import CharacterCustomistationComponent, { CharacterClassOption } from "./classSelection";
+import { GamePropsData } from "../gameScene/gameScene";
 
 var React = require("react");
 
 
-export class Lobby extends Context {
-    private joinGameButton: JSX.Element;
-    private leaveGameButton: JSX.Element;
-    private inLobby: number;
-    private ready: number;
-    private characterClassOptions: CharacterClassOption[];
-    private weaponOptions;
+interface LobbyProps {
+    socket: WebSocket;
+    setCurrentScene;
+}
 
-    constructor(socket: WebSocket, reactRoot: React.FC) {
-        super(socket, reactRoot, "lobby");
-        this.joinGameButton = <div className="leaveGame button" onClick={() => this.transmit("leaveGame")}>Leave</div>
-        this.leaveGameButton = <div className="joinGame button" onClick={() => this.transmit("joinGame")}>Join</div>
-        this.characterClassOptions = new Array<CharacterClassOption>({value: "class1"}, {value: "class2"});
-        this.weaponOptions = {
-            "class1": ["Weapon for class 1"],
-            "class2": ["Weapon for class 2"]
-        };
+const Lobby: React.FC<LobbyProps> = ({ socket, setCurrentScene }) => {
+
+    const [playerInLobby, setPlayersInLobby] = useState<number>(0);
+    const [playerReady, setPlayersReady] = useState<number>(0);
+
+    const characterClassOptions: CharacterClassOption[] = [{value: "class1"}, {value: "class2"}];
+    const weaponOptions = {
+        "class1": ["Weapon for class 1"],
+        "class2": ["Weapon for class 2"]
+    };
+    
+    const transmit = (eventType: string) => {
+        socket.send(JSON.stringify({ event: eventType }));
     }
 
-    render() {
-        this.reactRoot.render(
-            <div>
-                <CharacterCustomistationComponent characterClassSelection={this.characterClassOptions} weaponSelection={this.weaponOptions} />
-                <div className="buttons">
-                    { this.joinGameButton }
-                    <div className="value">You're ID is: {}</div>
-                    { this.leaveGameButton }
-                </div>
-                <div className="state">
-                    <span className="users">{this.inLobby} online, {this.ready} players are ready</span>
-                </div>
-            </div>);
-    }
-
-    handleEvent(contextHandler: ContextHandler, event: { responseType: any; mapStatus: any; playerID: any; characters: JSON; inLobby: number; ready: number; }) {
+    socket.onmessage = ({ data }) => {
+        const event = JSON.parse(data);
         switch (event.responseType) {
             case "gameStart":
+                // Maybe we still need some sort of context manager, because it's going to be
+                // tricky to switch component otherwise?
                 console.log("starting game");
-                const mapStatus = event.mapStatus;
-                const playerID = event.playerID;
-                const characters = event.characters;
-                contextHandler.context = new Game(
-                    this.socket,
-                    this.reactRoot,
-                    mapStatus.mapWidth,
-                    mapStatus.mapHeight,
-                    playerID,
-                    characters);
+                const gameProps: GamePropsData = {
+                    characterJson: event.characters,
+                    mapWidth: event.mapStatus.mapWidth,
+                    mapHeight: event.mapStatus.mapHeight,
+                    playerID: event.playerID
+                }
+                setCurrentScene({inLobby: false, data: gameProps})
                 break;
             case "users":
-                this.inLobby = event.inLobby;
-                this.ready = event.ready;
+                setPlayersInLobby(event.inLobby);
+                setPlayersReady(event.ready);
                 break;
             default:
         }
     }
 
-    transmit(eventType: string) {
-        this.socket.send(JSON.stringify({ event: eventType }));
-    }
-    
+    return (
+        <div>
+            <CharacterCustomistationComponent characterClassSelection={characterClassOptions} weaponSelection={weaponOptions} />
+            <div className="buttons">
+                <div className="leaveGame button" onClick={() => transmit("leaveGame")}>Leave</div>
+                <div className="value">You're ID is: {}</div>
+                <div className="joinGame button" onClick={() => transmit("joinGame")}>Join</div>
+            </div>
+            <div className="state">
+                <span className="users">{playerInLobby} online, {playerReady} players are ready</span>
+            </div>
+        </div>
+    );
 }
+
+export default Lobby;
+
+export { LobbyProps }

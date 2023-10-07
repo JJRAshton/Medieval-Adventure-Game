@@ -79,7 +79,7 @@ class Hub:
 
     # Returns the locations of all characters
     def getCharLoc(self):
-        return {character.id: character.coords for character in self.chart.characters}
+        return {character.id: character.coords for character in self.chart.characters.values()}
 
     # Returns the locations of all objects
     def getObjLoc(self):

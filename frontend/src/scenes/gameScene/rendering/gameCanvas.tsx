@@ -1,6 +1,5 @@
-import React, { useRef, useEffect, MutableRefObject } from 'react'
+import React, { useRef, useEffect, MutableRefObject, useState } from 'react'
 import { TILE_WIDTH } from '../constants';
-import Renderable from './renderable';
 
 import { onCharacter } from "../gameSceneUtil";
 
@@ -9,11 +8,14 @@ import loadInfoDisabldeSrc from "../../../images/loadInfoButtonDisabled.png";
 import loadInfoSrc from "../../../images/loadInfoButton.png";
 import loadInfoSelectedSrc from "../../../images/loadInfoButtonSelected.png";
 
+import orc from "../../../images/orc.png";
+import me from "../../../images/me.png";
+import notMe from "../../../images/notMe.png";
+
 import Attack from "../attack/attack";
-import GameUISelectionHandler from '../gameUISelection';
-import GameState from '../gameState';
+import { GameUISelection } from '../gameUISelection';
 import Movement from './movement';
-import Character from '../parsing/character';
+import Character, { checkAttackable, getCharacterAtLocation, isCharacter } from '../parsing/character';
 
 const ATTACK_IMAGE = new Image();
 ATTACK_IMAGE.src = attackImageSrc;
@@ -25,161 +27,87 @@ LOAD_INFO_DISABLED.src = loadInfoDisabldeSrc;
 LOAD_INFO.src = loadInfoSrc;
 LOAD_INFO_SELECTED.src = loadInfoSelectedSrc;
 
-type CanvasProps = {
-    draw: any;
-    resize: any;
-    handleClick: any;
-    handleKeyPress: any;
-    handleMouseMove: any;
-    setStyle: any;
-    getCanvasOffset: any;
-}
+const ORC_IMAGE = new Image();
+const ME_IMAGE = new Image();
+const NOT_ME_IMAGE = new Image();
 
-let listenersAdded: boolean = false;
+ORC_IMAGE.src = orc;
+ME_IMAGE.src = me;
+NOT_ME_IMAGE.src = notMe;
+
+type CanvasProps = {
+    mapSize: any;
+    selection: GameUISelection | null;
+    setSelection;
+    characters: Record<string, Character>;
+    character: Character;
+    socket: WebSocket;
+    onTurn: boolean;
+    infoPanelSelection: Character | null;
+    setInfoPanelSelection;
+}
 
 const Canvas = (props: CanvasProps) => {
   
-  const { draw, resize, handleClick, handleKeyPress, handleMouseMove, setStyle, getCanvasOffset, ...rest } = props;
-  const canvasRef: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
-  window.addEventListener("keyup", handleKeyPress);
+    const { mapSize, selection, setSelection, characters, character, socket, onTurn, infoPanelSelection, setInfoPanelSelection } = props;
+    const canvasRef: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
 
-  useEffect(() => {
-    
-    const canvas = canvasRef.current;
-    if (canvas === null) {
-        throw new Error("Critical error: Canvas ref was null");
-    }
+    const [mouseX, setMouseX] = useState<number>(0);
+    const [mouseY, setMouseY] = useState<number>(0);
 
-    resize(canvas);
-    getCanvasOffset(canvas)
-
-    if (!!!listenersAdded) {
-        // Only want to add the event listeners once
-        canvas.addEventListener("click", handleClick, false);
-        canvas.addEventListener("mousemove", handleMouseMove, false);
-        listenersAdded = true;
-    }
-
-    const context = canvas.getContext('2d');
-    let animationFrameId: number;
-    
-    const render = () => {
-      draw(context);
-      animationFrameId = window.requestAnimationFrame(render);
-    }
-    render();
-    
-    return () => {
-      window.cancelAnimationFrame(animationFrameId);
-    }
-  });
-  
-  return <canvas ref={canvasRef} width="100" height="400" style={setStyle()} {...rest}/>
-}
-
-export default class CanvasComponent implements Renderable {
-    private _selectionHandler: GameUISelectionHandler;
-    private _state: GameState;
-    private _socket: WebSocket;
-
-    private _mouseX: number;
-    private _mouseY: number;
-    private canvasOffset: [number, number];
-
-    constructor(selectionHandler: GameUISelectionHandler, socket: WebSocket, gameState: GameState) {
-        this._selectionHandler = selectionHandler;
-        this._socket = socket;
-        this._state = gameState;
-        [this._mouseX, this._mouseY] = [0, 0];
-    }
-
-    render(): JSX.Element {
-        return <Canvas
-            // Passing in the various call backs as props
-            draw={(ctx: CanvasRenderingContext2D) => {this.drawCanvas(ctx)}}
-            resize={(canvas: HTMLCanvasElement) => {this.resize(canvas)}}
-            handleClick={this.handleClick.bind(this)}
-            handleMouseMove={this.handleMouseMove.bind(this)}
-            handleKeyPress={this.handleKeyPress.bind(this)}
-            setStyle={this.setStyle}
-            getCanvasOffset={this.getCanvasOffset.bind(this)}></Canvas>
-    }
-
-    setStyle(): any {
-        return {cursor: "pointer"}
-    }
-
-    getCanvasOffset(canvas: HTMLCanvasElement) {
-        this.canvasOffset = [canvas.offsetLeft + canvas.clientLeft, canvas.offsetTop + canvas.clientTop];
-    }
-
-    translateMouseCoords(posX: number, posY: number): [number, number] {
-        return [posX - this.canvasOffset[0], posY - this.canvasOffset[1]];
-    }
-
-    // Drawing to the canvas, passed in as a callback
-    drawCanvas(ctx: CanvasRenderingContext2D): void {
-        //ctx.clearRect(0, 0, this.mapWidth * TILE_WIDTH, this.mapHeight * TILE_WIDTH);
-        ctx.fillStyle = 'rgb(109, 153, 87)';
-        ctx.fillRect(0, 0, this._state.mapState.mapWidth * TILE_WIDTH, this._state.mapState.mapHeight * TILE_WIDTH);
-
-        // Draw the move path if its not null
-        if (this._selectionHandler.selection instanceof Movement) {
-            this._selectionHandler.selection.draw(ctx);
-        }
-
-        // Draw the grid
-        for (var i = 0; i < this._state.mapState.mapWidth; i++) {
-            for (var j = 0; j < this._state.mapState.mapWidth; j++) {
-                ctx.strokeRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+    const handleMouseMove = (event) => {
+        const rect = event.target.getBoundingClientRect();
+        let [newX, newY] = [event.pageX - rect.left, event.pageY - rect.top];
+        setMouseX(newX);
+        setMouseY(newY);
+        if (selection instanceof Movement) {
+            if (0 < mouseX && mouseX < mapSize.mapWidth * TILE_WIDTH && 0 < mouseY && mouseY < mapSize.mapHeight * TILE_WIDTH) {
+                selection.check(mouseX, mouseY);
             }
         }
+    }
 
-        // Draw the characters
-        this._state.characters.forEach((character) => {
-            if (character.imageLoaded) {
-                ctx.drawImage(character.image, character.x * TILE_WIDTH, character.y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
-                if (this._selectionHandler.onTurn && this._state.character.checkAttackable(character)) {
-                    if (this._selectionHandler.selection instanceof Attack 
-                            && this._selectionHandler.selection.target
-                            && this._selectionHandler.selection.target.id === character.id) {
-                        ctx.drawImage(ATTACK_IMAGE, character.x * TILE_WIDTH + 2, character.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH - 4);
-                        // this._drawHealthBar(character, ctx)
-                    }
-                    else {
-                        ctx.drawImage(ATTACK_IMAGE, character.x * TILE_WIDTH, character.y * TILE_WIDTH, TILE_WIDTH / 2, TILE_WIDTH / 2);
-                    }
+    let handleClick = (event) => {
+        const rect = event.target.getBoundingClientRect();
+        let [clickX, clickY] = [event.pageX - rect.left, event.pageY - rect.top];
+        const [mapX, mapY]: [number, number] = [Math.floor(clickX / TILE_WIDTH), Math.floor(clickY / TILE_WIDTH)];
+        const [x_rel, y_rel]: [number, number] = [clickX - mapX * TILE_WIDTH, clickY - mapY * TILE_WIDTH];
+        const hover: Character | undefined = getCharacterAtLocation(mapX, mapY, characters);
+        // Handling movement
+        if (selection instanceof Movement) {
+            socket.send(JSON.stringify(selection.getMoveRequest(character.id)));
+            setSelection(null);
+        }
+        else if (isCharacter(hover) && onOpenSelection(x_rel, y_rel)) {
+            setInfoPanelSelection(hover)
+        }
+        else {
+            if (onTurn) {
+                if (onCharacter(clickX, clickY, character)) {
+                    console.log("Setting movement")
+                    setSelection(new Movement(character.x, character.y));
+                }
+                else {
+                    Object.values(characters).forEach(player => {
+                        if (checkAttackable(character, player) && onCharacter(clickX, clickY, player)) {
+                            if (selection instanceof Attack) {
+                                selection.setOptions({target: player})
+                            }
+                            else {
+                                setSelection(new Attack({target: player}));
+                            }
+                        }
+                    })
                 }
             }
-        }, this);
-
-        const mapX: number = Math.floor(this._mouseX / TILE_WIDTH);
-        const mapY: number = Math.floor(this._mouseY / TILE_WIDTH);
-        const x_rel: number = this._mouseX - mapX * TILE_WIDTH;
-        const y_rel: number = this._mouseY - mapY * TILE_WIDTH;
-        const hover: Character | null = this._state.mapState.get(mapX, mapY);
-        // Draw health bar on hovered character if necessary
-        if (hover instanceof Character) {
-            this._drawHealthBar(hover, ctx);
-            let img: HTMLImageElement = this._onOpenSelection(x_rel, y_rel) ? LOAD_INFO : LOAD_INFO_DISABLED;
-            ctx.drawImage(img, (mapX + 0.6) * TILE_WIDTH, (mapY + 0.6) * TILE_WIDTH, TILE_WIDTH * 0.4, TILE_WIDTH * 0.4);
         }
-        let informationSelection = this._selectionHandler.getInformationPanelSelection() ;
-        if (informationSelection instanceof Character) {
-            ctx.drawImage(LOAD_INFO_SELECTED, (informationSelection.x + 0.6) * TILE_WIDTH, (informationSelection.y + 0.6) * TILE_WIDTH, TILE_WIDTH * 0.4, TILE_WIDTH * 0.4);
-        }
-
-        // Draw outer boundary
-        ctx.strokeRect(1, 1, this._state.mapState.mapWidth * TILE_WIDTH - 2, this._state.mapState.mapHeight * TILE_WIDTH - 2);
-        ctx.beginPath();
-    
-        ctx.fill()
     }
-    private _onOpenSelection(x_rel: number, y_rel: number): boolean {
+
+    const onOpenSelection = (x_rel: number, y_rel: number) => {
         return x_rel > TILE_WIDTH * 0.6 && y_rel > TILE_WIDTH * 0.6;
     }
 
-    private _drawHealthBar(character: Character, ctx: CanvasRenderingContext2D) {
+    const drawHealthBar = (character: Character, ctx: CanvasRenderingContext2D) => {
         ctx.fillStyle = "red";
         ctx.fillRect(character.x * TILE_WIDTH + 2, character.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH / 8);
         ctx.fillStyle = "green";
@@ -188,78 +116,94 @@ export default class CanvasComponent implements Renderable {
         ctx.strokeRect(character.x * TILE_WIDTH + 2, character.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH / 8);
     }
 
-    // Handling click events in the canvas, passed in as a callback
-    handleClick(event: MouseEvent): void {
-        //let clickX: number, clickY: number;
-        let [clickX, clickY] = this.translateMouseCoords(event.pageX, event.pageY);
-        const mapX: number = Math.floor(this._mouseX / TILE_WIDTH);
-        const mapY: number = Math.floor(this._mouseY / TILE_WIDTH);
-        const x_rel: number = this._mouseX - mapX * TILE_WIDTH;
-        const y_rel: number = this._mouseY - mapY * TILE_WIDTH;
-        const hover: Character | null = this._state.mapState.get(mapX, mapY);
-        // Handling movement
-        if (this._selectionHandler.selection instanceof Movement) {
-            this._socket.send(JSON.stringify(this._selectionHandler.selection.getMoveRequest(this._state.character.id)));
-            this._selectionHandler.reset();
+    const drawCanvas = (ctx: CanvasRenderingContext2D | null) => {
+        //ctx.clearRect(0, 0, this.mapWidth * TILE_WIDTH, this.mapHeight * TILE_WIDTH);
+        if (!ctx) {
+            console.log("Canvas context was null");
+            return;
         }
-        else if (hover instanceof Character && this._onOpenSelection(x_rel, y_rel)) {
-            this._selectionHandler.setInformationPanel(hover)
+        ctx.fillStyle = 'rgb(109, 153, 87)';
+        ctx.fillRect(0, 0, mapSize.mapWidth * TILE_WIDTH, mapSize.mapHeight * TILE_WIDTH);
+    
+        // Draw the move path if its not null
+        if (selection instanceof Movement) {
+            selection.draw(ctx);
         }
-        else {
-            if (this._selectionHandler.onTurn) {
-                if (onCharacter(clickX, clickY, this._state.character)) {
-                    this._selectionHandler.setMovement(new Movement(this._state.character.x, this._state.character.y));
-                }
-                else {
-                    this._state.characters.forEach(player => {
-                        // Inefficient way of finding players, they should probably be stored in 2d array
-                        if (this._state.character.checkAttackable(player) && onCharacter(clickX, clickY, player)) {
-                            this._selectionHandler.setAttackOptions({target: player})
-                        }
-                    }, this)
-                }
+    
+        // Draw the grid
+        for (var i = 0; i < mapSize.mapWidth; i++) {
+            for (var j = 0; j < mapSize.mapWidth; j++) {
+                ctx.strokeRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
             }
         }
-    }
-
-    // Resizes the canvas, for some reason this has to be passed as a callback
-    resize(canvas: HTMLCanvasElement) {
-        canvas.width = TILE_WIDTH * this._state.mapState.mapWidth;
-        canvas.height = TILE_WIDTH * this._state.mapState.mapHeight;
-    }
-
-    handleKeyPress(event: { keyCode: number; }): void {
-        switch (event.keyCode) {
-            // Handling wasd and arrow keys, probably wont be used now
-            case 38:
-            case 87:
-                // Up
-                console.log("up");
-                break;
-            case 40:
-            case 83:
-                // Down
-                console.log("down");
-                break;
-            case 37:
-            case 65:
-                // Left
-                console.log("left");
-                break;
-            case 39:
-            case 68:
-                // Right
-                console.log("right");
-                break;
-            default:
-                break;
+    
+        // Draw the characters
+        Object.values(characters).forEach((aCharacter) => {
+            let relevantImage: HTMLImageElement;
+            if (aCharacter.team === character.team) {
+                relevantImage = aCharacter.id === character.id ? ME_IMAGE : NOT_ME_IMAGE;
+            }
+            else {
+                relevantImage = ORC_IMAGE;
+            }
+            ctx.drawImage(relevantImage, aCharacter.x * TILE_WIDTH, aCharacter.y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+            if (onTurn && checkAttackable(character, aCharacter)) {
+                if (selection instanceof Attack 
+                        && selection.target
+                        && selection.target.id === aCharacter.id) {
+                    ctx.drawImage(ATTACK_IMAGE, aCharacter.x * TILE_WIDTH + 2, aCharacter.y * TILE_WIDTH + 2, TILE_WIDTH - 4, TILE_WIDTH - 4);
+                }
+                else {
+                    ctx.drawImage(ATTACK_IMAGE, aCharacter.x * TILE_WIDTH, aCharacter.y * TILE_WIDTH, TILE_WIDTH / 2, TILE_WIDTH / 2);
+                }
+            }
+        });
+    
+        const [mapX, mapY]: [number, number] = [Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH)];
+        const [x_rel, y_rel]: [number, number] = [mouseX - mapX * TILE_WIDTH, mouseY - mapY * TILE_WIDTH];
+        const hover: Character | undefined = getCharacterAtLocation(mapX, mapY, characters);
+        // Draw health bar on hovered character if necessary
+        if (hover && isCharacter(hover)) {
+            drawHealthBar(hover, ctx);
+            let img: HTMLImageElement = onOpenSelection(x_rel, y_rel) ? LOAD_INFO : LOAD_INFO_DISABLED;
+            ctx.drawImage(img, (mapX + 0.6) * TILE_WIDTH, (mapY + 0.6) * TILE_WIDTH, TILE_WIDTH * 0.4, TILE_WIDTH * 0.4);
         }
+        if (infoPanelSelection !== null && isCharacter(infoPanelSelection)) {
+            ctx.drawImage(LOAD_INFO_SELECTED, (infoPanelSelection.x + 0.6) * TILE_WIDTH, (infoPanelSelection.y + 0.6) * TILE_WIDTH, TILE_WIDTH * 0.4, TILE_WIDTH * 0.4);
+        }
+    
+        // Draw outer boundary
+        ctx.strokeRect(1, 1, mapSize.mapWidth * TILE_WIDTH - 2, mapSize.mapHeight * TILE_WIDTH - 2);
+        ctx.beginPath();
+    
+        ctx.fill()
     }
 
-    // Handling mouse movements inside the canvas
-    handleMouseMove(event: MouseEvent): void {
-        [this._mouseX, this._mouseY] = this.translateMouseCoords(event.pageX, event.pageY);
+    useEffect(() => {
+      
+        const canvas = canvasRef.current;
+        if (canvas === null) {
+            throw new Error("Critical error: Canvas ref was null");
+        }
 
-        this._selectionHandler.handleMouseMove(this._mouseX, this._mouseY, this._state.mapState.mapWidth, this._state.mapState.mapHeight);
-    }
+        canvas.width = TILE_WIDTH * mapSize.mapWidth;
+        canvas.height = TILE_WIDTH * mapSize.mapHeight;
+
+        const context = canvas.getContext('2d');
+        let animationFrameId: number;
+
+        const render = () => {
+            drawCanvas(context);
+            animationFrameId = window.requestAnimationFrame(render);
+        }
+        render();
+
+        return () => {
+            window.cancelAnimationFrame(animationFrameId);
+        }
+    }, [mouseX, mouseY, onTurn, characters, selection, infoPanelSelection]);
+    
+    return <canvas ref={canvasRef} onMouseMove={handleMouseMove} onClick={handleClick} width="100" height="400" style={{cursor: "pointer"}} />
 }
+
+export default Canvas;

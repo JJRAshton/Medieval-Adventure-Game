@@ -1,20 +1,14 @@
-import { createRoot } from "react-dom/client";
-import ContextHandler from "./scenes/contextHandler";
+import React from "react";
+import { createRoot } from 'react-dom/client';
 
 import './ui.css'
+import App from './app';
 
-const root = createRoot(document.getElementById("reactRoot"));
 const websocket = new WebSocket("ws://localhost:8001/");
 
+const container = document.getElementById('reactRoot');
+const root = createRoot(container!);
+
 websocket.addEventListener("open", () => {
-    const contextHandler = new ContextHandler(root, websocket);
-    websocket.onmessage = ({ data }) => {
-        // debugServerMessages(data);
-
-        contextHandler.handleEvent(data)
-    };
+    root.render(<App websocket={websocket} />);
 });
-
-function debugServerMessages(data: JSON) {
-    console.log("MESSAGE: ", console.log(data));
-}

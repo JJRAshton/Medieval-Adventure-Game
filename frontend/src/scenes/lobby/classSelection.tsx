@@ -6,7 +6,7 @@ interface CharacterClassOption {
 
 interface CharacterCustomistationProps {
     characterClassSelection: CharacterClassOption[];
-    weaponSelection: Map<string, string[]>;
+    weaponSelection;
 }
 
 const CharacterCustomistationComponent: React.FC<CharacterCustomistationProps> = ({ characterClassSelection, weaponSelection }) => {
