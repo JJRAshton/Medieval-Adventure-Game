@@ -11,6 +11,7 @@ import loadInfoSelectedSrc from "../../../images/loadInfoButtonSelected.png";
 import orc from "../../../images/orc.png";
 import me from "../../../images/me.png";
 import notMe from "../../../images/notMe.png";
+import grass from "../../../images/grass.png";
 
 import Attack from "../attack/attack";
 import { GameUISelection } from '../gameUISelection';
@@ -30,10 +31,12 @@ LOAD_INFO_SELECTED.src = loadInfoSelectedSrc;
 const ORC_IMAGE = new Image();
 const ME_IMAGE = new Image();
 const NOT_ME_IMAGE = new Image();
+const GRASS_IMAGE = new Image();
 
 ORC_IMAGE.src = orc;
 ME_IMAGE.src = me;
 NOT_ME_IMAGE.src = notMe;
+GRASS_IMAGE.src = grass;
 
 type CanvasProps = {
     mapSize: any;
@@ -125,6 +128,13 @@ const Canvas = (props: CanvasProps) => {
         ctx.fillStyle = 'rgb(109, 153, 87)';
         ctx.fillRect(0, 0, mapSize.mapWidth * TILE_WIDTH, mapSize.mapHeight * TILE_WIDTH);
     
+        // Background tile texture
+        for (var i = 0; i < mapSize.mapWidth; i++) {
+            for (var j = 0; j < mapSize.mapWidth; j++) {
+                ctx.drawImage(GRASS_IMAGE, i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+            }
+        }
+
         // Draw the move path if its not null
         if (selection instanceof Movement) {
             selection.draw(ctx);
