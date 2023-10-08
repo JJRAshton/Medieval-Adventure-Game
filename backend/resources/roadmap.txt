@@ -31,8 +31,9 @@ Other:
 
 To call the game finished:
 
-    - Allow customisation of characters
-    - Handle players and monsters dying
-    - Winning screen if no enemies present
-    - Some slightly better Art
-    - Improve lobby styling
+    - Allow customisation of characters     : Done
+    - Handle players and monsters dying     :
+    - Winning screen if no enemies present  :
+    - Some slightly better Art              :
+    - Improve lobby styling                 :
+    - Fix AI walking over each other        :
