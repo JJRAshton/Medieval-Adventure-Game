@@ -1,17 +1,5 @@
-import sharp_stick from "../../../images/weapons/sharp_stick.png"
-import sickle from "../../../images/weapons/sickle.png"
-import hatchet from "../../../images/weapons/hatchet.png"
-import trident from "../../../images/weapons/trident.png"
-import greataxe from "../../../images/weapons/greataxe.png"
-import war_scythe from "../../../images/weapons/war_scythe.png"
+import weaponImages from "./weaponImages";
 
-let imagesDict = new Map();
-imagesDict.set("sharp_stick", sharp_stick);
-imagesDict.set("sickle", sickle);
-imagesDict.set("hatchet", hatchet);
-imagesDict.set("trident", trident);
-imagesDict.set("greataxe", greataxe);
-imagesDict.set("war_scythe", war_scythe);
 
 /**
  * This class is envisioned to contain information needed 
@@ -24,7 +12,7 @@ export default class Weapon {
 
     constructor(weaponType: string, range: number) {
         this.name = weaponType;
-        this.imageSource = imagesDict.get(weaponType);
+        this.imageSource = weaponImages[weaponType];
         this.range = range; // Range is attached to weapon to reflect how the backend does it, but should really be on an AttackOption
     }
 }
