@@ -12,7 +12,7 @@ from .weapon_factory import WeaponFactory
 from ....utils import dice_utils
 from ...id_generator import IDGenerator
 
-from .make_dataframes import EntityStatDictionaryProvider, AttackStatDictionaryProvider
+from .make_dataframes import ENTITY_STAT_PROVIDER, EntityStatDictionaryProvider, AttackStatDictionaryProvider
 from .characters_loader import CharacterStatDictionaryProvider
 
 STATS = ['STR', 'DEX', 'CON', 'WIT']
@@ -47,11 +47,10 @@ SIZE_FOR_STRING: Dict[str, int] = {
 class EntityFactory:
 
     def __init__(self, id_generator: IDGenerator, map_number: int=1):
-        self.stat_provider = EntityStatDictionaryProvider()
         self.character_stat_provider = CharacterStatDictionaryProvider(map_number)
         self.__id_generator: IDGenerator = id_generator
         self.__attack_factory = AttackFactory(AttackStatDictionaryProvider())
-        self.__weapon_factory = WeaponFactory(EntityStatDictionaryProvider(), self.__attack_factory, id_generator)
+        self.__weapon_factory = WeaponFactory(self.__attack_factory, id_generator)
 
     # Returns a dictionary of stats for the given character
     def __getCharacterDict(self, character_name: str):
@@ -81,7 +80,7 @@ class EntityFactory:
             player_name = rd.choice(Player.names)
         base_stats = {stat_name: stat for stat_name, stat in zip(player_class.stat_order, sorted(dice_utils.roll_stats(), reverse=True))}
         
-        df = self.stat_provider.weapons
+        df = ENTITY_STAT_PROVIDER.weapons
         weapon_str = rd.choice(df[(df.Type.isin(player_class.weapons)) & (df.Tier == 4)].index.tolist())
 
         equipped_weapons = {location: None for location in ['Left', 'Right', 'Both']}

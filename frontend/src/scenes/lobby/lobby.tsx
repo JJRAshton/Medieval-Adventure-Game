@@ -58,7 +58,7 @@ const Lobby: React.FC<LobbyProps> = ({ socket, setCurrentScene }) => {
                 setPlayersReady(event.ready);
                 break;
 
-            case "classAndWeaponOpions":
+            case "classAndWeaponOptions":
                 setClassOptions(event.options)
                 break;
             default:

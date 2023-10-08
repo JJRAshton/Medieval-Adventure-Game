@@ -18,7 +18,7 @@ Front end:
 
 Back end and front end:
 
-	- Walls (effect AI)
+	- Walls (affect AI)
     - Configurable map generation
 
 Back end:
@@ -28,3 +28,11 @@ Back end:
 
 Other:
     - Art
+
+To call the game finished:
+
+    - Allow customisation of characters
+    - Handle players and monsters dying
+    - Winning screen if no enemies present
+    - Some slightly better Art
+    - Improve lobby styling

@@ -72,4 +72,5 @@ SAMURAI = PlayerClass(   # bows
     ['single_edged_swords'], ['Melee_evader', 'Keen_eye']
 ) 
 
+# Some of these may cause problems? I'm not sure. I should write a test...
 ALL = [GLADIATOR, GUARDIAN, HUNTER, KNIGHT, NINJA, PROFESSOR, RAIDER, SAMURAI]

@@ -52,6 +52,8 @@ class EntityStatDictionaryProvider:
         # Make a dictionary of the stats for the entity
         return self.__armour.loc[armour_name].to_dict() # type: ignore
 
+# Singleton because we need it in the lobby and I can't be bothered to wire it all the way
+ENTITY_STAT_PROVIDER = EntityStatDictionaryProvider()
 
 class AttackCSVToDataFrameParser:
 
