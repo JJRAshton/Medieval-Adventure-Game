@@ -15,6 +15,8 @@ class User:
         self.player_class = None
         self.player_weapon = None
 
+        self.character_id = None # The id of the currently associated character
+
     def __str__(self):
         return f"User with id: {self.uuid}"
 

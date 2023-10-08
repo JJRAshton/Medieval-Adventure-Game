@@ -26,19 +26,19 @@ class APISession:
         self.translator = PythonToJSONTranslator()
 
         # Starting the DnD encounter:
-        character_info_list, size = self.backend.init(len(playerPool))
+        character_info_list, size = self.backend.init(playerPool)
         mapWidth, mapHeight = size
         if len(character_info_list) != len(playerPool):
             raise ValueError("Wrong number of players created on games start")
         locations = self.backend.locationsRequest()
         characterLocations = [(characterID, locations[characterID]) for characterID in locations]
-        for character_info, user in zip(character_info_list, playerPool):
+        for user in playerPool:
             websockets.broadcast(
                 {user.socket},
                 self.translator.translate({
                     "responseType": "gameStart",
                     "mapStatus": {"mapWidth": mapWidth, "mapHeight": mapHeight},
-                    "playerID": character_info[0],
+                    "playerID": user.character_id,
                     "characters": characterLocations
                 }))
         self.backend.startRequest()

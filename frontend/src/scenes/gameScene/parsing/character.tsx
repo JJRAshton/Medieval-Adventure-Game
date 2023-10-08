@@ -2,9 +2,9 @@ import React from "react";
 
 import PlayerInfoParser from "./playerInfoParser";
 import Weapon from "../attack/weapon";
-import AttackOption from "../attack/attackOption";
 
 type CharacterInfo =  {
+    Name: string;
     Weapons: JSON;
     Attacks: JSON;
     Stats: Array<number>;
@@ -21,6 +21,7 @@ let checkAttackable = (attacker: Character, target: Character) => {
 }
 
 type Character  = {
+    characterName: string;
     infoReceived: boolean;
     id: string;
     x: number;
@@ -37,6 +38,7 @@ type Character  = {
 }
 
 const NULL_CHARACTER: Character = {
+    characterName: "Loading...",
     infoReceived: false,
     id: "null_id",
     x: 0,
@@ -109,6 +111,7 @@ const CHARACTER_INFO_PARSER = new PlayerInfoParser();
 const constructCharacter = (character: Character, characterInfo: CharacterInfo, isPlayer: boolean) => {
     return {
         ...character,
+        characterName: characterInfo.Name,
         weapons: CHARACTER_INFO_PARSER.parseWeapons(characterInfo.Weapons), // Not yet implemented
         // attacks: CHARACTER_INFO_PARSER.parseAttacks(characterInfo.Attacks, selection, setSelection),
         stats: CHARACTER_INFO_PARSER.parseStats(characterInfo.Stats),

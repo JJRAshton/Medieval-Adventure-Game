@@ -1,4 +1,6 @@
-from typing import Tuple
+from typing import Set, Tuple
+
+from ..api.users import User
 from .processing.turn_notifications import TurnNotificationSubscription
 from . import processing as pr
 
@@ -11,8 +13,8 @@ class Requests:
         self.functions = pr.Hub(turn_notification_subscription, ai_manager)
 
     # Requests the generation of the given map
-    def init(self, player_quantity: int, map_number: int=1, builtin: bool=True):
-        self.functions.requestMapStart(player_quantity, map_number, builtin)
+    def init(self, players: Set[User], map_number: int=1, builtin: bool=True):
+        self.functions.requestMapStart(players, map_number, builtin)
 
         return self.functions.getPlayers(), self.functions.map_size
 

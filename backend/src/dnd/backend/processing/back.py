@@ -1,8 +1,10 @@
 import pickle as pkl
 import random as rd
-from typing import Dict, List, Tuple
+from typing import Dict, List, Set, Tuple
 import pandas as pd
 import os
+
+from ...api.users import User
 
 from .entities.item import Weapon, Armour
 
@@ -27,14 +29,13 @@ def load_pkl(file_name):
 class Back:
     maps_dir = os.path.dirname(__file__) + '/../../../../resources/inputs/maps'
 
-    def __init__(self, map_no: int or str, nPlayers: int, builtin_map: int, id_generator: IDGenerator,  classes: List[str] = []):
+    def __init__(self, map_no: int or str, users: Set[User], builtin_map: int, id_generator: IDGenerator,  classes: List[str] = []):
         if builtin_map:
             self.map_path = f'{Back.maps_dir}/map{map_no}'
         else:
             self.map_path = map_no
 
         self.__entity_factory = EntityFactory(id_generator, map_no)
-        self.player_n = nPlayers
         self.id_generator: IDGenerator = id_generator
 
         self.terrainGrid = load_pkl(f'{self.map_path}/terrain.pkl')
@@ -79,12 +80,20 @@ class Back:
         npc_list: List[str] = [x for x in df['NPCs'] if x != ''] # type: ignore
         self.npcs: List[HealthEntity] = [self.createCharacter('NPC', npc) for npc in npc_list]  # Non-monsters
 
-        self.players: List[HealthEntity] = [self.createCharacter('Player') for _ in range(self.player_n)]
+        self.players = []
+        for user in users:
+            next_character = self.createCharacter('Player', preferences={
+                "name": user.player_name,
+                "class": user.player_class,
+                "weapon": user.player_weapon
+            })
+            self.players.append(next_character)
+            user.character_id = next_character.id
 
     # Creates and registers a character and its inventory
-    def createCharacter(self, character_type: str, sub_type: str | None=None) -> HealthEntity:
+    def createCharacter(self, character_type: str, sub_type: str | None=None, preferences: Dict[str, str]={}) -> HealthEntity:
         if character_type == 'Player' and sub_type is None:
-            character: HealthEntity = self.__entity_factory.create_player(self.classes.pop(0))
+            character: HealthEntity = self.__entity_factory.create_player(preferences)
         elif character_type == 'Monster' and sub_type is not None:
             character: HealthEntity = self.__entity_factory.create_npc(sub_type, team=2)
         elif character_type == 'NPC' and sub_type is not None:

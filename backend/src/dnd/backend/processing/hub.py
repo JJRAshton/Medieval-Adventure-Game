@@ -1,5 +1,7 @@
 import random as rd
-from typing import Tuple
+from typing import Set, Tuple
+
+from ...api.users import User
 
 from . import turn_manager as tn
 from . import back as bk
@@ -54,8 +56,8 @@ class Hub:
         return True
 
     # Generates the map
-    def requestMapStart(self, n_players, map, using_builtin_map):
-        self.chart = bk.Back(map, n_players, using_builtin_map, self.id_generator)
+    def requestMapStart(self, players: Set[User], map, using_builtin_map):
+        self.chart = bk.Back(map, players, using_builtin_map, self.id_generator)
 
         turn_notifier = TurnNotifier()
         
@@ -104,6 +106,7 @@ class Hub:
 
         character = self.chart.characters[charID]
         infoDict = {
+            'Name': character.name,
             'Team': character.team,
             'Remaining_movement': character.movement,
             'Range': character.range,

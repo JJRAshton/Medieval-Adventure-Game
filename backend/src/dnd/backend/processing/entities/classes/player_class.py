@@ -74,3 +74,8 @@ SAMURAI = PlayerClass(   # bows
 
 # Some of these may cause problems? I'm not sure. I should write a test...
 ALL = [GLADIATOR, GUARDIAN, HUNTER, KNIGHT, NINJA, PROFESSOR, RAIDER, SAMURAI]
+
+def for_name(name: str):
+    for player_class in ALL:
+        if player_class.name == name:
+            return player_class

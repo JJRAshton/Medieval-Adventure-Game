@@ -75,13 +75,27 @@ class EntityFactory:
         return new_object
 
     # Adds the stats to the given player
-    def create_player(self, player_class: player_class.PlayerClass, player_name=None) -> Player:
-        if player_name is None:
+    def create_player(self, preferences: Dict[str, str]={}) -> Player:
+        if "name" in preferences and preferences["name"]:
+            player_name = preferences["name"]
+        else:
             player_name = rd.choice(Player.names)
-        base_stats = {stat_name: stat for stat_name, stat in zip(player_class.stat_order, sorted(dice_utils.roll_stats(), reverse=True))}
+
+        if "class" in preferences and preferences["class"]:
+            selected_class = player_class.for_name(preferences["class"])
+        else:
+            selected_class = rd.choice(player_class.ALL)
+        
+
+        base_stats = {stat_name: stat for stat_name, stat in zip(selected_class.stat_order, sorted(dice_utils.roll_stats(), reverse=True))}
         
         df = ENTITY_STAT_PROVIDER.weapons
-        weapon_str = rd.choice(df[(df.Type.isin(player_class.weapons)) & (df.Tier == 4)].index.tolist())
+        if "weapon" in preferences and preferences["weapon"]:
+            # The user could provide anything, but sanitisation is effort
+            weapon_str = preferences["weapon"]
+        else:
+            # Not restricting weapon tier for now
+            weapon_str = rd.choice(df[(df.Type.isin(selected_class.weapons))].index.tolist())
 
         equipped_weapons = {location: None for location in ['Left', 'Right', 'Both']}
         if df.loc[weapon_str].to_dict()['Two-handed']:
@@ -90,7 +104,7 @@ class EntityFactory:
             equipped_weapons['Right'] = self.__weapon_factory.create(weapon_str)
 
         player = Player(
-            player_class,
+            selected_class,
             weapon_factory=self.__weapon_factory,
             player_name=player_name,
             id=self.__id_generator.get_character_id(),

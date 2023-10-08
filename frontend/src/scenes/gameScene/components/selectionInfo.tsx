@@ -21,7 +21,7 @@ const SelectionInfo: React.FC<SelectionInfoProps> = ({ infoPanelSelection }) => 
                 <tbody>
                     <tr>
                         <td>Name</td>
-                        <td>a name</td>
+                        <td>{infoPanelSelection.characterName}</td>
                     </tr>
                     <tr>
                         <td>Side</td>
