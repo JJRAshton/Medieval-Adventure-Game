@@ -88,5 +88,8 @@ async def main():
     async with websockets.serve(addToLobby, "localhost", 8001):
         await asyncio.Future()
 
-if __name__ == "__main__":
+def run() -> None:
     asyncio.run(main())
+
+if __name__ == "__main__":
+    run()

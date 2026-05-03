@@ -7,11 +7,22 @@ name = "dnd"
 version = "0.0.1"
 description = "The dnd backend server"
 requires-python = ">=3.7"
+dependencies = [
+    "pandas",
+    "sortedcontainers",
+    "websockets",
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+[project.scripts]
+medieval-backend = "dnd.dnd:run"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dnd"]
 
 [tool.pytest.ini_options]
 addopts = [
