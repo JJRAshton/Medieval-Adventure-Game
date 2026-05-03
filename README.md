@@ -17,13 +17,30 @@ Install and run:
 
 ```powershell
 python -m pip install -e backend
+```
+
+Generate map data (only needed if map files are missing or maps change):
+
+```powershell
+python map_generation.py
+```
+
+Start the backend:
+
+```powershell
 medieval-backend
 ```
 
 ## Frontend
 
-From `frontend`:
+From `frontend`, install dependencies (first time only):
 
 ```powershell
-npx webpack
+npm install
+```
+
+Then serve locally at `http://localhost:8080/`:
+
+```powershell
+npm run serve
 ```

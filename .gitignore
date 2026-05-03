@@ -132,10 +132,7 @@ dmypy.json
 /.idea/*
 *.name
 
-# Ignore pickle files
-*.pkl
-*/*.pkl
-*/*/*.pkl
+# Ignore pickle files (except map data)
 *.xml
 *.patch
 .DS_Store
